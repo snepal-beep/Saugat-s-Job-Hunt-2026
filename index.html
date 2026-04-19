@@ -5,11 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Job Hunt Command Center — Saugat</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
 <style>
 :root{
   --bg:#FAFAF8;
@@ -203,6 +198,10 @@ body{
   font-size:16px;font-weight:400;color:var(--navy);
   margin-bottom:14px;display:flex;align-items:center;gap:8px;
 }
+.card-label{
+  font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+  font-weight:700;color:var(--text3);margin-bottom:12px;
+}
 
 /* ── STAT CARDS ── */
 .stat{
@@ -235,13 +234,13 @@ body{
 .stat.gold .stat-bar-fill{background:linear-gradient(90deg,#C8922A,var(--gold2));}
 .stat.teal .stat-bar-fill{background:linear-gradient(90deg,var(--teal),var(--teal2));}
 
-/* ── PROGRESS RINGS (BEAUTIFIED) ── */
+/* ── PROGRESS RINGS ── */
 .ring-wrap{text-align:center;}
 .ring-wrap svg{transform:rotate(-90deg);}
-.r-track{fill:none;stroke:var(--bg2);stroke-width:7;}
+.r-track{fill:none;stroke:var(--border);stroke-width:7;}
 .r-fill{fill:none;stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset 1.1s cubic-bezier(0.4,0,0.2,1);}
-.ring-num{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;line-height:1;text-shadow:0 2px 4px rgba(0,0,0,0.05);}
-.ring-lbl{font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-top:6px;}
+.ring-num{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;line-height:1;}
+.ring-lbl{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);font-weight:600;margin-top:6px;}
 .ring-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);}
 
 /* ── TABLES ── */
@@ -285,6 +284,14 @@ body{
 .btn-danger{background:var(--coral-bg);color:var(--coral);border:1px solid var(--coral-border);}
 .btn-danger:hover{background:rgba(168,56,56,0.12);}
 .btn-sm{padding:5px 12px;font-size:12px;border-radius:7px;}
+.btn-copy{
+  background:var(--bg2);color:var(--text2);border:1px solid var(--border);
+  padding:5px 11px;border-radius:7px;font-size:11px;font-weight:600;
+  cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.btn-copy:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
+.btn-copy.copied{background:var(--teal);color:#fff;border-color:var(--teal);}
 
 /* ── MODAL ── */
 .overlay{
@@ -306,6 +313,7 @@ body{
   font-family:'DM Serif Display',serif;
   font-size:24px;font-weight:400;color:var(--navy);margin-bottom:22px;
 }
+.modal-wide{width:680px;}
 
 /* ── FORMS ── */
 .fg{margin-bottom:14px;}
@@ -318,6 +326,7 @@ body{
 }
 .fi:focus,.fs:focus,.fa:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(168,114,14,0.1);}
 .fa{resize:vertical;min-height:76px;}
+.fs option{background:var(--card);}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .f-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
 
@@ -359,6 +368,27 @@ body{
   align-items:flex-start;gap:12px;margin-bottom:8px;
   transition:border-color 0.15s,box-shadow 0.15s;
 }
+.employer-card:hover{border-color:var(--border2);box-shadow:var(--shadow);}
+.emp-logo{
+  width:38px;height:38px;border-radius:9px;
+  background:var(--bg2);display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;border:1px solid var(--border);
+}
+.emp-info{flex:1;min-width:0;}
+.emp-name{font-weight:600;font-size:13.5px;color:var(--navy);margin-bottom:1px;}
+.emp-roles{font-size:11.5px;color:var(--text3);margin-bottom:4px;}
+.emp-task-list{margin-top:5px;}
+.emp-task-item{
+  display:flex;align-items:flex-start;gap:6px;
+  font-size:11.5px;color:var(--text2);margin-bottom:3px;line-height:1.4;
+}
+.emp-task-dot{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--gold-bg);border:1.5px solid var(--gold-border);
+  flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;
+  font-size:7px;color:var(--gold);font-weight:700;
+}
+.emp-actions{display:flex;gap:6px;flex-shrink:0;flex-direction:column;align-items:flex-end;}
 
 /* ── TEMPLATE TABS ── */
 .role-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px;}
@@ -368,30 +398,169 @@ body{
   cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);
   transition:all 0.15s;font-family:'DM Sans',sans-serif;
 }
+.role-tab:hover{border-color:var(--border2);background:var(--bg2);}
 .role-tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
 .template-panel{display:none;}
 .template-panel.active{display:block;}
-.tpl-box{background:var(--bg);border:1px solid var(--border);border-radius:11px;padding:20px;margin-bottom:14px;}
-.tpl-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;font-weight:700;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
-.tpl-text{font-size:13px;color:var(--text2);line-height:1.75;white-space:pre-wrap;font-family:'DM Sans',sans-serif;}
-.btn-copy{background:var(--bg2);color:var(--text2);border:1px solid var(--border);padding:5px 11px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:5px;}
-.btn-copy:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
+.tpl-box{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:11px;padding:20px;margin-bottom:14px;
+  position:relative;
+}
+.tpl-label{
+  font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+  font-weight:700;color:var(--text3);margin-bottom:10px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.tpl-text{
+  font-size:13px;color:var(--text2);line-height:1.75;
+  white-space:pre-wrap;font-family:'DM Sans',sans-serif;
+}
+.tpl-note{
+  font-size:11px;color:var(--text3);margin-top:10px;
+  padding:7px 11px;background:var(--gold-light);
+  border-radius:6px;border-left:2px solid var(--gold);
+}
+.char-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);}
+
+/* ── REMINDER CARD ── */
+.rem-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:18px 20px;margin-bottom:10px;
+  box-shadow:var(--shadow-sm);
+}
+.rem-time{
+  font-family:'DM Serif Display',serif;
+  font-size:30px;font-weight:400;color:var(--navy);margin-bottom:2px;
+}
+.rem-label{font-weight:600;font-size:14px;color:var(--text);margin-bottom:3px;}
+.rem-desc{font-size:12.5px;color:var(--text2);line-height:1.5;}
+.rem-days{display:flex;gap:5px;margin-top:10px;}
+.rem-day{
+  width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;text-transform:uppercase;
+  background:var(--bg2);color:var(--text3);
+}
+.rem-day.on{background:var(--navy);color:#fff;}
 
 /* ── STRATEGY ── */
 .phase{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow-sm);}
-.phase-hd{padding:15px 20px;display:flex;align-items:center;gap:12px;cursor:pointer;background:var(--card);transition:background 0.15s;}
+.phase-hd{
+  padding:15px 20px;display:flex;align-items:center;gap:12px;
+  cursor:pointer;background:var(--card);
+  transition:background 0.15s;
+}
 .phase-hd:hover{background:var(--bg);}
-.phase-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:14px;font-weight:400;}
+.phase-num{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Serif Display',serif;font-size:14px;font-weight:400;
+  flex-shrink:0;
+}
 .phase-bd{padding:0 20px 18px;background:var(--card);display:none;}
 .phase-bd.open{display:block;}
+.phase-arrow{margin-left:auto;color:var(--text3);transition:transform 0.2s;font-size:12px;}
 
 /* ── TIPS ── */
-.tip{border-left:3px solid var(--teal);border-radius:0 9px 9px 0;background:var(--teal-bg);padding:13px 15px;margin-bottom:9px;}
+.tip{
+  border-left:3px solid var(--teal);border-radius:0 9px 9px 0;
+  background:var(--teal-bg);padding:13px 15px;margin-bottom:9px;
+}
 .tip.gold{border-left-color:var(--gold);background:var(--gold-bg);}
 .tip.purple{border-left-color:var(--purple);background:var(--purple-bg);}
 .tip.coral{border-left-color:var(--coral);background:var(--coral-bg);}
 .tip-title{font-weight:600;font-size:13px;color:var(--navy);margin-bottom:3px;}
 .tip-text{font-size:12.5px;color:var(--text2);line-height:1.6;}
+
+/* ── SCHEDULE ── */
+.sch-wrap{overflow-x:auto;}
+.sch-grid{display:grid;grid-template-columns:52px repeat(7,1fr);gap:2px;min-width:580px;}
+.sch-hd{
+  background:var(--navy);color:rgba(255,255,255,0.65);
+  text-align:center;padding:8px 4px;
+  font-size:10px;font-weight:600;letter-spacing:0.08em;
+  border-radius:7px;
+}
+.sch-hd.today{background:var(--gold);color:#fff;}
+.sch-time{
+  display:flex;align-items:center;justify-content:flex-end;
+  padding-right:6px;color:var(--text3);
+  font-family:'JetBrains Mono',monospace;font-size:9px;height:28px;
+}
+.sch-cell{height:28px;background:var(--bg2);border-radius:3px;position:relative;overflow:hidden;}
+.sch-blk{
+  position:absolute;left:1px;right:1px;border-radius:3px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:700;overflow:hidden;
+  padding:1px;text-align:center;
+}
+.blk-work{background:#B8821E;color:#fff;}
+.blk-c1{background:#4840A8;color:#fff;}
+.blk-c2{background:#1E6494;color:#fff;}
+.blk-hunt{background:#0F6B58;color:#fff;}
+.blk-online{background:#5C4E9C;color:#fff;}
+.blk-social{background:#A05818;color:#fff;}
+
+/* ── DAY PLAN CARDS ── */
+.day-plan-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:26px;}
+.day-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:14px;
+  box-shadow:var(--shadow-sm);position:relative;overflow:hidden;
+}
+.day-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+}
+.dc-mon::before{background:linear-gradient(90deg,#C8922A,var(--teal));}
+.dc-tue::before{background:linear-gradient(90deg,var(--teal),#0E9B7A);}
+.dc-wed::before{background:linear-gradient(90deg,var(--sky),var(--purple));}
+.dc-thu::before{background:linear-gradient(90deg,#C8922A,var(--orange));}
+.dc-fri::before{background:linear-gradient(90deg,var(--orange),var(--coral));}
+.dc-sat::before{background:linear-gradient(90deg,var(--purple),var(--sky));}
+.dc-sun::before{background:linear-gradient(90deg,var(--teal),#C8922A);}
+.day-name{
+  font-family:'DM Serif Display',serif;
+  font-size:14px;font-weight:400;color:var(--navy);margin-bottom:3px;
+}
+.day-type{font-size:10px;color:var(--text3);margin-bottom:8px;}
+.day-targets{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.day-pill{
+  font-size:9px;font-weight:600;padding:2px 8px;
+  border-radius:20px;
+}
+.pill-app{background:var(--teal-bg);color:var(--teal);border:1px solid var(--teal-border);}
+.pill-net{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border);}
+.tb{display:flex;align-items:flex-start;gap:7px;margin-bottom:6px;}
+.tb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.dot-work{background:#C8922A;}
+.dot-class{background:var(--purple);}
+.dot-hunt{background:var(--teal);}
+.dot-online{background:var(--sky);}
+.dot-social{background:var(--orange);}
+.dot-free{background:var(--text3);}
+.tb-t{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);}
+.tb-d{font-size:11.5px;color:var(--text2);font-weight:500;}
+
+/* ── DATA SYNC PAGE ── */
+.sync-option{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:22px;margin-bottom:16px;
+  box-shadow:var(--shadow-sm);
+}
+.sync-tier{
+  font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+  font-weight:700;margin-bottom:7px;
+}
+.sync-title{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;color:var(--navy);margin-bottom:7px;}
+.sync-desc{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:14px;}
+.code-block{
+  background:var(--navy);color:#8FD9B2;
+  border-radius:9px;padding:14px 16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;line-height:1.7;overflow-x:auto;
+  margin:10px 0;
+}
 
 /* ── UTILITY ── */
 .mb4{margin-bottom:4px;} .mb8{margin-bottom:8px;} .mb12{margin-bottom:12px;}
@@ -405,23 +574,69 @@ body{
 .mono{font-family:'JetBrains Mono',monospace;}
 .fs11{font-size:11px;} .fs12{font-size:12px;} .fs13{font-size:13px;}
 .serif{font-family:'DM Serif Display',serif;}
-.sec-title{font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;color:var(--navy);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.sec-title{
+  font-family:'DM Serif Display',serif;
+  font-size:20px;font-weight:400;color:var(--navy);
+  margin-bottom:14px;padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
 .row-act{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
-.del-btn{background:none;border:none;cursor:pointer;color:var(--text3);padding:3px 6px;border-radius:5px;font-size:14px;transition:all 0.15s;}
+.del-btn{
+  background:none;border:none;cursor:pointer;
+  color:var(--text3);padding:3px 6px;border-radius:5px;
+  font-size:14px;transition:all 0.15s;
+}
 .del-btn:hover{color:var(--coral);background:var(--coral-bg);}
 .empty-state{text-align:center;padding:40px 20px;color:var(--text3);}
 .empty-ico{font-size:30px;margin-bottom:10px;}
-.quote-banner{background:linear-gradient(135deg,var(--navy),#243460);color:rgba(255,255,255,0.82);border-radius:14px;padding:20px 24px;margin-bottom:26px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);}
+.quote-banner{
+  background:linear-gradient(135deg,var(--navy),#243460);
+  color:rgba(255,255,255,0.82);border-radius:14px;
+  padding:20px 24px;margin-bottom:26px;
+  display:flex;align-items:center;gap:16px;
+  box-shadow:var(--shadow);
+}
 .quote-banner p{font-size:13.5px;line-height:1.6;font-style:italic;}
+.quote-banner strong{color:#DBA83C;font-style:normal;}
 
 /* ── TOAST ── */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transform:translateY(6px);transition:all 0.25s;pointer-events:none;box-shadow:var(--shadow-lg);border-left:3px solid var(--gold);}
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--navy);color:#fff;
+  padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;
+  z-index:9999;opacity:0;transform:translateY(6px);
+  transition:all 0.25s;pointer-events:none;
+  box-shadow:var(--shadow-lg);border-left:3px solid var(--gold);
+}
 .toast.show{opacity:1;transform:translateY(0);}
 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+
+/* ── TASK DAILY SECTION ── */
+.daily-task-section{
+  background:var(--gold-light);border:1px solid var(--gold-border);
+  border-radius:12px;padding:18px;margin-bottom:20px;
+}
+.daily-task-title{
+  font-family:'DM Serif Display',serif;font-size:17px;color:var(--navy);
+  margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.daily-tasks-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;}
+.day-tasks-col{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 14px;}
+.day-tasks-name{
+  font-family:'DM Serif Display',serif;font-size:13px;color:var(--navy);
+  margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid var(--border);
+}
+.dtask{display:flex;gap:6px;margin-bottom:5px;font-size:11px;color:var(--text2);line-height:1.4;}
+.dtask-num{
+  background:var(--navy);color:#fff;
+  width:15px;height:15px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:700;flex-shrink:0;margin-top:0.5px;
+}
 
 /* ── MOBILE ── */
 @media(max-width:1024px){
@@ -435,6 +650,18 @@ body{
   .topbar{display:flex;}
   .main{margin-left:0;padding:72px 16px 28px;max-width:100vw;}
   .g2,.g3,.g4{grid-template-columns:1fr;}
+  .day-plan-grid{grid-template-columns:repeat(2,1fr);}
+  .daily-tasks-grid{grid-template-columns:repeat(2,1fr);}
+  .frow{grid-template-columns:1fr;}
+  .page-title{font-size:28px;}
+  .role-tabs{gap:4px;}
+  .role-tab{font-size:11px;padding:6px 10px;}
+  .emp-actions{flex-direction:row;}
+}
+@media(max-width:600px){
+  .day-plan-grid{grid-template-columns:1fr;}
+  .daily-tasks-grid{grid-template-columns:1fr;}
+  .g4{grid-template-columns:1fr 1fr;}
 }
 </style>
 </head>
@@ -473,7 +700,7 @@ body{
     <div class="nav-item" onclick="nav('templates')"><span class="nav-icon">💬</span>Message Templates</div>
     <div class="nav-item" onclick="nav('reminders')"><span class="nav-icon">🔔</span>Phone Reminders</div>
     <div class="nav-item" onclick="nav('strategy')"><span class="nav-icon">🧭</span>Strategy & Tips</div>
-    <div class="nav-item" onclick="nav('datasync')"><span class="nav-icon">☁️</span>Data Sync</div>
+    <div class="nav-item" onclick="nav('datasync')"><span class="nav-icon">☁️</span>Data & Sync</div>
   </div>
   <div class="sidebar-bottom">
     <div class="week-chip">
@@ -519,86 +746,140 @@ body{
       <div class="stat-sub">Ready to apply</div>
     </div>
   </div>
-
-  <div class="card mb20">
-    <div class="card-title">📊 Weekly Progress</div>
-    <div style="display:flex;gap:40px;align-items:center;flex-wrap:wrap;justify-content:space-around;">
-      <div class="ring-wrap">
-        <svg width="110" height="110" viewBox="0 0 86 86">
-          <defs>
-            <linearGradient id="g-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#EBC068" />
-              <stop offset="100%" stop-color="#A8720E" />
-            </linearGradient>
-            <filter id="glow-gold" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#A8720E" flood-opacity="0.3"/>
-            </filter>
-          </defs>
-          <circle class="r-track" cx="43" cy="43" r="35"/>
-          <circle class="r-fill" cx="43" cy="43" r="35" stroke="url(#g-gold)" filter="url(#glow-gold)" stroke-dasharray="219.9" id="ring-apps" stroke-dashoffset="219.9"/>
-        </svg>
-        <div style="position:relative;margin-top:-66px;text-align:center;z-index:1;pointer-events:none;">
-          <div class="ring-num text-gold" id="rn-apps">0</div>
-          <div class="ring-sub">/ 20</div>
-        </div>
-        <div style="margin-top:54px"></div>
-        <div class="ring-lbl">Applications</div>
-      </div>
-      <div class="ring-wrap">
-        <svg width="110" height="110" viewBox="0 0 86 86">
-          <defs>
-            <linearGradient id="g-teal" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#24B396" />
-              <stop offset="100%" stop-color="#0F6B58" />
-            </linearGradient>
-            <filter id="glow-teal" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F6B58" flood-opacity="0.3"/>
-            </filter>
-          </defs>
-          <circle class="r-track" cx="43" cy="43" r="35"/>
-          <circle class="r-fill" cx="43" cy="43" r="35" stroke="url(#g-teal)" filter="url(#glow-teal)" stroke-dasharray="219.9" id="ring-net" stroke-dashoffset="219.9"/>
-        </svg>
-        <div style="position:relative;margin-top:-66px;text-align:center;z-index:1;pointer-events:none;">
-          <div class="ring-num text-teal" id="rn-net">0</div>
-          <div class="ring-sub">/ 30</div>
-        </div>
-        <div style="margin-top:54px"></div>
-        <div class="ring-lbl">Networking</div>
-      </div>
-      <div class="ring-wrap">
-        <svg width="110" height="110" viewBox="0 0 86 86">
-          <defs>
-            <linearGradient id="g-purple" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#8076F2" />
-              <stop offset="100%" stop-color="#4840A8" />
-            </linearGradient>
-            <filter id="glow-purple" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#4840A8" flood-opacity="0.3"/>
-            </filter>
-          </defs>
-          <circle class="r-track" cx="43" cy="43" r="35"/>
-          <circle class="r-fill" cx="43" cy="43" r="35" stroke="url(#g-purple)" filter="url(#glow-purple)" stroke-dasharray="219.9" id="ring-int" stroke-dashoffset="219.9"/>
-        </svg>
-        <div style="position:relative;margin-top:-66px;text-align:center;z-index:1;pointer-events:none;">
-          <div class="ring-num" style="color:var(--purple)" id="rn-int">0</div>
-          <div class="ring-sub">live</div>
-        </div>
-        <div style="margin-top:54px"></div>
-        <div class="ring-lbl">Interviews</div>
-      </div>
-    </div>
-  </div>
-
   <div class="g2 mb20">
     <div class="card">
-      <div class="card-title">⚠️ Tasks Due Today / Overdue</div>
-      <div id="dash-tasks-today"></div>
+      <div class="card-title">📊 Weekly Progress</div>
+      <div style="display:flex;gap:32px;align-items:center;flex-wrap:wrap;">
+        <div class="ring-wrap">
+          <svg width="86" height="86" viewBox="0 0 86 86">
+            <circle class="r-track" cx="43" cy="43" r="35"/>
+            <circle class="r-fill" cx="43" cy="43" r="35" stroke="#A8720E" stroke-dasharray="219.9" id="ring-apps" stroke-dashoffset="219.9"/>
+          </svg>
+          <div style="position:relative;margin-top:-54px;text-align:center;z-index:1;pointer-events:none;">
+            <div class="ring-num text-gold" id="rn-apps">0</div>
+            <div class="ring-sub">/ 20</div>
+          </div>
+          <div style="margin-top:48px"></div>
+          <div class="ring-lbl">Applications</div>
+        </div>
+        <div class="ring-wrap">
+          <svg width="86" height="86" viewBox="0 0 86 86">
+            <circle class="r-track" cx="43" cy="43" r="35"/>
+            <circle class="r-fill" cx="43" cy="43" r="35" stroke="#0F6B58" stroke-dasharray="219.9" id="ring-net" stroke-dashoffset="219.9"/>
+          </svg>
+          <div style="position:relative;margin-top:-54px;text-align:center;z-index:1;pointer-events:none;">
+            <div class="ring-num text-teal" id="rn-net">0</div>
+            <div class="ring-sub">/ 30</div>
+          </div>
+          <div style="margin-top:48px"></div>
+          <div class="ring-lbl">Networking</div>
+        </div>
+        <div class="ring-wrap">
+          <svg width="86" height="86" viewBox="0 0 86 86">
+            <circle class="r-track" cx="43" cy="43" r="35"/>
+            <circle class="r-fill" cx="43" cy="43" r="35" stroke="#4840A8" stroke-dasharray="219.9" id="ring-int" stroke-dashoffset="219.9"/>
+          </svg>
+          <div style="position:relative;margin-top:-54px;text-align:center;z-index:1;pointer-events:none;">
+            <div class="ring-num" style="color:var(--purple)" id="rn-int">0</div>
+            <div class="ring-sub">live</div>
+          </div>
+          <div style="margin-top:48px"></div>
+          <div class="ring-lbl">Interviews</div>
+        </div>
+      </div>
     </div>
     <div class="card">
       <div class="card-title">🗓 Today's Focus — <span class="text-gold fs13" id="today-lbl"></span></div>
       <div id="today-focus"></div>
     </div>
   </div>
+  <div class="g3">
+    <div style="background:var(--teal-bg);border:1px solid var(--teal-border);border-radius:12px;padding:17px;">
+      <div style="font-size:22px;margin-bottom:8px;">📋</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--teal);margin-bottom:6px;">Daily Applications</div>
+      <div class="fs12 text-muted" style="line-height:1.65">3–6 quality applications per day. Use your 3 resume versions — don't start from scratch. Batch by company type for efficiency.</div>
+    </div>
+    <div style="background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:12px;padding:17px;">
+      <div style="font-size:22px;margin-bottom:8px;">🤝</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--purple);margin-bottom:6px;">Networking Power</div>
+      <div class="fs12 text-muted" style="line-height:1.65">4–5 LinkedIn messages daily. Tuesday is your power day — target 10 reach-outs. Personalize line 1 only. Use templates from the Messages page.</div>
+    </div>
+    <div style="background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:12px;padding:17px;">
+      <div style="font-size:22px;margin-bottom:8px;">🔄</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--gold);margin-bottom:6px;">Follow-Up Rule</div>
+      <div class="fs12 text-muted" style="line-height:1.65">Follow up 5–7 business days after applying. Use Thursday mornings for all follow-ups. Second touch often makes the difference.</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-schedule">
+  <div class="page-header">
+    <div class="breadcrumb">/ <span>weekly-schedule</span></div>
+    <h1 class="page-title">Weekly Schedule</h1>
+    <p class="page-subtitle">Your full week plotted — work, classes, job hunt windows, and social time.</p>
+  </div>
+  <div class="flex gap16 mb16" style="flex-wrap:wrap;">
+    <div class="flex gap8"><div style="width:12px;height:12px;border-radius:3px;background:#B8821E;flex-shrink:0;margin-top:2px;"></div><span class="fs12 text-muted">Work</span></div>
+    <div class="flex gap8"><div style="width:12px;height:12px;border-radius:3px;background:var(--purple);flex-shrink:0;margin-top:2px;"></div><span class="fs12 text-muted">Class 1 (Mon 6–9p)</span></div>
+    <div class="flex gap8"><div style="width:12px;height:12px;border-radius:3px;background:var(--sky);flex-shrink:0;margin-top:2px;"></div><span class="fs12 text-muted">Class 2 (Wed 5:30–8:30p)</span></div>
+    <div class="flex gap8"><div style="width:12px;height:12px;border-radius:3px;background:var(--teal);flex-shrink:0;margin-top:2px;"></div><span class="fs12 text-muted">Job Hunt 🎯</span></div>
+    <div class="flex gap8"><div style="width:12px;height:12px;border-radius:3px;background:#5C4E9C;flex-shrink:0;margin-top:2px;"></div><span class="fs12 text-muted">Online Class Review</span></div>
+    <div class="flex gap8"><div style="width:12px;height:12px;border-radius:3px;background:var(--orange);flex-shrink:0;margin-top:2px;"></div><span class="fs12 text-muted">Social / Rest</span></div>
+  </div>
+  <div class="card mb20">
+    <div class="sch-wrap"><div id="sch-grid"></div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">⏱ Weekly Capacity</div>
+      <div class="fs13" style="line-height:2.3;">
+        <div class="flex jcsb" style="border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px;"><span class="text-muted">Work hours / week</span><span class="mono fw6 text-gold">~17.5 hrs</span></div>
+        <div class="flex jcsb" style="border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px;"><span class="text-muted">In-class hours / week</span><span class="mono fw6" style="color:var(--purple)">~6 hrs</span></div>
+        <div class="flex jcsb" style="border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px;"><span class="text-muted">Online class review / week</span><span class="mono fw6" style="color:var(--sky)">~3–4 hrs</span></div>
+        <div class="flex jcsb" style="border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px;"><span class="text-muted">Job hunt windows</span><span class="mono fw6 text-teal">~18–22 hrs</span></div>
+        <div class="flex jcsb"><span class="text-muted">Social + buffer</span><span class="mono fw6" style="color:var(--orange)">~8–10 hrs</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚡ Best Power Windows</div>
+      <div class="tip mb8">
+        <div class="tip-title">🔥 Tuesday — Super Day</div>
+        <div class="tip-text">Fully free. Block 9 AM–5 PM. Target: 6 apps + 10 networking. Your week's highest-leverage window.</div>
+      </div>
+      <div class="tip gold mb8">
+        <div class="tip-title">⚡ Wednesday Morning</div>
+        <div class="tip-text">Free until 5:30 PM. 4 applications + 6 networking messages before Class 2.</div>
+      </div>
+      <div class="tip purple">
+        <div class="tip-title">🌅 Thursday Morning</div>
+        <div class="tip-text">Free until noon. 3 apps + 5 networking + all follow-ups. Prime tailoring time.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-dayplan">
+  <div class="page-header">
+    <div class="breadcrumb">/ <span>daily-game-plan</span></div>
+    <h1 class="page-title">Daily Game Plan</h1>
+    <p class="page-subtitle">Specific daily tasks, employer research targets, and time blocks — engineered to hit 20 apps + 30 networking every week.</p>
+  </div>
+  <div class="card mb20" style="background:linear-gradient(135deg,var(--teal-bg),var(--gold-bg));border-color:var(--teal-border);">
+    <div class="flex gap12">
+      <span style="font-size:28px">🏆</span>
+      <div>
+        <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--teal);margin-bottom:4px;">Weekly Targets Breakdown</div>
+        <div class="fs13 text-muted">Mon: 2+4 &nbsp;|&nbsp; <strong style="color:var(--teal)">Tue: 6+10 ⚡ Power Day</strong> &nbsp;|&nbsp; Wed: 4+6 &nbsp;|&nbsp; Thu: 4+5 &nbsp;|&nbsp; Fri: 1+2 &nbsp;|&nbsp; Sat: 2+3 &nbsp;|&nbsp; Sun: 1+0 &nbsp;|&nbsp; <strong style="color:var(--navy)">Total: 20+30 ✓</strong></div>
+      </div>
+    </div>
+  </div>
+  <div class="day-plan-grid" id="dayplan-grid"></div>
+
+  <div class="sec-title" style="margin-top:8px;">✅ Specific Daily Job-Clipping Tasks</div>
+  <div class="daily-tasks-grid mb28" id="daily-tasks-grid"></div>
+
+  <div class="sec-title">📍 Employer Research Targets by Day</div>
+  <div id="employer-research"></div>
 </div>
 
 <div class="page" id="page-tasks">
@@ -623,6 +904,43 @@ body{
   </div>
 </div>
 
+<div class="page" id="page-clips">
+  <div class="page-header">
+    <div class="breadcrumb">/ <span>job-clips</span></div>
+    <h1 class="page-title">Job Clips</h1>
+    <p class="page-subtitle">Save jobs during employer research, then move them to Applications when ready to apply.</p>
+  </div>
+  <div class="card mb16" style="background:var(--gold-light);border-color:var(--gold-border);">
+    <div class="flex gap12">
+      <span style="font-size:22px">📌</span>
+      <div class="fs13 text-muted" style="line-height:1.65">
+        <strong style="color:var(--navy)">Workflow:</strong> Visit employer site → Find role → <strong style="color:var(--gold)">Clip it</strong> (URL + notes) → Review clips → <strong style="color:var(--teal)">Apply →</strong> Auto-moves to Applications tracker.
+      </div>
+    </div>
+  </div>
+  <div class="row-act">
+    <div class="flex gap12">
+      <span class="badge b-sky" id="clips-saved-count">0 Saved</span>
+      <span class="badge b-gold" id="clips-ready-count">0 Ready</span>
+      <span class="badge b-teal" id="clips-applied-count">0 Applied</span>
+    </div>
+    <button class="btn btn-gold" onclick="openM('m-clip')">📌 Clip a Job</button>
+  </div>
+  <div class="card" style="overflow-x:auto;">
+    <table class="tbl">
+      <thead><tr>
+        <th>Company</th><th>Role</th><th>Job URL</th>
+        <th>Status</th><th>Saved</th><th>Location</th><th>Notes</th><th></th>
+      </tr></thead>
+      <tbody id="clips-tbody"></tbody>
+    </table>
+    <div class="empty-state" id="clips-empty" style="display:none;">
+      <div class="empty-ico">📌</div>
+      <div>No clips yet. Visit employer sites in Day Plan, then clip roles here.</div>
+    </div>
+  </div>
+</div>
+
 <div class="page" id="page-jobs">
   <div class="page-header">
     <div class="breadcrumb">/ <span>applications</span></div>
@@ -639,6 +957,14 @@ body{
         <div class="stat-label" style="font-size:9px;">Interview</div>
         <div class="stat-val" style="font-size:28px;" id="j-int">0</div>
       </div>
+      <div class="stat teal" style="padding:10px 16px;min-width:0;">
+        <div class="stat-label" style="font-size:9px;">Offers</div>
+        <div class="stat-val" style="font-size:28px;" id="j-offer">0</div>
+      </div>
+      <div class="stat coral" style="padding:10px 16px;min-width:0;">
+        <div class="stat-label" style="font-size:9px;">Rejected</div>
+        <div class="stat-val" style="font-size:28px;" id="j-rej">0</div>
+      </div>
     </div>
     <button class="btn btn-navy" onclick="openM('m-job')">+ Add Application</button>
   </div>
@@ -646,13 +972,13 @@ body{
     <table class="tbl">
       <thead><tr>
         <th>Company</th><th>Role</th><th>Status</th>
-        <th>Applied</th><th>Platform</th><th>Job URL</th><th>Follow-Up</th><th>Notes</th><th></th>
+        <th>Applied</th><th>Platform</th><th>Follow-Up</th><th>Notes</th><th></th>
       </tr></thead>
       <tbody id="jobs-tbody"></tbody>
     </table>
     <div class="empty-state" id="jobs-empty" style="display:none;">
       <div class="empty-ico">💼</div>
-      <div>No applications yet. Add one directly.</div>
+      <div>No applications yet — clip a job from the Clips page or add one directly.</div>
     </div>
   </div>
 </div>
@@ -664,6 +990,15 @@ body{
     <p class="page-subtitle">30 reach-outs per week — every conversation tracked, no warm lead lost.</p>
   </div>
   <div class="row-act">
+    <div class="flex gap12">
+      <div>
+        <span style="font-family:'DM Serif Display',serif;font-size:30px;color:var(--teal);" id="net-week-count">0</span>
+        <span class="text-muted fs12"> / 30 this week</span>
+      </div>
+      <div class="stat-bar" style="width:140px;height:5px;margin-top:4px;">
+        <div class="stat-bar-fill" id="net-week-bar" style="width:0%;background:linear-gradient(90deg,var(--teal),var(--teal2))"></div>
+      </div>
+    </div>
     <button class="btn btn-teal" onclick="openM('m-net')">+ Add Contact</button>
   </div>
   <div class="card" style="overflow-x:auto;">
@@ -674,32 +1009,121 @@ body{
       </tr></thead>
       <tbody id="net-tbody"></tbody>
     </table>
+    <div class="empty-state" id="net-empty" style="display:none;">
+      <div class="empty-ico">🤝</div>
+      <div>No contacts yet. Use templates from the Messages page, then log here.</div>
+    </div>
   </div>
+</div>
+
+<div class="page" id="page-templates">
+  <div class="page-header">
+    <div class="breadcrumb">/ <span>message-templates</span></div>
+    <h1 class="page-title">Message Templates</h1>
+    <p class="page-subtitle">Six role-specific templates — LinkedIn Connection Note + InMail for each. Personalize the <em>[bracketed]</em> fields before sending.</p>
+  </div>
+  <div class="card mb18" style="background:var(--navy);color:rgba(255,255,255,0.8);margin-bottom:18px;">
+    <div class="flex gap12">
+      <span style="font-size:22px">⚠️</span>
+      <div class="fs12" style="line-height:1.65">
+        <strong style="color:#DBA83C">LinkedIn Connection Request:</strong> Hard limit of <strong style="color:#DBA83C">300 characters</strong> (not words). Every word counts. The InMail messages below are full-length (~180–220 words) and can also be sent as emails. Always replace [Name], [Firm/Company], and [specific area] before sending.
+      </div>
+    </div>
+  </div>
+  <div class="role-tabs" id="role-tabs"></div>
+  <div id="template-panels"></div>
+</div>
+
+<div class="page" id="page-reminders">
+  <div class="page-header">
+    <div class="breadcrumb">/ <span>phone-reminders</span></div>
+    <h1 class="page-title">Phone Reminder Guide</h1>
+    <p class="page-subtitle">Set these exactly on iOS Reminders or Google Calendar — copy the label as your alarm name.</p>
+  </div>
+  <div class="card mb20" style="background:var(--gold-light);border-color:var(--gold-border);">
+    <div style="font-family:'DM Serif Display',serif;font-size:17px;color:var(--gold);margin-bottom:9px;">📱 Setup Instructions</div>
+    <div class="fs13 text-muted" style="line-height:1.75">
+      <strong style="color:var(--navy)">iOS:</strong> Open Reminders app → New List named "Job Hunt" → Add each time below → Set Repeat days shown.<br/>
+      <strong style="color:var(--navy)">Android / Google Cal:</strong> Create Event → set Notification → Repeat → check specific days.<br/>
+      <strong style="color:var(--navy)">Pro tip:</strong> Name your alarm the exact action (e.g. "📧 Send 2 job apps NOW") so you know what to do the moment it rings.
+    </div>
+  </div>
+  <div class="g2" id="reminders-grid"></div>
+</div>
+
+<div class="page" id="page-strategy">
+  <div class="page-header">
+    <div class="breadcrumb">/ <span>strategy</span></div>
+    <h1 class="page-title">Strategy & Tips</h1>
+    <p class="page-subtitle">Proven frameworks for landing a role with your CA + Big 4 + MS Analytics background.</p>
+  </div>
+  <div id="strategy-content"></div>
 </div>
 
 <div class="page" id="page-datasync">
   <div class="page-header">
     <div class="breadcrumb">/ <span>data-sync</span></div>
-    <h1 class="page-title">Data Sync</h1>
-    <p class="page-subtitle">Your Firebase Realtime Database Status.</p>
+    <h1 class="page-title">Data & Sync</h1>
+    <p class="page-subtitle">How your data is stored, how to back it up, and how to access across devices including mobile.</p>
   </div>
-  <div class="card" style="border-color:var(--teal-border);background:linear-gradient(135deg,var(--teal-bg),var(--card));">
-    <div style="color:var(--teal);font-weight:bold;font-size:11px;letter-spacing:1px;margin-bottom:8px;">✅ ACTIVELY SYNCING</div>
-    <div class="card-title">Firebase Realtime Cloud Sync</div>
-    <div class="fs13 text-muted">Your data is actively syncing to the connected Firestore instance (job-hunt-2026-9caef). Changes are saved instantly and securely to the cloud. You can open this file on any device and your data will load automatically.</div>
-  </div>
-</div>
 
-<div class="page" id="page-schedule"><div class="empty-state">Schedule UI coming soon</div></div>
-<div class="page" id="page-dayplan"><div class="empty-state">Day Plan UI coming soon</div></div>
-<div class="page" id="page-clips">
-  <div class="page-header"><h1 class="page-title">Job Clips</h1></div>
-  <div class="row-act"><button class="btn btn-gold" onclick="openM('m-clip')">📌 Clip a Job</button></div>
-  <div class="card" style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Company</th><th>Role</th><th>URL</th><th>Status</th><th></th></tr></thead><tbody id="clips-tbody"></tbody></table></div>
+  <div class="sync-option" style="border-color:var(--teal-border);background:linear-gradient(135deg,var(--teal-bg),var(--card));">
+    <div class="sync-tier" style="color:var(--teal)">✅ CURRENT — ACTIVE NOW — NO SETUP NEEDED</div>
+    <div class="sync-title">Browser localStorage</div>
+    <div class="sync-desc">All your jobs, clips, networking contacts, and tasks are saved automatically in your browser's localStorage. This works right now with zero configuration. Data persists through browser restarts — but lives on this device and browser only.<br/><br/><strong>Bottom line: Use Export/Import JSON to move data between devices. It takes 30 seconds.</strong></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+      <button class="btn btn-navy" onclick="exportData()">⬇ Export All Data (JSON)</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">⬆ Import Data (JSON)</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)"/>
+      <button class="btn btn-danger" onclick="if(confirm('Clear ALL data? Cannot be undone.'))clearData()">🗑 Clear All Data</button>
+    </div>
+    <div class="tip">
+      <div class="tip-title">📱 Accessing on Mobile — Step by Step</div>
+      <div class="tip-text">
+        <strong>Option A (Easiest):</strong> Save this HTML file to iCloud Drive / Google Drive. Open it on your phone's browser. Data is separate per device — sync weekly via Export → send JSON file to yourself → Import on mobile.<br/><br/>
+        <strong>Option B (Best UX):</strong> Open this file on Chrome on your phone → tap ⋮ menu → "Add to Home Screen". Now it opens like an app! Same localStorage approach applies.<br/><br/>
+        <strong>Option C (True cross-device sync):</strong> Set up Firebase (see below) — takes ~20 minutes, totally free.
+      </div>
+    </div>
+  </div>
+
+  <div class="sync-option">
+    <div class="sync-tier" style="color:var(--sky)">🔧 UPGRADE OPTION — FREE, ~20 MIN SETUP</div>
+    <div class="sync-title">Firebase Firestore</div>
+    <div class="sync-desc">For true real-time cross-device sync (desktop ↔ mobile ↔ tablet), Firebase Firestore is the easiest free option. No server needed, no credit card required. Free tier gives 50,000 reads + 20,000 writes/day — far more than job hunting needs.</div>
+    <div class="tip gold mb12" style="margin-bottom:12px;">
+      <div class="tip-title">How to set up (5 steps, ~20 min)</div>
+      <div class="tip-text">
+        1. Go to <strong>console.firebase.google.com</strong> → New Project → "JobHunt2026" (free tier)<br/>
+        2. Enable Firestore Database → Start in Test Mode<br/>
+        3. Project Settings → General → Add Web App → copy your firebaseConfig<br/>
+        4. Enable Anonymous Authentication (Auth → Sign-in method)<br/>
+        5. Share your config values with Claude and ask it to wire up the file — takes 5 minutes
+      </div>
+    </div>
+    <div class="code-block">// Add to &lt;head&gt;:
+&lt;script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"&gt;&lt;/script&gt;
+&lt;script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"&gt;&lt;/script&gt;
+
+// Replace localStorage with Firestore:
+const db = firebase.firestore();
+// Save: await db.collection('jobs').add(jobObj)
+// Load: const snap = await db.collection('jobs').get()
+//       const data = snap.docs.map(d => ({id:d.id,...d.data()}))</div>
+  </div>
+
+  <div class="sync-option">
+    <div class="sync-tier" style="color:var(--purple)">💡 SIMPLEST CROSS-DEVICE — NO CODING</div>
+    <div class="sync-title">Google Drive + Home Screen Shortcut</div>
+    <div class="sync-desc">Upload this HTML file to Google Drive. On desktop: right-click → Open With → Chrome. On mobile: open Google Drive → find file → Open → tap ⋮ → "Open in browser" → Add to Home Screen. Data is still per-device localStorage, but the file is always in sync. Pair with weekly JSON exports for data portability.</div>
+    <div class="flex gap8" style="flex-wrap:wrap;">
+      <span class="badge b-teal">✓ Zero coding</span>
+      <span class="badge b-sky">✓ Completely free</span>
+      <span class="badge b-gold">✓ Works offline</span>
+      <span class="badge b-muted">✗ Data still per-device</span>
+    </div>
+  </div>
 </div>
-<div class="page" id="page-templates"><div class="empty-state">Templates UI coming soon</div></div>
-<div class="page" id="page-reminders"><div class="empty-state">Reminders UI coming soon</div></div>
-<div class="page" id="page-strategy"><div class="empty-state">Strategy UI coming soon</div></div>
 
 </main>
 
@@ -721,7 +1145,8 @@ body{
       <div class="fg"><label>Platform</label>
         <select class="fs" id="j-platform">
           <option>LinkedIn</option><option>Company Site</option>
-          <option>Indeed</option><option>Other</option>
+          <option>Indeed</option><option>Handshake</option>
+          <option>Referral</option><option>Other</option>
         </select>
       </div>
     </div>
@@ -729,8 +1154,7 @@ body{
       <div class="fg"><label>Date Applied</label><input class="fi" type="date" id="j-date"/></div>
       <div class="fg"><label>Follow-Up Date</label><input class="fi" type="date" id="j-followup"/></div>
     </div>
-    <div class="fg"><label>Job URL</label><input class="fi" type="url" id="j-url" placeholder="https://careers.company.com/job/123"/></div>
-    <div class="fg"><label>Notes</label><textarea class="fa" id="j-notes" placeholder="Recruiter name, tailored resume version..."></textarea></div>
+    <div class="fg"><label>Notes</label><textarea class="fa" id="j-notes" placeholder="Recruiter name, tailored resume version, JD highlights..."></textarea></div>
     <div class="f-actions">
       <button class="btn btn-ghost" onclick="closeM('m-job')">Cancel</button>
       <button class="btn btn-navy" onclick="addJob()">Save Application</button>
@@ -740,20 +1164,30 @@ body{
 
 <div class="overlay" id="m-net">
   <div class="modal">
-    <div class="modal-title">🤝 Add Contact</div>
+    <div class="modal-title">🤝 Add Networking Contact</div>
     <div class="frow">
-      <div class="fg"><label>Full Name *</label><input class="fi" id="n-name"/></div>
-      <div class="fg"><label>Title / Company</label><input class="fi" id="n-title"/></div>
+      <div class="fg"><label>Full Name *</label><input class="fi" id="n-name" placeholder="e.g. Jane Smith"/></div>
+      <div class="fg"><label>Title / Company</label><input class="fi" id="n-title" placeholder="e.g. Manager at EY"/></div>
     </div>
     <div class="frow">
-      <div class="fg"><label>Platform</label><select class="fs" id="n-platform"><option>LinkedIn</option><option>Email</option></select></div>
-      <div class="fg"><label>Status</label><select class="fs" id="n-status"><option value="pending">Pending</option><option value="connected">Connected</option></select></div>
+      <div class="fg"><label>Platform</label>
+        <select class="fs" id="n-platform">
+          <option>LinkedIn</option><option>Email</option><option>Event</option>
+          <option>Referral</option><option>Alumni Network</option><option>Other</option>
+        </select>
+      </div>
+      <div class="fg"><label>Status</label>
+        <select class="fs" id="n-status">
+          <option value="pending">Pending</option><option value="connected">Connected</option>
+          <option value="warm">Warm Lead</option><option value="followup">Follow-Up</option>
+        </select>
+      </div>
     </div>
-    <div class="fg"><label>Date</label><input class="fi" type="date" id="n-date"/></div>
-    <div class="fg"><label>Notes</label><textarea class="fa" id="n-notes"></textarea></div>
+    <div class="fg"><label>Date Reached Out</label><input class="fi" type="date" id="n-date"/></div>
+    <div class="fg"><label>Notes</label><textarea class="fa" id="n-notes" placeholder="Mutual connection, what you discussed, next step..."></textarea></div>
     <div class="f-actions">
       <button class="btn btn-ghost" onclick="closeM('m-net')">Cancel</button>
-      <button class="btn btn-teal" onclick="addContact()">Save</button>
+      <button class="btn btn-teal" onclick="addContact()">Save Contact</button>
     </div>
   </div>
 </div>
@@ -765,16 +1199,24 @@ body{
     <div class="frow">
       <div class="fg"><label>Category</label>
         <select class="fs" id="tk-cat">
-          <option>Application</option><option>Job Clipping</option><option>Networking</option><option>Other</option>
+          <option>Application</option><option>Job Clipping</option><option>Networking</option>
+          <option>Follow-Up</option><option>Research</option><option>Resume / Cover Letter</option>
+          <option>Interview Prep</option><option>Class</option><option>Other</option>
         </select>
       </div>
+      <div class="fg"><label>Due Date</label><input class="fi" type="date" id="tk-due"/></div>
+    </div>
+    <div class="frow">
       <div class="fg"><label>Priority</label>
         <select class="fs" id="tk-pri">
-          <option value="h">🔴 High</option><option value="m" selected>🟡 Medium</option><option value="l">⚪ Low</option>
+          <option value="h">🔴 High</option>
+          <option value="m" selected>🟡 Medium</option>
+          <option value="l">⚪ Low</option>
         </select>
       </div>
+      <div class="fg"></div>
     </div>
-    <div class="fg"><label>Due Date</label><input class="fi" type="date" id="tk-due"/></div>
+    <div class="fg"><label>Notes</label><textarea class="fa" id="tk-notes" placeholder="Optional details..."></textarea></div>
     <div class="f-actions">
       <button class="btn btn-ghost" onclick="closeM('m-task')">Cancel</button>
       <button class="btn btn-navy" onclick="addTask()">Add Task</button>
@@ -784,12 +1226,17 @@ body{
 
 <div class="overlay" id="m-clip">
   <div class="modal">
-    <div class="modal-title">📌 Clip Job</div>
+    <div class="modal-title">📌 Clip a Job</div>
     <div class="frow">
-      <div class="fg"><label>Company *</label><input class="fi" id="cl-company"/></div>
-      <div class="fg"><label>Role *</label><input class="fi" id="cl-role"/></div>
+      <div class="fg"><label>Company *</label><input class="fi" id="cl-company" placeholder="e.g. JPMorgan Chase"/></div>
+      <div class="fg"><label>Role Title *</label><input class="fi" id="cl-role" placeholder="e.g. Internal Audit Associate"/></div>
     </div>
-    <div class="fg"><label>URL</label><input class="fi" id="cl-url" type="url"/></div>
+    <div class="fg"><label>Job URL *</label><input class="fi" id="cl-url" placeholder="https://careers.example.com/job/12345" type="url"/></div>
+    <div class="frow">
+      <div class="fg"><label>Date Found</label><input class="fi" type="date" id="cl-date"/></div>
+      <div class="fg"><label>Location</label><input class="fi" id="cl-location" placeholder="e.g. New York, NY (Hybrid)"/></div>
+    </div>
+    <div class="fg"><label>Notes</label><textarea class="fa" id="cl-notes" placeholder="Why this role? Salary range, match to profile, deadline..."></textarea></div>
     <div class="f-actions">
       <button class="btn btn-ghost" onclick="closeM('m-clip')">Cancel</button>
       <button class="btn btn-gold" onclick="addClip()">Save Clip</button>
@@ -799,8 +1246,950 @@ body{
 
 <script>
 // ══════════════════════════════════════════════════
-//  FIREBASE INITIALIZATION
+//  DATA
 // ══════════════════════════════════════════════════
+const KEY={jobs:'jhcc_jobs',net:'jhcc_net',tasks:'jhcc_tasks',clips:'jhcc_clips'};
+function ld(k){try{return JSON.parse(localStorage.getItem(k))||[];}catch{return[];}}
+function sv(k,d){localStorage.setItem(k,JSON.stringify(d));}
+let jobs=ld(KEY.jobs), nets=ld(KEY.net), tasks=ld(KEY.tasks), clips=ld(KEY.clips);
+
+// ══════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════
+function nav(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if((n.getAttribute('onclick')||'').includes("'"+id+"'"))n.classList.add('active');
+  });
+  closeSidebar();
+  window.scrollTo(0,0);
+  refreshAll();
+}
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sb-overlay').classList.toggle('on');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sb-overlay').classList.remove('on');
+}
+
+// ══════════════════════════════════════════════════
+//  MODALS
+// ══════════════════════════════════════════════════
+function openM(id,prefill){
+  const today=new Date().toISOString().split('T')[0];
+  const fu=new Date(Date.now()+7*86400000).toISOString().split('T')[0];
+  document.querySelectorAll('#'+id+' input[type=date]').forEach((el,i)=>{el.value=i===0?today:fu;});
+  if(prefill){
+    if(prefill.company&&document.getElementById('cl-company'))document.getElementById('cl-company').value=prefill.company;
+    if(prefill.company&&document.getElementById('j-company'))document.getElementById('j-company').value=prefill.company;
+    if(prefill.role&&document.getElementById('j-role'))document.getElementById('j-role').value=prefill.role;
+  }
+  document.getElementById(id).classList.add('on');
+}
+function closeM(id){document.getElementById(id).classList.remove('on');}
+document.querySelectorAll('.overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');});});
+
+// ══════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// ══════════════════════════════════════════════════
+//  JOBS CRUD
+// ══════════════════════════════════════════════════
+function addJob(){
+  const c=document.getElementById('j-company').value.trim();
+  const r=document.getElementById('j-role').value.trim();
+  if(!c||!r){alert('Company and role are required.');return;}
+  jobs.unshift({id:Date.now(),company:c,role:r,
+    status:document.getElementById('j-status').value,
+    platform:document.getElementById('j-platform').value,
+    date:document.getElementById('j-date').value,
+    followup:document.getElementById('j-followup').value,
+    notes:document.getElementById('j-notes').value.trim()
+  });
+  sv(KEY.jobs,jobs);closeM('m-job');
+  ['j-company','j-role','j-notes'].forEach(i=>document.getElementById(i).value='');
+  refreshAll();toast('✅ Application saved!');
+}
+function delJob(id){jobs=jobs.filter(j=>j.id!==id);sv(KEY.jobs,jobs);refreshAll();}
+function setJobStatus(id,v){const j=jobs.find(j=>j.id===id);if(j){j.status=v;sv(KEY.jobs,jobs);refreshAll();}}
+
+function renderJobs(){
+  const tb=document.getElementById('jobs-tbody');
+  const em=document.getElementById('jobs-empty');
+  const statusLabel={applied:'Applied',interview:'Interview',offer:'Offer 🎉',rejected:'Rejected',followup:'Follow-Up'};
+  if(!jobs.length){tb.innerHTML='';em.style.display='block';}
+  else{
+    em.style.display='none';
+    tb.innerHTML=jobs.map(j=>`<tr>
+      <td><strong>${e(j.company)}</strong></td>
+      <td class="fs12">${e(j.role)}</td>
+      <td><select onchange="setJobStatus(${j.id},this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        ${['applied','interview','offer','rejected','followup'].map(s=>`<option value="${s}"${j.status===s?' selected':''}>${statusLabel[s]}</option>`).join('')}
+      </select></td>
+      <td class="mono fs11 text-muted">${j.date||'—'}</td>
+      <td><span class="badge b-muted">${e(j.platform)}</span></td>
+      <td class="mono fs11 text-muted">${j.followup||'—'}</td>
+      <td class="fs12 text-muted" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e(j.notes)}">${e(j.notes)||'—'}</td>
+      <td><button class="del-btn" onclick="delJob(${j.id})">🗑</button></td>
+    </tr>`).join('');
+  }
+  document.getElementById('j-applied').textContent=jobs.filter(j=>j.status==='applied').length;
+  document.getElementById('j-int').textContent=jobs.filter(j=>j.status==='interview').length;
+  document.getElementById('j-offer').textContent=jobs.filter(j=>j.status==='offer').length;
+  document.getElementById('j-rej').textContent=jobs.filter(j=>j.status==='rejected').length;
+}
+
+// ══════════════════════════════════════════════════
+//  CLIPS CRUD
+// ══════════════════════════════════════════════════
+function addClip(){
+  const c=document.getElementById('cl-company').value.trim();
+  const r=document.getElementById('cl-role').value.trim();
+  if(!c||!r){alert('Company and role are required.');return;}
+  clips.unshift({id:Date.now(),company:c,role:r,
+    url:document.getElementById('cl-url').value.trim(),
+    date:document.getElementById('cl-date').value,
+    location:document.getElementById('cl-location').value.trim(),
+    notes:document.getElementById('cl-notes').value.trim(),
+    status:'saved'
+  });
+  sv(KEY.clips,clips);closeM('m-clip');
+  ['cl-company','cl-role','cl-url','cl-location','cl-notes'].forEach(i=>document.getElementById(i).value='');
+  refreshAll();toast('📌 Job clipped!');
+}
+function delClip(id){clips=clips.filter(c=>c.id!==id);sv(KEY.clips,clips);refreshAll();}
+function setClipStatus(id,v){const c=clips.find(c=>c.id===id);if(c){c.status=v;sv(KEY.clips,clips);refreshAll();}}
+function applyClip(id){
+  const c=clips.find(c=>c.id===id);
+  if(!c)return;
+  c.status='applied';sv(KEY.clips,clips);
+  openM('m-job',{company:c.company,role:c.role});
+  refreshAll();
+}
+
+function renderClips(){
+  const tb=document.getElementById('clips-tbody');
+  const em=document.getElementById('clips-empty');
+  const sl={saved:'Saved',ready:'Ready to Apply',applied:'Applied'};
+  if(!clips.length){tb.innerHTML='';em.style.display='block';}
+  else{
+    em.style.display='none';
+    tb.innerHTML=clips.map(cl=>`<tr>
+      <td><strong>${e(cl.company)}</strong></td>
+      <td class="fs12">${e(cl.role)}</td>
+      <td class="fs12">${cl.url?`<a href="${e(cl.url)}" target="_blank" style="color:var(--sky);text-decoration:none;font-size:11px;">🔗 View Job</a>`:'—'}</td>
+      <td><select onchange="setClipStatus(${cl.id},this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        ${['saved','ready','applied'].map(s=>`<option value="${s}"${cl.status===s?' selected':''}>${sl[s]}</option>`).join('')}
+      </select></td>
+      <td class="mono fs11 text-muted">${cl.date||'—'}</td>
+      <td class="fs12 text-muted">${e(cl.location)||'—'}</td>
+      <td class="fs12 text-muted" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e(cl.notes)}">${e(cl.notes)||'—'}</td>
+      <td style="display:flex;gap:5px;align-items:center;white-space:nowrap;">
+        ${cl.status!=='applied'?`<button class="btn btn-teal btn-sm" onclick="applyClip(${cl.id})">Apply →</button>`:'<span class="badge b-teal">Applied</span>'}
+        <button class="del-btn" onclick="delClip(${cl.id})">🗑</button>
+      </td>
+    </tr>`).join('');
+  }
+  const saved=clips.filter(c=>c.status==='saved').length;
+  const ready=clips.filter(c=>c.status==='ready').length;
+  const applied=clips.filter(c=>c.status==='applied').length;
+  document.getElementById('clips-saved-count').textContent=saved+' Saved';
+  document.getElementById('clips-ready-count').textContent=ready+' Ready';
+  document.getElementById('clips-applied-count').textContent=applied+' Applied';
+}
+
+// ══════════════════════════════════════════════════
+//  NETWORKING CRUD
+// ══════════════════════════════════════════════════
+function addContact(){
+  const nm=document.getElementById('n-name').value.trim();
+  if(!nm){alert('Name required.');return;}
+  nets.unshift({id:Date.now(),name:nm,
+    title:document.getElementById('n-title').value.trim(),
+    platform:document.getElementById('n-platform').value,
+    status:document.getElementById('n-status').value,
+    date:document.getElementById('n-date').value,
+    notes:document.getElementById('n-notes').value.trim()
+  });
+  sv(KEY.net,nets);closeM('m-net');
+  ['n-name','n-title','n-notes'].forEach(i=>document.getElementById(i).value='');
+  refreshAll();toast('🤝 Contact saved!');
+}
+function delContact(id){nets=nets.filter(n=>n.id!==id);sv(KEY.net,nets);refreshAll();}
+function setNetStatus(id,v){const n=nets.find(n=>n.id===id);if(n){n.status=v;sv(KEY.net,nets);refreshAll();}}
+
+function renderNets(){
+  const tb=document.getElementById('net-tbody');
+  const em=document.getElementById('net-empty');
+  const sl={pending:'Pending',connected:'Connected',warm:'Warm Lead',followup:'Follow-Up'};
+  if(!nets.length){tb.innerHTML='';em.style.display='block';}
+  else{
+    em.style.display='none';
+    tb.innerHTML=nets.map(n=>`<tr>
+      <td><strong>${e(n.name)}</strong></td>
+      <td class="fs12 text-muted">${e(n.title)||'—'}</td>
+      <td><span class="badge b-muted">${e(n.platform)}</span></td>
+      <td><select onchange="setNetStatus(${n.id},this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        ${['pending','connected','warm','followup'].map(s=>`<option value="${s}"${n.status===s?' selected':''}>${sl[s]}</option>`).join('')}
+      </select></td>
+      <td class="mono fs11 text-muted">${n.date||'—'}</td>
+      <td class="fs12 text-muted" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e(n.notes)}">${e(n.notes)||'—'}</td>
+      <td><button class="del-btn" onclick="delContact(${n.id})">🗑</button></td>
+    </tr>`).join('');
+  }
+  const ws=getWeekStart();
+  const wc=nets.filter(n=>n.date&&new Date(n.date)>=ws).length;
+  document.getElementById('net-week-count').textContent=wc;
+  document.getElementById('net-week-bar').style.width=Math.min(100,wc/30*100)+'%';
+}
+
+// ══════════════════════════════════════════════════
+//  TASKS CRUD
+// ══════════════════════════════════════════════════
+function addTask(){
+  const txt=document.getElementById('tk-text').value.trim();
+  if(!txt)return;
+  tasks.unshift({id:Date.now(),text:txt,
+    cat:document.getElementById('tk-cat').value,
+    pri:document.getElementById('tk-pri').value,
+    due:document.getElementById('tk-due').value,
+    notes:document.getElementById('tk-notes').value.trim(),
+    done:false,created:new Date().toISOString()
+  });
+  sv(KEY.tasks,tasks);closeM('m-task');
+  ['tk-text','tk-notes','tk-due'].forEach(i=>document.getElementById(i).value='');
+  refreshAll();toast('✅ Task added!');
+}
+function toggleTask(id){const t=tasks.find(t=>t.id===id);if(t){t.done=!t.done;sv(KEY.tasks,tasks);refreshAll();}}
+function delTask(id){tasks=tasks.filter(t=>t.id!==id);sv(KEY.tasks,tasks);refreshAll();}
+
+function renderTasks(){
+  const active=tasks.filter(t=>!t.done);
+  const done=tasks.filter(t=>t.done);
+  const pc={h:'pri-h',m:'pri-m',l:'pri-l'};
+  const pl={h:'HIGH',m:'MED',l:'LOW'};
+  function tHTML(t){return`<div class="task-item${t.done?' done':''}" onclick="toggleTask(${t.id})">
+    <div class="chkbox"><span class="chk-ico">✓</span></div>
+    <div style="flex:1">
+      <div class="task-txt">${e(t.text)}</div>
+      <div class="task-meta">${e(t.cat)}${t.due ? ' • Due: ' + t.due : ''}</div>
+      ${t.notes ? `<div class="fs11 text-muted" style="margin-top:3px;">${e(t.notes)}</div>` : ''}
+    </div>
+    <span class="pri ${pc[t.pri]||'pri-m'}">${pl[t.pri]||'MED'}</span>
+    <button class="del-btn" onclick="event.stopPropagation();delTask(${t.id})">🗑</button>
+  </div>`;}
+  document.getElementById('tasks-active').innerHTML=active.length?active.map(tHTML).join(''):`<div class="empty-state" style="padding:24px;"><div class="empty-ico">🎯</div><div>All clear — add a task to get going.</div></div>`;
+  document.getElementById('tasks-done').innerHTML=done.length?done.map(tHTML).join(''):`<div class="fs12 text-muted" style="padding:12px;">Nothing completed yet.</div>`;
+  document.getElementById('t-done').textContent=done.length;
+  document.getElementById('t-total').textContent=tasks.length;
+}
+
+// ══════════════════════════════════════════════════
+//  DASHBOARD + BADGES
+// ══════════════════════════════════════════════════
+function getWeekStart(){
+  const d=new Date();const day=d.getDay();
+  const diff=d.getDate()-day+(day===0?-6:1);
+  const m=new Date(d);m.setDate(diff);m.setHours(0,0,0,0);return m;
+}
+function updateDashboard(){
+  const ws=getWeekStart();
+  const wj=jobs.filter(j=>j.date&&new Date(j.date)>=ws).length;
+  const wn=nets.filter(n=>n.date&&new Date(n.date)>=ws).length;
+  const wi=jobs.filter(j=>j.status==='interview').length;
+  const wc=clips.filter(c=>c.status!=='applied').length;
+  document.getElementById('d-apps').textContent=wj;
+  document.getElementById('d-net').textContent=wn;
+  document.getElementById('d-int').textContent=wi;
+  document.getElementById('d-clips').textContent=wc;
+  document.getElementById('bar-apps').style.width=Math.min(100,wj/20*100)+'%';
+  document.getElementById('bar-net').style.width=Math.min(100,wn/30*100)+'%';
+  const C=219.9;
+  document.getElementById('ring-apps').style.strokeDashoffset=C-(C*Math.min(1,wj/20));
+  document.getElementById('ring-net').style.strokeDashoffset=C-(C*Math.min(1,wn/30));
+  document.getElementById('ring-int').style.strokeDashoffset=C-(C*Math.min(1,wi/5));
+  document.getElementById('rn-apps').textContent=wj;
+  document.getElementById('rn-net').textContent=wn;
+  document.getElementById('rn-int').textContent=wi;
+  document.getElementById('badge-jobs').textContent=jobs.length;
+  document.getElementById('badge-net').textContent=nets.length;
+  document.getElementById('badge-tasks').textContent=tasks.filter(t=>!t.done).length;
+  document.getElementById('badge-clips').textContent=clips.filter(c=>c.status==='saved'||c.status==='ready').length;
+}
+
+// ══════════════════════════════════════════════════
+//  TODAY FOCUS
+// ══════════════════════════════════════════════════
+const todayPlans={
+  0:{label:'Sunday',apps:1,net:0,blocks:[
+    {t:'9–11 AM',d:'Online class review / assignments',dot:'dot-online'},
+    {t:'11 AM–12 PM',d:'🎯 1 tailored application — quality over speed',dot:'dot-hunt'},
+    {t:'12–2 PM',d:'Review all clips — mark top 3 "Ready to Apply"',dot:'dot-hunt'},
+    {t:'2–4 PM',d:'Plan next week: employers to hit, templates to prep',dot:'dot-hunt'},
+    {t:'Evening',d:'REST. Recharge for Monday.',dot:'dot-social'}
+  ]},
+  1:{label:'Monday',apps:2,net:4,blocks:[
+    {t:'8–9:30 AM',d:'Review EY + Deloitte careers sites — clip 2 roles',dot:'dot-hunt'},
+    {t:'9:30–10:30 AM',d:'Work (squeeze: write 2 LinkedIn msgs during break)',dot:'dot-work'},
+    {t:'10:30 AM–4 PM',d:'Work',dot:'dot-work'},
+    {t:'4–6 PM',d:'🎯 2 applications + 2 more networking messages',dot:'dot-hunt'},
+    {t:'6–9 PM',d:'Class 1',dot:'dot-class'},
+    {t:'After 9 PM',d:'Quick LinkedIn — accept connections, browse',dot:'dot-hunt'}
+  ]},
+  2:{label:'Tuesday ⚡ Power Day',apps:6,net:10,blocks:[
+    {t:'8–9 AM',d:'Coffee + review your clip list. Set timer. No distractions.',dot:'dot-free'},
+    {t:'9 AM–12 PM',d:'🎯 PEAK: 4 applications (Big 4 + Banks) + 6 networking msgs',dot:'dot-hunt'},
+    {t:'12–1 PM',d:'Lunch. Step away completely.',dot:'dot-social'},
+    {t:'1–2:30 PM',d:'Online class review (if needed)',dot:'dot-online'},
+    {t:'2:30–5 PM',d:'🎯 2 more apps + 4 networking + all follow-ups due',dot:'dot-hunt'},
+    {t:'Evening',d:'🎉 Social / friends. You earned it.',dot:'dot-social'}
+  ]},
+  3:{label:'Wednesday',apps:4,net:6,blocks:[
+    {t:'8–9 AM',d:'2 morning networking reach-outs (pharma / healthcare targets)',dot:'dot-hunt'},
+    {t:'9 AM–12 PM',d:'🎯 3 applications (J&J, Pfizer, Merck focus)',dot:'dot-hunt'},
+    {t:'12–5 PM',d:'1 app + 4 networking + clip jobs from Wed employer list',dot:'dot-hunt'},
+    {t:'5:30–8:30 PM',d:'Class 2',dot:'dot-class'},
+    {t:'After 8:30 PM',d:'Wind down — no screens.',dot:'dot-social'}
+  ]},
+  4:{label:'Thursday',apps:4,net:5,blocks:[
+    {t:'8 AM–12 PM',d:'🎯 MORNING POWER: 3 apps (tech giants) + 5 networking',dot:'dot-hunt'},
+    {t:'12–1 PM',d:'Work (squeeze: send ALL follow-up emails today)',dot:'dot-work'},
+    {t:'1–4 PM',d:'Work',dot:'dot-work'},
+    {t:'4–6 PM',d:'🎯 1 more app + LinkedIn engagement',dot:'dot-hunt'},
+    {t:'Evening',d:'Rest / social',dot:'dot-social'}
+  ]},
+  5:{label:'Friday',apps:1,net:2,blocks:[
+    {t:'8–9:30 AM',d:'🎯 1 application + 2 networking. Fast. Clean.',dot:'dot-hunt'},
+    {t:'9:30–10:30 AM',d:'Work (squeeze: save 2 jobs from Fidelity/Vanguard)',dot:'dot-work'},
+    {t:'10:30 AM–4 PM',d:'Work',dot:'dot-work'},
+    {t:'After 4 PM',d:'🎉 Friday night — completely OFF.',dot:'dot-social'}
+  ]},
+  6:{label:'Saturday',apps:2,net:3,blocks:[
+    {t:'9–11 AM',d:'Online class review / assignments',dot:'dot-online'},
+    {t:'11 AM–1 PM',d:'🎯 2 quality applications — best for tailoring (fresh focus!)',dot:'dot-hunt'},
+    {t:'2–4 PM',d:'🎯 3 networking + review clip pipeline',dot:'dot-hunt'},
+    {t:'Evening',d:'Go out. Meet people. Recharge.',dot:'dot-social'}
+  ]}
+};
+function renderTodayFocus(){
+  const day=new Date().getDay();const p=todayPlans[day];
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  document.getElementById('today-lbl').textContent=days[day]+' · '+new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  
+  let html =
+    `<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+      <span class="badge b-teal">📋 ${p.apps} apps today</span>
+      <span class="badge b-purple">🤝 ${p.net} reach-outs</span>
+    </div>`+
+    p.blocks.map(b=>`<div class="tb"><div class="tb-dot ${b.dot}"></div><div><div class="tb-t">${b.t}</div><div class="tb-d">${b.d}</div></div></div>`).join('');
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  const dueToday = tasks.filter(t => !t.done && t.due === todayStr);
+
+  if(dueToday.length > 0) {
+    html += `<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);">
+      <div style="font-family:'DM Serif Display',serif;font-size:14px;color:var(--navy);margin-bottom:10px;">📅 Due Today</div>`;
+
+    const pc={h:'pri-h',m:'pri-m',l:'pri-l'};
+    const pl={h:'HIGH',m:'MED',l:'LOW'};
+
+    html += dueToday.map(t=>`
+      <div class="task-item" style="margin-bottom:6px;box-shadow:none;border-color:var(--border2);" onclick="toggleTask(${t.id})">
+        <div class="chkbox"></div>
+        <div style="flex:1"><div class="task-txt">${e(t.text)}</div></div>
+        <span class="pri ${pc[t.pri]||'pri-m'}">${pl[t.pri]||'MED'}</span>
+      </div>
+    `).join('');
+
+    html += `</div>`;
+  }
+
+  document.getElementById('today-focus').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════
+//  SCHEDULE GRID
+// ══════════════════════════════════════════════════
+function buildSchedule(){
+  const hours=[];for(let h=7;h<=22;h++)hours.push(h);
+  const dayOrder=[1,2,3,4,5,6,0];
+  const dayNames={1:'MON',2:'TUE',3:'WED',4:'THU',5:'FRI',6:'SAT',0:'SUN'};
+  const today=new Date().getDay();
+  const blks=[
+    {day:1,s:9.5,e:16,c:'blk-work',l:'Work'},{day:1,s:16,e:18,c:'blk-hunt',l:'🎯'},{day:1,s:18,e:21,c:'blk-c1',l:'Class 1'},
+    {day:2,s:9,e:17,c:'blk-hunt',l:'⚡ Hunt'},{day:2,s:18,e:21,c:'blk-social',l:'Social'},
+    {day:3,s:9,e:17.5,c:'blk-hunt',l:'🎯 Hunt'},{day:3,s:17.5,e:20.5,c:'blk-c2',l:'Class 2'},
+    {day:4,s:8,e:12,c:'blk-hunt',l:'🎯 Hunt'},{day:4,s:12,e:16,c:'blk-work',l:'Work'},{day:4,s:16,e:18,c:'blk-hunt',l:'🎯'},
+    {day:5,s:8,e:9.5,c:'blk-hunt',l:'🎯'},{day:5,s:9.5,e:16,c:'blk-work',l:'Work'},{day:5,s:18,e:22,c:'blk-social',l:'Fri 🎉'},
+    {day:6,s:9,e:11,c:'blk-online',l:'Class'},{day:6,s:11,e:16,c:'blk-hunt',l:'🎯 Hunt'},{day:6,s:18,e:22,c:'blk-social',l:'Social'},
+    {day:0,s:9,e:11,c:'blk-online',l:'Class'},{day:0,s:11,e:13,c:'blk-hunt',l:'🎯'},{day:0,s:14,e:22,c:'blk-social',l:'Rest'}
+  ];
+  let h=`<div class="sch-grid"><div class="sch-hd"></div>`;
+  dayOrder.forEach(d=>{h+=`<div class="sch-hd${d===today?' today':''}">${dayNames[d]}${d===today?' ●':''}</div>`;});
+  hours.forEach(hr=>{
+    const ts=hr<12?`${hr}a`:hr===12?'12p':`${hr-12}p`;
+    h+=`<div class="sch-time">${ts}</div>`;
+    dayOrder.forEach(d=>{
+      h+=`<div class="sch-cell">`;
+      blks.filter(b=>b.day===d&&b.s<=hr&&b.e>hr).forEach(b=>{
+        const sf=Math.max(0,b.s-hr),ef=Math.min(1,b.e-hr);
+        const tp=sf*100,ht=(ef-sf)*100;
+        h+=`<div class="sch-blk ${b.c}" style="top:${tp}%;height:${ht}%;">${ht>50?b.l:''}</div>`;
+      });
+      h+=`</div>`;
+    });
+  });
+  h+=`</div>`;
+  document.getElementById('sch-grid').innerHTML=h;
+}
+
+// ══════════════════════════════════════════════════
+//  DAY PLAN CARDS
+// ══════════════════════════════════════════════════
+const dayDefs=[
+  {k:'mon',n:'Monday',type:'Moderate',apps:2,net:4,blocks:[
+    {t:'8–9:30 AM',d:'EY + Deloitte career sites — clip 2 roles',dot:'dot-hunt'},
+    {t:'9:30–4 PM',d:'Work (1 hr squeezed for msgs + clips)',dot:'dot-work'},
+    {t:'4–6 PM',d:'🎯 2 apps + 4 networking',dot:'dot-hunt'},
+    {t:'6–9 PM',d:'Class 1',dot:'dot-class'}
+  ]},
+  {k:'tue',n:'Tuesday',type:'⚡ Power Day',apps:6,net:10,blocks:[
+    {t:'9 AM–12 PM',d:'🎯 4 apps + 6 networking (Big 4 + Banks)',dot:'dot-hunt'},
+    {t:'12–1 PM',d:'Lunch. Step away.',dot:'dot-social'},
+    {t:'1–2:30 PM',d:'Online class (if needed)',dot:'dot-online'},
+    {t:'2:30–5 PM',d:'🎯 2 apps + 4 networking + follow-ups',dot:'dot-hunt'},
+    {t:'Evening',d:'Social 🎉',dot:'dot-social'}
+  ]},
+  {k:'wed',n:'Wednesday',type:'Strong',apps:4,net:6,blocks:[
+    {t:'8–9 AM',d:'2 reach-outs (pharma targets)',dot:'dot-hunt'},
+    {t:'9 AM–5 PM',d:'🎯 4 apps + 4 networking + clip pharma jobs',dot:'dot-hunt'},
+    {t:'5:30–8:30 PM',d:'Class 2',dot:'dot-class'}
+  ]},
+  {k:'thu',n:'Thursday',type:'Strong AM',apps:4,net:5,blocks:[
+    {t:'8 AM–12 PM',d:'🎯 3 apps + 5 networking (tech focus)',dot:'dot-hunt'},
+    {t:'12–4 PM',d:'Work (all follow-up emails)',dot:'dot-work'},
+    {t:'4–6 PM',d:'🎯 1 app + LinkedIn',dot:'dot-hunt'}
+  ]},
+  {k:'fri',n:'Friday',type:'Light Day',apps:1,net:2,blocks:[
+    {t:'8–9:30 AM',d:'🎯 1 app + 2 networking — quick',dot:'dot-hunt'},
+    {t:'9:30–4 PM',d:'Work (save Fidelity/Vanguard jobs)',dot:'dot-work'},
+    {t:'After 4 PM',d:'OFF 🎉',dot:'dot-social'}
+  ]},
+  {k:'sat',n:'Saturday',type:'Relaxed',apps:2,net:3,blocks:[
+    {t:'9–11 AM',d:'Online class review',dot:'dot-online'},
+    {t:'11 AM–1 PM',d:'🎯 2 quality apps',dot:'dot-hunt'},
+    {t:'2–4 PM',d:'🎯 3 networking + clip review',dot:'dot-hunt'},
+    {t:'Evening',d:'Social 😊',dot:'dot-social'}
+  ]},
+  {k:'sun',n:'Sunday',type:'Recovery',apps:1,net:0,blocks:[
+    {t:'9–11 AM',d:'Online class / assignments',dot:'dot-online'},
+    {t:'11 AM–12 PM',d:'🎯 1 application',dot:'dot-hunt'},
+    {t:'12–4 PM',d:'Clip review + week prep',dot:'dot-hunt'},
+    {t:'Evening',d:'REST. Set intentions.',dot:'dot-social'}
+  ]}
+];
+function buildDayPlan(){
+  document.getElementById('dayplan-grid').innerHTML=dayDefs.map(d=>`
+    <div class="day-card dc-${d.k}">
+      <div class="day-name">${d.n}</div>
+      <div class="day-type text-muted">${d.type}</div>
+      <div class="day-targets">
+        <span class="day-pill pill-app">📋 ${d.apps}</span>
+        <span class="day-pill pill-net">🤝 ${d.net}</span>
+      </div>
+      ${d.blocks.map(b=>`<div class="tb"><div class="tb-dot ${b.dot}"></div><div><div class="tb-t">${b.t}</div><div class="tb-d">${b.d}</div></div></div>`).join('')}
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  SPECIFIC DAILY TASKS (JOB CLIPPING)
+// ══════════════════════════════════════════════════
+const dailySpecificTasks={
+  Monday:[
+    'Visit careers.ey.com → search "SAP GRC" → clip 2 roles',
+    'Visit apply.deloitte.com → search "SOX" → clip 2 roles',
+    'Visit home.kpmg → search "IT advisory" → clip 1 role',
+    'Visit pwc.com/careers → search "risk assurance" → clip 1 role',
+    'Write 4 LinkedIn connection notes (use SAP Risk template)',
+    'Apply to 2 clipped roles from last week\'s list'
+  ],
+  Tuesday:[
+    'Visit careers.jpmorgan.com → search "internal audit" → clip 3 roles',
+    'Visit goldmansachs.com/careers → search "compliance" → clip 2 roles',
+    'Visit jobs.citi.com → search "SOX" or "GRC" → clip 2 roles',
+    'Visit careers.bankofamerica.com → search "controls" → clip 1 role',
+    'Write 10 LinkedIn notes — batch all in one session (2 hr timer)',
+    'Apply to 6 roles (4 Big 4 + 2 banks) using saved resume versions'
+  ],
+  Wednesday:[
+    'Visit jobs.jnj.com → search "internal audit" + "SAP" → clip 2 roles',
+    'Visit pfizer.com/careers → search "SOX" or "GRC" → clip 2 roles',
+    'Visit jobs.merck.com → browse compliance + analytics → clip 1 role',
+    'Visit careers.astrazeneca.com → search "internal controls" → clip 1 role',
+    'Visit aholddelhaize.com/careers → search "analytics" → clip 1 role',
+    'Apply to 4 roles: prioritize pharma/FMCG companies today'
+  ],
+  Thursday:[
+    'Visit amazon.jobs → search "internal audit" + "SOX" → clip 2 roles',
+    'Visit careers.microsoft.com → search "risk" or "compliance" → clip 2 roles',
+    'Visit careers.google.com → search "internal audit" → clip 1 role',
+    'Visit metacareers.com → browse compliance → clip 1 role',
+    'SEND ALL FOLLOW-UP EMAILS (5–7 days after previous apps)',
+    'Apply to 3–4 roles from tech giant clips'
+  ],
+  Friday:[
+    'Visit accenture.com/careers → search "SAP GRC" → clip 1 role',
+    'Visit protiviti.com/careers → review risk consulting openings → clip 1',
+    'Visit cognizant.com/careers → search "SAP" or "risk" → save if fit',
+    'Scan LinkedIn Jobs: saved searches for "SOX" + "internal audit"',
+    'Write 2 LinkedIn connection notes (light day — keep it quick)',
+    'Apply to 1 role from your "Ready to Apply" clips list'
+  ],
+  Saturday:[
+    'Visit jobs.fidelity.com → search "SOX" or "risk" → clip 2 roles',
+    'Visit vanguard.com/careers → check risk + compliance section → clip 1',
+    'Visit navyfederal.org/careers → browse risk & audit → clip 1 role',
+    'Visit careers.tiaa.org → search "internal audit" → note openings',
+    'Review ALL clips from the week → mark best ones "Ready to Apply"',
+    'Apply to 2 roles — fresh Saturday focus = better tailoring'
+  ],
+  Sunday:[
+    'LinkedIn Jobs: run "SOX compliance" search → clip 3 best new roles',
+    'LinkedIn Jobs: run "SAP GRC" search → clip 2 best new roles',
+    'LinkedIn Jobs: run "internal audit analyst" search → clip 2 roles',
+    'Handshake (UD portal) → check campus-specific postings → clip any',
+    'Indeed: search "SAP GRC" + "internal audit" → clip 2 unique roles',
+    'Review entire clip list → plan Monday\'s application priority order'
+  ]
+};
+function buildDailyTasks(){
+  const days=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const colors={Monday:'var(--gold)',Tuesday:'var(--teal)',Wednesday:'var(--sky)',Thursday:'var(--orange)',Friday:'var(--coral)',Saturday:'var(--purple)',Sunday:'var(--teal)'};
+  document.getElementById('daily-tasks-grid').innerHTML=days.map(day=>`
+    <div class="day-tasks-col">
+      <div class="day-tasks-name" style="color:${colors[day]}">${day}</div>
+      <div class="emp-task-list">
+        ${dailySpecificTasks[day].map((t,i)=>`
+          <div class="dtask">
+            <div class="dtask-num">${i+1}</div>
+            <span>${t}</span>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  EMPLOYER RESEARCH
+// ══════════════════════════════════════════════════
+const employers={
+  Monday:[
+    {n:'EY',icon:'🟡',url:'https://careers.ey.com',roles:'Technology Risk, SAP GRC, Risk Advisory',tasks:['Search "SAP GRC" → clip 2 roles','Search "technology risk" → clip 1 role','Check EY-Parthenon for strategy roles']},
+    {n:'Deloitte',icon:'🟢',url:'https://apply.deloitte.com',roles:'Risk & Financial Advisory, Internal Audit, Advisory',tasks:['Search "SOX" or "internal controls" → clip 2 roles','Browse Risk & Financial Advisory practice']},
+    {n:'KPMG',icon:'🔵',url:'https://home.kpmg/us/en/home/careers.html',roles:'IT Advisory, SAP, Risk Consulting',tasks:['Search "SAP" or "IT advisory" → clip 1 role','Look under Advisory → Risk Consulting']},
+    {n:'PwC',icon:'🟠',url:'https://www.pwc.com/us/en/careers.html',roles:'Risk Assurance, Technology Risk, SAP',tasks:['Search "risk assurance" → clip 1 role','Check Digital Trust practice for SAP roles']},
+    {n:'RSM US',icon:'🔴',url:'https://rsmus.com/careers',roles:'Risk Consulting, SOX Advisory, IT Risk',tasks:['Browse risk consulting → clip 1 role','RSM has strong SOX + midmarket focus — good fit']}
+  ],
+  Tuesday:[
+    {n:'JPMorgan Chase',icon:'🏦',url:'https://careers.jpmorgan.com',roles:'Internal Audit, SOX, Risk Controls',tasks:['Search "internal audit" → clip 3 roles','Search "SOX compliance" → clip 1 role','Filter by: New York / Wilmington DE (closer to UD)']},
+    {n:'Goldman Sachs',icon:'🏦',url:'https://www.goldmansachs.com/careers',roles:'Risk, Compliance, Internal Audit',tasks:['Search "compliance" or "risk" → clip 2 roles','Check Internal Audit division listings']},
+    {n:'Citigroup',icon:'🌐',url:'https://jobs.citi.com',roles:'SOX, GRC, Internal Controls, ICFR',tasks:['Search "SOX" or "GRC" → clip 2 roles','Look for "Internal Controls" analyst programs']},
+    {n:'Bank of America',icon:'🏦',url:'https://careers.bankofamerica.com',roles:'Internal Controls, Audit, Risk',tasks:['Search "internal controls" → clip 1 role','Check Global Internal Audit postings']},
+    {n:'Morgan Stanley',icon:'🏦',url:'https://www.morganstanley.com/about-us/careers',roles:'Risk, Compliance, Internal Audit',tasks:['Browse Risk + Compliance → clip 1 role','Check Technology Risk roles — SAP experience valued']}
+  ],
+  Wednesday:[
+    {n:'Johnson & Johnson',icon:'💊',url:'https://jobs.jnj.com',roles:'Internal Audit, SAP Controls, Risk',tasks:['Search "internal audit" + "SAP" → clip 2 roles','J&J Raritan NJ office — commutable from DE']},
+    {n:'Pfizer',icon:'💉',url:'https://www.pfizer.com/about/careers',roles:'SOX Compliance, Risk, Controls',tasks:['Search "SOX" or "GRC" → clip 2 roles','Check Internal Controls & Compliance team']},
+    {n:'Merck',icon:'🔬',url:'https://jobs.merck.com',roles:'Internal Audit, Compliance, Analytics',tasks:['Browse compliance + analytics → clip 1 role','Merck Rahway NJ — OPT-friendly, strong sponsor']},
+    {n:'AstraZeneca',icon:'💊',url:'https://careers.astrazeneca.com',roles:'Internal Controls, GRC, Risk',tasks:['Search "internal controls" → clip 1 role','AZ has major US presence in Wilmington, DE — great fit!']},
+    {n:'Ahold Delhaize USA',icon:'🛒',url:'https://www.aholddelhaize.com/careers',roles:'Analytics, Controls, SAP, Finance',tasks:['Search "analytics" or "controls" → clip 1 role','Quincy MA office — SAP + analytics heavy environment']}
+  ],
+  Thursday:[
+    {n:'Amazon',icon:'📦',url:'https://www.amazon.jobs',roles:'Internal Audit, SOX, Finance Risk',tasks:['Search "internal audit" + "SOX" → clip 2 roles','Also check AWS risk & compliance roles']},
+    {n:'Microsoft',icon:'🪟',url:'https://careers.microsoft.com',roles:'Risk & Compliance, Internal Audit, SAP',tasks:['Search "risk" or "compliance" → clip 2 roles','Check Finance Risk & Internal Audit group']},
+    {n:'Google / Alphabet',icon:'🔍',url:'https://careers.google.com',roles:'Internal Audit, Risk, Finance Controls',tasks:['Search "internal audit" → clip 1 role','Strong STEM OPT sponsorship record']},
+    {n:'Meta',icon:'🌐',url:'https://www.metacareers.com',roles:'Compliance, Risk, Internal Controls',tasks:['Browse compliance → clip 1 role','Look for Risk & Compliance Operations roles']},
+    {n:'Apple',icon:'🍎',url:'https://jobs.apple.com',roles:'Finance, Internal Audit, SOX, Risk',tasks:['Search "finance" or "audit" → clip 1 role','Finance Risk + SOX team in Cupertino + remote']}
+  ],
+  Friday:[
+    {n:'Accenture',icon:'🔷',url:'https://www.accenture.com/us-en/careers',roles:'SAP GRC, Risk Consulting, Technology Risk',tasks:['Search "SAP GRC" → clip 1 role (light day)','Check Technology & Security practice']},
+    {n:'Protiviti',icon:'🔶',url:'https://www.protiviti.com/en-US/careers',roles:'Internal Audit, Risk Advisory, Technology Risk',tasks:['Check open risk consulting roles → clip 1','Protiviti = strong Big 4 alumni culture — good fit']},
+    {n:'Cognizant',icon:'🔵',url:'https://careers.cognizant.com',roles:'SAP, GRC, Risk, Compliance',tasks:['Quick search "SAP" or "risk" → save 1 if relevant','SAP consulting is Cognizant\'s core — strong match']},
+    {n:'GE Aerospace',icon:'✈️',url:'https://www.ge.com/careers',roles:'Internal Audit, Risk, Controls',tasks:['Browse internal audit section → note openings','GE has STEM OPT sponsorship history']},
+    {n:'Honeywell',icon:'🏭',url:'https://careers.honeywell.com',roles:'Internal Audit, SOX, Finance Controls',tasks:['Search "SOX" or "audit" → note if relevant','Morris Plains NJ office — reachable from DE']}
+  ],
+  Saturday:[
+    {n:'Fidelity Investments',icon:'💰',url:'https://jobs.fidelity.com',roles:'SOX, Risk, Internal Audit, Analytics',tasks:['Search "SOX" or "risk" → clip 2 roles','Strong sponsorship history, Boston + remote']},
+    {n:'Vanguard',icon:'⛵',url:'https://www.vanguard.com/corporate/careers',roles:'Audit, Controls, Compliance, Analytics',tasks:['Check risk + compliance → clip 1 role','Malvern PA is 30 min from UD — commutable!']},
+    {n:'Navy Federal Credit Union',icon:'⚓',url:'https://www.navyfederal.org/about/careers.html',roles:'Risk, Audit, Analytics, Controls',tasks:['Browse risk & audit → clip 1 role','Vienna VA / Pensacola — hybrid options available']},
+    {n:'TIAA',icon:'🏛',url:'https://careers.tiaa.org',roles:'Internal Audit, GRC, Compliance',tasks:['Search "internal audit" → note open roles','Charlotte NC main office, NYC also active']},
+    {n:'USAA',icon:'🛡',url:'https://www.usaa.com/inet/wc/careers',roles:'Risk, Audit, Analytics, Controls',tasks:['Search "risk" or "audit" → clip 1 if good fit','San Antonio TX — remote roles also available']}
+  ],
+  Sunday:[
+    {n:'LinkedIn Jobs',icon:'🔗',url:'https://www.linkedin.com/jobs',roles:'Saved searches: "SOX" "internal audit" "SAP GRC" "risk advisory"',tasks:['Run all 4 saved searches → clip best 3 new roles','Sort by: Date Posted (past week) → filter by Easy Apply + <100 applicants']},
+    {n:'Handshake (UD Portal)',icon:'🎓',url:'https://joinhandshake.com',roles:'Campus recruiting, entry-level, analyst programs',tasks:['Check UD-specific postings → clip any relevant','Look for Big 4 on-campus recruiting events to sign up for']},
+    {n:'Indeed',icon:'🔍',url:'https://www.indeed.com',roles:'Broad catch-all search for roles missed elsewhere',tasks:['Search "SAP GRC" + "internal audit" → clip 2 unique roles','Search "ICFR" or "SOX 404" for niche listings']},
+    {n:'Glassdoor Jobs',icon:'🪟',url:'https://www.glassdoor.com/Job',roles:'Salary data + company culture research',tasks:['Research any company you\'re applying to this week','Check interview questions for upcoming applications']},
+    {n:'Company Backlog Review',icon:'🔄',url:'#',roles:'Revisit bookmarked employer sites from the week',tasks:['Review all clips → mark top 3–5 "Ready to Apply"','Plan Monday application priority list for the new week']}
+  ]
+};
+function buildEmployerResearch(){
+  const daysOrder=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const dayColors={Monday:'var(--gold)',Tuesday:'var(--teal)',Wednesday:'var(--sky)',Thursday:'var(--orange)',Friday:'var(--coral)',Saturday:'var(--purple)',Sunday:'var(--teal)'};
+  document.getElementById('employer-research').innerHTML=daysOrder.map(day=>{
+    const list=employers[day];
+    return `<div class="card mb16">
+      <div class="card-title" style="color:${dayColors[day]}">📍 ${day} — Employer Research Targets</div>
+      ${list.map(emp=>`
+        <div class="employer-card">
+          <div class="emp-logo">${emp.icon}</div>
+          <div class="emp-info">
+            <div class="emp-name">${emp.n}</div>
+            <div class="emp-roles">${emp.roles}</div>
+            <div class="emp-task-list">
+              ${emp.tasks.map(t=>`<div class="emp-task-item"><div class="emp-task-dot">→</div><span>${t}</span></div>`).join('')}
+            </div>
+          </div>
+          <div class="emp-actions">
+            <a href="${emp.url}" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration:none;font-size:11px;white-space:nowrap;">Visit →</a>
+            <button class="btn btn-gold btn-sm" onclick="openM('m-clip',{company:'${emp.n.replace(/'/g,"\\'")}'})" style="font-size:11px;white-space:nowrap;">📌 Clip</button>
+          </div>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  NETWORKING TEMPLATES
+// ══════════════════════════════════════════════════
+const roles=[
+  {
+    id:'sap',label:'SAP Risk / Tech Risk',short:'EY · Deloitte · KPMG · Risk Tech',
+    conn:`Hi [Name] — your SAP risk advisory work at [Firm] caught my eye. I'm a CA with 5+ yrs Big 4 SAP GRC/ITGC experience, completing MS Analytics at UD (4.0 GPA). Exploring similar roles — would love to connect!`,
+    conn_note:'⚠️ LinkedIn connection requests max out at 300 characters. This message is ~245 chars — fits perfectly.',
+    inmail_subj:'SAP GRC & Risk Technology — CA + Big 4 Professional Exploring Opportunities',
+    inmail:`Hi [Name],
+
+I hope this finds you well. I came across your profile while researching [Firm]'s risk technology practice, and your work in [specific area — SAP GRC, IT risk advisory, or similar] is exactly the direction I'm looking to move in.
+
+A bit about me: I'm a Chartered Accountant with over five years of Big 4 experience specializing in SAP application controls, ITGC testing, and SOX advisory engagements. I'm completing my MS in Business Analytics (4.0 GPA) at the University of Delaware, graduating May 2026 — which has sharpened my Python, SQL, and data analytics skills alongside my risk consulting foundation.
+
+I'm particularly drawn to [Firm]'s [practice/team name] and believe my combination of SAP GRC platform experience, ICFR audit depth, and analytics capability would translate well into an advisory context.
+
+Would you be open to a 15-minute call to share your perspective on the team? I'd genuinely value your insights on what it takes to succeed in this space.
+
+Thank you for considering my note.
+
+Best regards,
+Saugat`
+  },
+  {
+    id:'sox',label:'SOX / Internal Audit',short:'Corporate CAE · Fortune 500 · Big 4 IA',
+    conn:`Hi [Name] — impressed by [Company]'s internal audit program. I'm a CA with 5+ yrs Big 4 SOX/ICFR experience + MS Analytics (UD, May '26). Exploring corporate IA roles and would love to hear about your path!`,
+    conn_note:'~270 chars — fits within LinkedIn\'s 300 character limit.',
+    inmail_subj:'CA + Big 4 SOX Professional — Interested in [Company]\'s Internal Audit Program',
+    inmail:`Hi [Name],
+
+Your experience in [Company]'s internal audit function caught my attention — particularly [any specific area or initiative you've seen them post about].
+
+I'm a Chartered Accountant with five years of Big 4 internal audit and SOX compliance experience. My background includes leading SOX 302 and 404 assessments, ICFR walkthroughs, control deficiency classification (from significant deficiency through material weakness), and substantive testing across IT general controls and SAP application controls at clients in financial services, healthcare, and manufacturing.
+
+I'm completing my MS in Business Analytics at the University of Delaware (GPA 4.0, graduating May 2026), adding Python, SQL, and data visualization skills to my audit foundation — allowing me to bring an analytics lens to traditional IA work.
+
+[Company]'s internal audit program stands out because [specific reason — scale, industry complexity, innovation in audit methodology], and I believe my depth in ICFR and SAP controls could add immediate value.
+
+Would a brief 15-minute conversation work for you? I'd appreciate any perspective you can share on the team's direction.
+
+Best regards,
+Saugat`
+  },
+  {
+    id:'scm',label:'Supply Chain Analyst',short:'FMCG · Pharma · Manufacturing Ops',
+    conn:`Hi [Name] — your supply chain role at [Company] is fascinating. My SAP P2P/O2C controls background + MS Analytics (UD '26, 4.0) give me a strong process improvement foundation. Would love to connect!`,
+    conn_note:'~255 chars — fits within LinkedIn\'s limit.',
+    inmail_subj:'SAP P2P/O2C Controls + Analytics — Exploring Supply Chain at [Company]',
+    inmail:`Hi [Name],
+
+I've been following [Company]'s supply chain work with genuine interest, particularly around [specific area — procurement transformation, logistics optimization, or similar].
+
+My background bridges two areas increasingly valuable in supply chain: deep SAP process expertise and data analytics. Over five years at Big 4 firms, I reviewed and tested controls across procure-to-pay, order-to-cash, and inventory management in SAP environments for manufacturing and FMCG clients. I developed a precise understanding of where process breakdowns occur and how to design controls that prevent them.
+
+I'm completing my MS in Business Analytics at the University of Delaware (GPA 4.0, graduating May 2026), with hands-on Python, SQL, and data pipeline experience that I'm eager to apply in a supply chain analytics context.
+
+I'm drawn to [Company] because [reason — supply chain scale, global complexity, or industry leadership], and I'd love to explore whether my SAP controls and analytics profile is a good fit for your team.
+
+Would you be open to a brief conversation?
+
+Best regards,
+Saugat`
+  },
+  {
+    id:'fpa',label:'Financial Analyst / FP&A',short:'Finance Teams · FP&A · Controllers',
+    conn:`Hi [Name] — your finance career at [Company] is inspiring. As a CA with Big 4 SAP FI/CO + GAAP/IFRS experience + MS Analytics (UD '26, 4.0 GPA), I'm targeting FP&A roles. Would love to connect!`,
+    conn_note:'~265 chars — fits within LinkedIn\'s limit.',
+    inmail_subj:'CA + SAP FI/CO Background — Exploring FP&A Opportunities at [Company]',
+    inmail:`Hi [Name],
+
+Your finance career path at [Company] is one I'd genuinely like to learn from.
+
+I'm a Chartered Accountant with deep financial reporting and SAP FI/CO experience from Big 4 audit engagements across diverse industries. My work involved reviewing financial close processes, testing SAP controls over GL, AR/AP, and fixed assets, and assessing GAAP/IFRS compliance — giving me an unusually complete understanding of how financial data flows through enterprise systems and where errors originate.
+
+I'm completing my MS in Business Analytics at the University of Delaware (GPA 4.0, graduating May 2026), with strong skills in Python, SQL, and financial modeling. I'm eager to apply this combination in an FP&A or finance analytics capacity where analytical rigor and business understanding both matter.
+
+[Company]'s finance function appeals to me because [specific reason — complexity, scale, innovation in planning tools], and I believe my audit depth would allow me to ramp up quickly and add value from day one.
+
+Would you be open to a 15-minute call?
+
+Best regards,
+Saugat`
+  },
+  {
+    id:'grc',label:'GRC / Compliance Analyst',short:'GRC Platforms · Compliance Programs · SoD',
+    conn:`Hi [Name] — your GRC work at [Company] stands out. I specialize in SAP GRC ARA, SoD analysis, and access governance from 5+ yrs Big 4. Completing MS Analytics at UD (4.0). Would love to connect!`,
+    conn_note:'~245 chars — fits comfortably within LinkedIn\'s limit.',
+    inmail_subj:'SAP GRC ARA + SoD Specialist — Exploring Compliance Opportunities at [Company]',
+    inmail:`Hi [Name],
+
+I came across your profile while researching [Company]'s compliance and GRC function, and your work in [area] is directly relevant to the expertise I'm looking to apply in my next role.
+
+Over five years at Big 4 firms, I built deep specialization in SAP GRC Access Risk Analysis (ARA), Segregation of Duties design and remediation, user access reviews, and compliance program management. I've supported clients across financial services, manufacturing, and healthcare in remediating SoD conflicts, designing mitigating controls, and maintaining audit-ready access governance frameworks.
+
+I complement this with an MS in Business Analytics from the University of Delaware (GPA 4.0, graduating May 2026), including Python scripting I've applied to automate access review data preparation and control testing dashboards.
+
+I'm selectively exploring GRC and compliance analyst roles at organizations like [Company] where this combination of SAP GRC platform depth and analytics capability would be high-impact.
+
+Would a short call make sense?
+
+Best regards,
+Saugat`
+  },
+  {
+    id:'data',label:'Data / Business Analyst',short:'Analytics · BI · Data Roles · Python/SQL',
+    conn:`Hi [Name] — your analytics work at [Company] caught my eye. MS Analytics (4.0 GPA, UD '26) + 5 yrs Big 4 with Python/SQL/Power BI + SAP data experience. Exploring analyst roles — would love to connect!`,
+    conn_note:'~255 chars — fits within LinkedIn\'s limit.',
+    inmail_subj:'MS Business Analytics + Big 4 Data Background — Interested in Analytics at [Company]',
+    inmail:`Hi [Name],
+
+Your data and analytics work at [Company] is exactly the kind of role I'm actively targeting, and I wanted to reach out directly.
+
+I'm completing my MS in Business Analytics at the University of Delaware (GPA 4.0, graduating May 2026) with applied experience in Python (pandas, scikit-learn, spaCy for NLP), SQL, Power BI, and statistical modeling. My coursework has included NLP analysis of earnings call transcripts, predictive modeling projects, and complex data pipeline construction — giving me genuine hands-on depth, not just coursework knowledge.
+
+What makes my background distinct for a data role is five years at Big 4 firms working deep inside SAP environments. I understand how enterprise data is structured, where it breaks, and why financial and operational data quality issues originate. This audit foundation makes me effective at translating business process questions into analytical frameworks — and at recognizing when a number looks wrong.
+
+I'm drawn to [Company] because of [reason — data culture, analytical sophistication, domain complexity], and I believe I could contribute quickly.
+
+Could we connect for a brief call?
+
+Best regards,
+Saugat`
+  }
+];
+
+function buildTemplates(){
+  document.getElementById('role-tabs').innerHTML=roles.map((r,i)=>`<div class="role-tab${i===0?' active':''}" onclick="switchRole('${r.id}',this)">${r.label}</div>`).join('');
+  document.getElementById('template-panels').innerHTML=roles.map((r,i)=>`
+    <div class="template-panel${i===0?' active':''}" id="tp-${r.id}">
+      <div class="card mb16" style="background:var(--navy);border-color:var(--navy);">
+        <div>
+          <div style="font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;color:#fff;margin-bottom:3px;">${r.label}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.42);">Best for: ${r.short}</div>
+        </div>
+      </div>
+      <div class="tpl-box">
+        <div class="tpl-label">
+          <span>🔗 LinkedIn Connection Request <span class="char-count">(300 char limit)</span></span>
+          <button class="btn-copy" onclick="copyTpl('${r.id}-conn',this)">📋 Copy</button>
+        </div>
+        <div class="tpl-text" id="${r.id}-conn">${r.conn}</div>
+        <div class="tpl-note">${r.conn_note}</div>
+      </div>
+      <div class="tpl-box">
+        <div class="tpl-label">
+          <span>📧 InMail / Email Message</span>
+          <button class="btn-copy" onclick="copyTpl('${r.id}-inmail',this)">📋 Copy</button>
+        </div>
+        <div style="margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="fs11 text-muted">Subject:</span>
+          <span class="fs12 fw6 text-navy">${r.inmail_subj}</span>
+          <button class="btn-copy" style="font-size:10px;padding:3px 8px;" onclick="copyText('${r.inmail_subj}',this)">📋</button>
+        </div>
+        <div class="tpl-text" id="${r.id}-inmail">${r.inmail}</div>
+      </div>
+    </div>`).join('');
+}
+function switchRole(id,el){
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.template-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tp-'+id).classList.add('active');
+}
+function copyTpl(id,btn){
+  const txt=document.getElementById(id).textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    btn.textContent='✓ Copied!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋 Copy';btn.classList.remove('copied');},2000);
+  });
+}
+function copyText(txt,btn){
+  navigator.clipboard.writeText(txt).then(()=>{
+    btn.textContent='✓';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋';btn.classList.remove('copied');},2000);
+  });
+}
+
+// ══════════════════════════════════════════════════
+//  REMINDERS
+// ══════════════════════════════════════════════════
+const remData=[
+  {time:'7:30 AM',label:'Morning Intention 🌅',desc:"What's today's job hunt goal? Set your intention before the day pulls you elsewhere.",days:[1,2,3,4,5]},
+  {time:'8:00 AM',label:'LinkedIn Messages 🤝',desc:'Open LinkedIn, send your first 2 networking messages before work or class begins.',days:[1,2,3,4,5]},
+  {time:'9:00 AM',label:'Tuesday Power Alarm ⚡',desc:'TUESDAY ONLY: Block calendar, close non-job-hunt tabs. 4 apps + 6 networking before noon. GO.',days:[2]},
+  {time:'10:00 AM',label:'Work Squeeze — Clip Jobs 📌',desc:'Mon/Thu/Fri work days: Use your personal hour to visit career sites and clip roles.',days:[1,4,5]},
+  {time:'11:30 AM',label:'Thu Morning Wrap-Up ⏰',desc:'THURSDAY: 30 minutes before work. Wrap up applications. Send last follow-ups now.',days:[4]},
+  {time:'2:30 PM',label:'Tuesday Afternoon 🔥',desc:'TUESDAY: Resume. 2 more apps + 4 networking messages. Timer: 2.5 hrs. No exceptions.',days:[2]},
+  {time:'4:00 PM',label:'After-Work Hunt Window ⚡',desc:'Mon/Wed: Work ended — immediately open job boards. Apply for 2 roles in next 90 min.',days:[1,3]},
+  {time:'5:00 PM',label:'Wed Class in 30 min 🔔',desc:'WEDNESDAY: Wrap up job hunt. Save tabs. Class starts at 5:30.',days:[3]},
+  {time:'7:00 PM',label:'Evening Log 📝',desc:"Log today's applications and networking contacts. Takes 5 minutes. Keeps your data clean.",days:[0,1,2,3,4,5,6]},
+  {time:'9:00 AM',label:'Weekend Study Block 📚',desc:'Sat/Sun: Tackle online class NOW before job hunt starts. Clear it so your focus is free.',days:[0,6]},
+  {time:'4:00 PM',label:'Sunday Review + Week Plan 📊',desc:'SUNDAY: Tally apps + networking. Did you hit 20+30? Plan next week\'s employer targets.',days:[0]},
+];
+function buildReminders(){
+  const dn=['S','M','T','W','T','F','S'];
+  document.getElementById('reminders-grid').innerHTML=remData.map(r=>`
+    <div class="rem-card">
+      <div class="rem-time">${r.time}</div>
+      <div class="rem-label">${r.label}</div>
+      <div class="rem-desc">${r.desc}</div>
+      <div class="rem-days">${dn.map((n,i)=>`<div class="rem-day${r.days.includes(i)?' on':''}">${n}</div>`).join('')}</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  STRATEGY
+// ══════════════════════════════════════════════════
+const phases=[
+  {n:1,color:'var(--gold)',bg:'var(--gold-bg)',title:'Application Strategy — Quality + Volume',body:`
+    <div class="tip mb8"><div class="tip-title">Your Unique Value Proposition</div><div class="tip-text">CA (ICAI) + Big 4 (5+ years) + SAP GRC + MS Analytics (4.0 GPA) = an extremely rare combination. Lead with all three in every application header and opening line. Don't bury it.</div></div>
+    <div class="tip gold mb8"><div class="tip-title">Three Resume Versions to Maintain</div><div class="tip-text">(1) Risk/Controls/SOX focused — for Big 4 and corporate IA roles. (2) Analytics/Data focused — Python/SQL/Power BI foregrounded. (3) Hybrid — for GRC/compliance analyst roles. Swap top 3 bullets and skills section per application. Never start from scratch.</div></div>
+    <div class="tip purple mb8"><div class="tip-title">ATS Keywords to Weave In</div><div class="tip-text">SOX compliance, ICFR, internal controls, SAP GRC ARA, SoD, ITGC, risk advisory, process improvement, data analytics, COSO framework, PCAOB, Python, SQL, Power BI, variance analysis, GAAP, IFRS, control deficiency, material weakness.</div></div>
+    <div class="tip coral"><div class="tip-title">Target Company Tiers</div><div class="tip-text"><strong>Tier 1 (highest fit):</strong> EY, Deloitte, KPMG, PwC, Protiviti, RSM — risk/advisory roles. <strong>Tier 2:</strong> JPMorgan, Goldman, Citi, BofA — internal audit / risk. <strong>Tier 3:</strong> J&J, Pfizer, Amazon, Microsoft — corporate IA / analytics. Apply across all three tiers every week.</div></div>`
+  },
+  {n:2,color:'var(--teal)',bg:'var(--teal-bg)',title:'Networking — 30 Reach-Outs Done Right',body:`
+    <div class="tip mb8"><div class="tip-title">The 3-Line LinkedIn Formula</div><div class="tip-text">Line 1: Personal hook (reference their post, company initiative, or shared alumni connection).<br/>Line 2: Your credentials in one sentence — CA + Big 4 + what you're seeking.<br/>Line 3: Specific ask — a 15-min call or perspective on the team. Never "do you have openings?"</div></div>
+    <div class="tip gold mb8"><div class="tip-title">Tuesday Batch Strategy</div><div class="tip-text">Write 10 LinkedIn drafts Tuesday morning. Customize only Line 1 for each person — Lines 2–3 can be templated from the Messages page. Set a 2-hour timer. Send all 10 before noon.</div></div>
+    <div class="tip purple mb8"><div class="tip-title">Who to Target</div><div class="tip-text">Big 4 → Industry transitioners (your future path), UD alumni in audit/risk roles, hiring managers at target companies, SAP GRC specialists, recruiters at EY/Deloitte/KPMG, people 5–8 years ahead of you with your background.</div></div>
+    <div class="tip coral"><div class="tip-title">Follow-Up Rule</div><div class="tip-text">Wait exactly 5–7 days, then one follow-up: "Hi [Name] — just following up on my note. Happy to connect if timing works." Never more than 2 touches per person.</div></div>`
+  },
+  {n:3,color:'var(--purple)',bg:'var(--purple-bg)',title:'OPT / H-1B Strategy',body:`
+    <div class="tip mb8"><div class="tip-title">Lead With STEM OPT Proactively</div><div class="tip-text">MS BUAN = STEM designation → 3-year OPT window. State clearly in cover letters: "I hold STEM OPT authorization through [date], giving employers a 3-year runway before H-1B is required." Remove the #1 hesitation before it forms.</div></div>
+    <div class="tip gold mb8"><div class="tip-title">Target High-Sponsorship Employers First</div><div class="tip-text">Use USCIS H-1B disclosure data (h1bdata.info) to verify sponsorship history before applying. Big 4, major banks, Fortune 500 tech, and pharma companies sponsor thousands annually — these are your Tier 1 targets for good reason.</div></div>
+    <div class="tip coral"><div class="tip-title">UD Career Services + On-Campus Recruiting</div><div class="tip-text">Lerner Career Services hosts firm-specific recruiting events. On-campus recruiting has higher sponsorship rates than cold applications. Attend every campus event this semester — your Finance Speed Networking experience is an asset here.</div></div>`
+  },
+  {n:4,color:'var(--sky)',bg:'var(--sky-bg)',title:'Time Management — Working Smarter',body:`
+    <div class="tip mb8"><div class="tip-title">The 60-Minute Squeeze Rule</div><div class="tip-text">During work days, identify your least-interrupted window. Set a hard 60-minute timer. Use it exclusively for job clipping, networking messages, or one application. Hard stop when the timer rings.</div></div>
+    <div class="tip gold mb8"><div class="tip-title">Batch Ruthlessly</div><div class="tip-text">Never alternate applying → networking → applying. Applications together. Networking together. Follow-ups together. Research/clipping together. Context switching costs 20+ minutes per transition.</div></div>
+    <div class="tip purple mb8"><div class="tip-title">Class Assignment Buffer</div><div class="tip-text">Schedule online class review Sunday 9–11 AM and Tuesday 1–2:30 PM. Protect these. Don't let class work bleed into your Tuesday power block or Thursday morning sprint.</div></div>
+    <div class="tip coral"><div class="tip-title">Protect Social Time — Non-Negotiable</div><div class="tip-text">Friday night + Saturday evening + Sunday afternoon = protected. Job hunting is a marathon. Burnout kills application quality. Treat these windows like you would a class commitment.</div></div>`
+  }
+];
+function buildStrategy(){
+  document.getElementById('strategy-content').innerHTML=phases.map(p=>`
+    <div class="phase">
+      <div class="phase-hd" onclick="togglePhase(this)" style="background:${p.bg};">
+        <div class="phase-num" style="background:${p.color};color:#fff;">${p.n}</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:18px;font-weight:400;color:var(--navy);flex:1;">${p.title}</div>
+        <span class="phase-arrow">▾</span>
+      </div>
+      <div class="phase-bd open" style="padding-top:14px;">${p.body}</div>
+    </div>`).join('');
+}
+function togglePhase(hd){
+  const bd=hd.nextElementSibling;const ar=hd.querySelector('.phase-arrow');
+  bd.classList.toggle('open');ar.style.transform=bd.classList.contains('open')?'rotate(180deg)':'';
+}
+
+// ══════════════════════════════════════════════════
+//  DATA EXPORT / IMPORT
+// ══════════════════════════════════════════════════
+function exportData(){
+  const data={jobs,nets,tasks,clips,exportedAt:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='jhcc-data-'+new Date().toISOString().split('T')[0]+'.json';
+  a.click();toast('⬇ Data exported!');
+}
+function importData(evt){
+  const file=evt.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.jobs)jobs=d.jobs,sv(KEY.jobs,jobs);
+      if(d.nets)nets=d.nets,sv(KEY.net,nets);
+      if(d.tasks)tasks=d.tasks,sv(KEY.tasks,tasks);
+      if(d.clips)clips=d.clips,sv(KEY.clips,clips);
+      refreshAll();toast('⬆ Data imported successfully!');
+    }catch{alert('Invalid JSON file.');}
+    evt.target.value='';
+  };
+  r.readAsText(file);
+}
+function clearData(){
+  [KEY.jobs,KEY.net,KEY.tasks,KEY.clips].forEach(k=>localStorage.removeItem(k));
+  jobs=[];nets=[];tasks=[];clips=[];refreshAll();toast('🗑 All data cleared.');
+}
+
+// ══════════════════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════════════════
+function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function setWeekDisplay(){
+  const ws=getWeekStart();const we=new Date(ws);we.setDate(we.getDate()+6);
+  const fmt=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  document.getElementById('week-display').textContent=`${fmt(ws)} – ${fmt(we)}`;
+}
+function refreshAll(){
+  renderJobs();
+  renderNets();
+  renderTasks();
+  renderClips();
+  updateDashboard();
+  renderTodayFocus();
+}
+
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
+function init(){
+  setWeekDisplay();
+  buildSchedule();
+  buildDayPlan();
+  buildDailyTasks();
+  buildEmployerResearch();
+  buildTemplates();
+  buildReminders();
+  buildStrategy();
+  refreshAll();
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyDN1gVIlmVcVTUsm3IskLLKzn0pGux9yb8",
   authDomain: "job-hunt-2026-9caef.firebaseapp.com",
@@ -811,293 +2200,70 @@ const firebaseConfig = {
   measurementId: "G-4VHQ5GYSR3"
 };
 
-// Initialize Firebase using the compat libraries loaded in the head
-firebase.initializeApp(firebaseConfig);
-const analytics = firebase.analytics();
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-let jobs=[], nets=[], tasks=[], clips=[];
+let userId = null;
 
-// Realtime listeners
-db.collection('jobs').onSnapshot(snap => { jobs = snap.docs.map(d => ({id: d.id, ...d.data()})); refreshAll(); });
-db.collection('nets').onSnapshot(snap => { nets = snap.docs.map(d => ({id: d.id, ...d.data()})); refreshAll(); });
-db.collection('tasks').onSnapshot(snap => { tasks = snap.docs.map(d => ({id: d.id, ...d.data()})); refreshAll(); });
-db.collection('clips').onSnapshot(snap => { clips = snap.docs.map(d => ({id: d.id, ...d.data()})); refreshAll(); });
+// AUTH
+signInAnonymously(auth);
 
-// ══════════════════════════════════════════════════
-//  NAVIGATION & UI
-// ══════════════════════════════════════════════════
-function nav(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>{ if((n.getAttribute('onclick')||'').includes("'"+id+"'")) n.classList.add('active'); });
-  closeSidebar(); window.scrollTo(0,0); refreshAll();
-}
-function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sb-overlay').classList.toggle('on'); }
-function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sb-overlay').classList.remove('on'); }
-
-function openM(id,prefill){
-  const today = new Date().toISOString().split('T')[0];
-  const fu = new Date(Date.now()+7*86400000).toISOString().split('T')[0];
-  document.querySelectorAll('#'+id+' input[type=date]').forEach((el,i)=>{ if(!el.value) el.value = i===0 ? today : fu; });
-  if(prefill){
-    if(prefill.company && document.getElementById('cl-company')) document.getElementById('cl-company').value = prefill.company;
-    if(prefill.company && document.getElementById('j-company')) document.getElementById('j-company').value = prefill.company;
-    if(prefill.role && document.getElementById('j-role')) document.getElementById('j-role').value = prefill.role;
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    userId = user.uid;
+    initRealtime();
   }
-  document.getElementById(id).classList.add('on');
-}
-function closeM(id){ document.getElementById(id).classList.remove('on'); }
-document.querySelectorAll('.overlay').forEach(o=>{ o.addEventListener('click', e => { if(e.target===o) o.classList.remove('on'); }); });
-
-function toast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(()=> t.classList.remove('show'), 2600);
-}
-
-// ══════════════════════════════════════════════════
-//  JOBS CRUD
-// ══════════════════════════════════════════════════
-function addJob(){
-  const c = document.getElementById('j-company').value.trim();
-  const r = document.getElementById('j-role').value.trim();
-  if(!c||!r) { alert('Company and role are required.'); return; }
-  
-  db.collection('jobs').add({
-    company: c, role: r,
-    status: document.getElementById('j-status').value,
-    platform: document.getElementById('j-platform').value,
-    date: document.getElementById('j-date').value,
-    followup: document.getElementById('j-followup').value,
-    notes: document.getElementById('j-notes').value.trim(),
-    url: document.getElementById('j-url').value.trim(),
-    createdAt: Date.now()
-  }).then(() => {
-    closeM('m-job');
-    ['j-company','j-role','j-notes','j-url'].forEach(i=>document.getElementById(i).value='');
-    toast('✅ Application saved to Cloud!');
-  });
-}
-function delJob(id){ db.collection('jobs').doc(id).delete(); }
-function setJobStatus(id, v){ db.collection('jobs').doc(id).update({status: v}); }
-
-function renderJobs(){
-  const tb = document.getElementById('jobs-tbody');
-  const em = document.getElementById('jobs-empty');
-  const statusLabel = {applied:'Applied', interview:'Interview', offer:'Offer 🎉', rejected:'Rejected', followup:'Follow-Up'};
-  if(!jobs.length){ tb.innerHTML=''; em.style.display='block'; }
-  else{
-    em.style.display='none';
-    tb.innerHTML = jobs.sort((a,b)=>b.createdAt-a.createdAt).map(j => `<tr>
-      <td><strong>${e(j.company)}</strong></td>
-      <td class="fs12">${e(j.role)}</td>
-      <td><select onchange="setJobStatus('${j.id}',this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
-        ${['applied','interview','offer','rejected','followup'].map(s=>`<option value="${s}"${j.status===s?' selected':''}>${statusLabel[s]}</option>`).join('')}
-      </select></td>
-      <td class="mono fs11 text-muted">${j.date||'—'}</td>
-      <td><span class="badge b-muted">${e(j.platform)}</span></td>
-      <td>${j.url ? `<a href="${e(j.url)}" target="_blank" style="color:var(--sky);text-decoration:none;font-size:11px;">🔗 Link</a>` : '—'}</td>
-      <td class="mono fs11 text-muted">${j.followup||'—'}</td>
-      <td class="fs12 text-muted" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e(j.notes)}">${e(j.notes)||'—'}</td>
-      <td><button class="del-btn" onclick="delJob('${j.id}')">🗑</button></td>
-    </tr>`).join('');
-  }
-  document.getElementById('j-applied').textContent=jobs.filter(j=>j.status==='applied').length;
-  document.getElementById('j-int').textContent=jobs.filter(j=>j.status==='interview').length;
-}
-
-// ══════════════════════════════════════════════════
-//  CLIPS CRUD
-// ══════════════════════════════════════════════════
-function addClip(){
-  db.collection('clips').add({
-    company: document.getElementById('cl-company').value.trim(),
-    role: document.getElementById('cl-role').value.trim(),
-    url: document.getElementById('cl-url').value.trim(),
-    status: 'saved', createdAt: Date.now()
-  }).then(() => { closeM('m-clip'); toast('📌 Job clipped to Cloud!'); });
-}
-function delClip(id){ db.collection('clips').doc(id).delete(); }
-function setClipStatus(id, v){ db.collection('clips').doc(id).update({status: v}); }
-function applyClip(id){
-  const c = clips.find(x => x.id === id); if(!c) return;
-  db.collection('clips').doc(id).update({status: 'applied'});
-  openM('m-job', {company: c.company, role: c.role});
-}
-
-function renderClips(){
-  const tb = document.getElementById('clips-tbody');
-  if(!clips.length){ tb.innerHTML=''; return; }
-  tb.innerHTML = clips.map(cl => `<tr>
-    <td><strong>${e(cl.company)}</strong></td>
-    <td class="fs12">${e(cl.role)}</td>
-    <td class="fs12">${cl.url?`<a href="${e(cl.url)}" target="_blank" style="color:var(--sky);text-decoration:none;">🔗 Link</a>`:'—'}</td>
-    <td><select onchange="setClipStatus('${cl.id}',this.value)">
-      <option value="saved"${cl.status==='saved'?' selected':''}>Saved</option>
-      <option value="ready"${cl.status==='ready'?' selected':''}>Ready</option>
-      <option value="applied"${cl.status==='applied'?' selected':''}>Applied</option>
-    </select></td>
-    <td style="display:flex;gap:5px;align-items:center;white-space:nowrap;">
-      ${cl.status!=='applied'?`<button class="btn btn-teal btn-sm" onclick="applyClip('${cl.id}')">Apply</button>`:''}
-      <button class="del-btn" onclick="delClip('${cl.id}')">🗑</button>
-    </td>
-  </tr>`).join('');
-}
-
-// ══════════════════════════════════════════════════
-//  NETWORKING CRUD
-// ══════════════════════════════════════════════════
-function addContact(){
-  db.collection('nets').add({
-    name: document.getElementById('n-name').value.trim(),
-    title: document.getElementById('n-title').value.trim(),
-    platform: document.getElementById('n-platform').value,
-    status: document.getElementById('n-status').value,
-    date: document.getElementById('n-date').value,
-    notes: document.getElementById('n-notes').value.trim(),
-    createdAt: Date.now()
-  }).then(() => { closeM('m-net'); toast('🤝 Contact saved to Cloud!'); });
-}
-function delContact(id){ db.collection('nets').doc(id).delete(); }
-function setNetStatus(id, v){ db.collection('nets').doc(id).update({status: v}); }
-
-function renderNets(){
-  const tb = document.getElementById('net-tbody');
-  if(!nets.length) { tb.innerHTML=''; return; }
-  tb.innerHTML = nets.map(n => `<tr>
-    <td><strong>${e(n.name)}</strong></td>
-    <td class="fs12 text-muted">${e(n.title)||'—'}</td>
-    <td><span class="badge b-muted">${e(n.platform)}</span></td>
-    <td><select onchange="setNetStatus('${n.id}',this.value)">
-      <option value="pending"${n.status==='pending'?' selected':''}>Pending</option>
-      <option value="connected"${n.status==='connected'?' selected':''}>Connected</option>
-    </select></td>
-    <td class="mono fs11 text-muted">${n.date||'—'}</td>
-    <td class="fs12 text-muted">${e(n.notes)||'—'}</td>
-    <td><button class="del-btn" onclick="delContact('${n.id}')">🗑</button></td>
-  </tr>`).join('');
-}
-
-// ══════════════════════════════════════════════════
-//  TASKS CRUD
-// ══════════════════════════════════════════════════
-function addTask(){
-  const txt = document.getElementById('tk-text').value.trim();
-  if(!txt) return;
-  db.collection('tasks').add({
-    text: txt,
-    cat: document.getElementById('tk-cat').value,
-    pri: document.getElementById('tk-pri').value,
-    due: document.getElementById('tk-due').value,
-    done: false,
-    createdAt: Date.now()
-  }).then(() => {
-    closeM('m-task');
-    document.getElementById('tk-text').value='';
-    document.getElementById('tk-due').value='';
-    toast('✅ Task added to Cloud!');
-  });
-}
-function toggleTask(id){
-  const t = tasks.find(x => x.id === id);
-  if(t) db.collection('tasks').doc(id).update({done: !t.done});
-}
-function delTask(id){ db.collection('tasks').doc(id).delete(); }
-
-function renderTasks(){
-  const active = tasks.filter(t=>!t.done).sort((a,b)=>b.createdAt-a.createdAt);
-  const done = tasks.filter(t=>t.done);
-  const pc = {h:'pri-h', m:'pri-m', l:'pri-l'};
-  const pl = {h:'HIGH', m:'MED', l:'LOW'};
-  const today = new Date().toISOString().split('T')[0];
-
-  function tHTML(t){
-    const isOverdue = t.due && t.due < today && !t.done;
-    const isToday = t.due === today && !t.done;
-    const dueColor = isOverdue ? 'color:var(--coral);font-weight:700;' : (isToday ? 'color:var(--gold);font-weight:700;' : '');
-    
-    return `<div class="task-item${t.done?' done':''}" onclick="toggleTask('${t.id}')">
-      <div class="chkbox"><span class="chk-ico">✓</span></div>
-      <div style="flex:1">
-        <div class="task-txt">${e(t.text)}</div>
-        <div class="task-meta">${e(t.cat)} ${t.due ? ` • <span style="${dueColor}">Due: ${t.due}</span>` : ''}</div>
-      </div>
-      <span class="pri ${pc[t.pri]||'pri-m'}">${pl[t.pri]||'MED'}</span>
-      <button class="del-btn" onclick="event.stopPropagation();delTask('${t.id}')">🗑</button>
-    </div>`;
-  }
-  document.getElementById('tasks-active').innerHTML = active.length ? active.map(tHTML).join('') : `<div class="empty-state" style="padding:24px;"><div class="empty-ico">🎯</div><div>All clear — add a task to get going.</div></div>`;
-  document.getElementById('tasks-done').innerHTML = done.length ? done.map(tHTML).join('') : `<div class="fs12 text-muted" style="padding:12px;">Nothing completed yet.</div>`;
-  document.getElementById('t-done').textContent = done.length;
-  document.getElementById('t-total').textContent = tasks.length;
-}
-
-// ══════════════════════════════════════════════════
-//  DASHBOARD
-// ══════════════════════════════════════════════════
-function renderDashTasks(){
-  const today = new Date().toISOString().split('T')[0];
-  const dueTasks = tasks.filter(t => !t.done && t.due && t.due <= today);
-  const c = document.getElementById('dash-tasks-today');
-  if(!dueTasks.length){
-    c.innerHTML = '<div class="fs12 text-muted" style="padding: 10px;">All clear! No tasks due today. Keep up the great work.</div>';
-    return;
-  }
-  c.innerHTML = dueTasks.map(t => `<div class="task-item" onclick="toggleTask('${t.id}')" style="border-left: 3px solid ${t.due < today ? 'var(--coral)' : 'var(--gold)'};">
-    <div class="chkbox"></div>
-    <div style="flex:1">
-      <div class="task-txt" style="font-weight:600">${e(t.text)}</div>
-      <div class="task-meta" style="color:var(--coral)">${t.due < today ? 'Overdue: ' : 'Due Today: '}${t.due}</div>
-    </div>
-  </div>`).join('');
-}
-
-function updateDashboard(){
-  const dApps = jobs.length;
-  const dNet = nets.length;
-  const dInt = jobs.filter(j=>j.status==='interview').length;
-  
-  document.getElementById('d-apps').textContent=dApps;
-  document.getElementById('d-net').textContent=dNet;
-  document.getElementById('d-int').textContent=dInt;
-  
-  document.getElementById('bar-apps').style.width=Math.min(100, dApps/20*100)+'%';
-  document.getElementById('bar-net').style.width=Math.min(100, dNet/30*100)+'%';
-  
-  const C = 219.9;
-  document.getElementById('ring-apps').style.strokeDashoffset=C-(C*Math.min(1, dApps/20));
-  document.getElementById('ring-net').style.strokeDashoffset=C-(C*Math.min(1, dNet/30));
-  document.getElementById('ring-int').style.strokeDashoffset=C-(C*Math.min(1, dInt/5));
-  
-  document.getElementById('rn-apps').textContent=dApps;
-  document.getElementById('rn-net').textContent=dNet;
-  document.getElementById('rn-int').textContent=dInt;
-  
-  document.getElementById('badge-jobs').textContent=dApps;
-  document.getElementById('badge-net').textContent=dNet;
-  document.getElementById('badge-tasks').textContent=tasks.filter(t=>!t.done).length;
-}
-
-function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-
-function refreshAll(){
-  renderJobs();
-  renderNets();
-  renderTasks();
-  renderDashTasks();
-  renderClips();
-  updateDashboard();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  // Simulate today's focus simply
-  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  document.getElementById('today-lbl').textContent=days[new Date().getDay()]+' · '+new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
-  document.getElementById('today-focus').innerHTML = `<div class="fs13 text-muted">Hit your daily numbers. Every app is a seed planted.</div>`;
 });
 
+// COLLECTION HELPERS (scoped per user)
+const col = (name) => collection(db, name);
+
+// INIT REALTIME LISTENERS
+function initRealtime() {
+  subscribe("tasks", renderTasks);
+  subscribe("jobs", renderJobs);
+  subscribe("clips", renderClips);
+  subscribe("network", renderNetwork);
+}
+
+// GENERIC SUBSCRIBE
+function subscribe(name, renderFn) {
+  const q = query(col(name), where("uid","==",userId));
+  onSnapshot(q, snap => {
+    const data = snap.docs.map(d => ({id:d.id,...d.data()}));
+    renderFn(data);
+  });
+}
+
+// CRUD
+window.addItem = async (collectionName, data) => {
+  await addDoc(col(collectionName), {...data, uid:userId, created:new Date()});
+};
+
+window.updateItem = async (collectionName, id, updates) => {
+  await updateDoc(doc(db, collectionName, id), updates);
+};
+
+window.deleteItem = async (collectionName, id) => {
+  await deleteDoc(doc(db, collectionName, id));
+};
+
+// RENDER PLACEHOLDERS (hook into your existing UI functions)
+window.renderTasks = (data) => {
+  console.log("Tasks:", data);
+};
+window.renderJobs = (data) => {
+  console.log("Jobs:", data);
+};
+window.renderClips = (data) => {
+  console.log("Clips:", data);
+};
+window.renderNetwork = (data) => {
+  console.log("Network:", data);
+};
+
 </script>
+
 </body>
 </html>
