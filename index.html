@@ -151,8 +151,12 @@ body{
   display:none;position:fixed;inset:0;
   background:rgba(0,0,0,0.4);z-index:190;
   opacity:0;transition:opacity 0.25s;
+  pointer-events:none; /* ADD THIS: Lets taps pass through when hidden */
 }
-.sidebar-overlay.on{opacity:1;}
+.sidebar-overlay.on{
+  opacity:1;
+  pointer-events:all; /* ADD THIS: Catches taps to close the sidebar when open */
+}
 
 /* ── MAIN ── */
 .main{
