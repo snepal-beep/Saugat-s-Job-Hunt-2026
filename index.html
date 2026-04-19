@@ -977,7 +977,7 @@ body{
     <table class="tbl">
       <thead><tr>
         <th>Name</th><th>Title / Company</th><th>Platform</th>
-        <th>Status</th><th>Date</th><th>Notes</th><th></th>
+        <th>Status</th><th>Date</th><th>Follow-Up</th><th>Notes</th><th></th>
       </tr></thead>
       <tbody id="net-tbody"></tbody>
     </table>
@@ -1189,10 +1189,18 @@ function closeSidebar(){
 // ══════════════════════════════════════════════════
 //  MODALS
 // ══════════════════════════════════════════════════
+let currentEditId = null;
+
 function openM(id,prefill){
+  currentEditId = null; // Ensure we start fresh when clicking "+ Add"
+  
+  // Clear out old text/notes from previous edits
+  document.querySelectorAll('#'+id+' input:not([type=date]), #'+id+' textarea').forEach(el=>el.value='');
+  
   const today=new Date().toISOString().split('T')[0];
   const fu=new Date(Date.now()+4*86400000).toISOString().split('T')[0];
   document.querySelectorAll('#'+id+' input[type=date]').forEach((el,i)=>{el.value=i===0?today:fu;});
+  
   if(prefill){
     if(prefill.company&&document.getElementById('cl-company'))document.getElementById('cl-company').value=prefill.company;
     if(prefill.company&&document.getElementById('j-company'))document.getElementById('j-company').value=prefill.company;
@@ -1215,20 +1223,47 @@ function toast(msg){
 // ══════════════════════════════════════════════════
 //  JOBS CRUD
 // ══════════════════════════════════════════════════
+function editJob(id) {
+  const j = jobs.find(x => x.id === id);
+  if(!j) return;
+  currentEditId = id;
+  document.getElementById('j-company').value = j.company || '';
+  document.getElementById('j-role').value = j.role || '';
+  document.getElementById('j-status').value = j.status || 'applied';
+  document.getElementById('j-platform').value = j.platform || 'LinkedIn';
+  document.getElementById('j-date').value = j.date || '';
+  document.getElementById('j-followup').value = j.followup || '';
+  document.getElementById('j-notes').value = j.notes || '';
+  document.getElementById('m-job').classList.add('on');
+}
+
 function addJob(){
   const c=document.getElementById('j-company').value.trim();
   const r=document.getElementById('j-role').value.trim();
   if(!c||!r){alert('Company and role are required.');return;}
-  jobs.unshift({id:Date.now(),company:c,role:r,
-    status:document.getElementById('j-status').value,
-    platform:document.getElementById('j-platform').value,
-    date:document.getElementById('j-date').value,
-    followup:document.getElementById('j-followup').value,
-    notes:document.getElementById('j-notes').value.trim()
-  });
-  sv(KEY.jobs,jobs);closeM('m-job');
-  ['j-company','j-role','j-notes'].forEach(i=>document.getElementById(i).value='');
-  refreshAll();toast('✅ Application saved!');
+  
+  if(currentEditId) {
+    const j = jobs.find(x => x.id === currentEditId);
+    if(j) {
+      j.company = c; j.role = r;
+      j.status = document.getElementById('j-status').value;
+      j.platform = document.getElementById('j-platform').value;
+      j.date = document.getElementById('j-date').value;
+      j.followup = document.getElementById('j-followup').value;
+      j.notes = document.getElementById('j-notes').value.trim();
+    }
+    toast('✅ Application updated!');
+  } else {
+    jobs.unshift({id:Date.now(),company:c,role:r,
+      status:document.getElementById('j-status').value,
+      platform:document.getElementById('j-platform').value,
+      date:document.getElementById('j-date').value,
+      followup:document.getElementById('j-followup').value,
+      notes:document.getElementById('j-notes').value.trim()
+    });
+    toast('✅ Application saved!');
+  }
+  sv(KEY.jobs,jobs); closeM('m-job'); currentEditId = null; refreshAll();
 }
 function delJob(id){jobs=jobs.filter(j=>j.id!==id);sv(KEY.jobs,jobs);refreshAll();}
 function setJobStatus(id,v){const j=jobs.find(j=>j.id===id);if(j){j.status=v;sv(KEY.jobs,jobs);refreshAll();}}
@@ -1250,7 +1285,10 @@ function renderJobs(){
       <td><span class="badge b-muted">${e(j.platform)}</span></td>
       <td class="mono fs11 text-muted">${j.followup||'—'}</td>
       <td class="fs12 text-muted" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e(j.notes)}">${e(j.notes)||'—'}</td>
-      <td><button class="del-btn" onclick="delJob(${j.id})">🗑</button></td>
+      <td style="white-space:nowrap;">
+        <button class="del-btn" onclick="editJob(${j.id})">✏️</button>
+        <button class="del-btn" onclick="delJob(${j.id})">🗑</button>
+      </td>
     </tr>`).join('');
   }
   document.getElementById('j-applied').textContent=jobs.filter(j=>j.status==='applied').length;
@@ -1262,20 +1300,45 @@ function renderJobs(){
 // ══════════════════════════════════════════════════
 //  CLIPS CRUD
 // ══════════════════════════════════════════════════
+function editClip(id) {
+  const c = clips.find(x => x.id === id);
+  if(!c) return;
+  currentEditId = id;
+  document.getElementById('cl-company').value = c.company || '';
+  document.getElementById('cl-role').value = c.role || '';
+  document.getElementById('cl-url').value = c.url || '';
+  document.getElementById('cl-date').value = c.date || '';
+  document.getElementById('cl-location').value = c.location || '';
+  document.getElementById('cl-notes').value = c.notes || '';
+  document.getElementById('m-clip').classList.add('on');
+}
+
 function addClip(){
   const c=document.getElementById('cl-company').value.trim();
   const r=document.getElementById('cl-role').value.trim();
   if(!c||!r){alert('Company and role are required.');return;}
-  clips.unshift({id:Date.now(),company:c,role:r,
-    url:document.getElementById('cl-url').value.trim(),
-    date:document.getElementById('cl-date').value,
-    location:document.getElementById('cl-location').value.trim(),
-    notes:document.getElementById('cl-notes').value.trim(),
-    status:'saved'
-  });
-  sv(KEY.clips,clips);closeM('m-clip');
-  ['cl-company','cl-role','cl-url','cl-location','cl-notes'].forEach(i=>document.getElementById(i).value='');
-  refreshAll();toast('📌 Job clipped!');
+  
+  if(currentEditId) {
+    const cl = clips.find(x => x.id === currentEditId);
+    if(cl) {
+      cl.company = c; cl.role = r;
+      cl.url = document.getElementById('cl-url').value.trim();
+      cl.date = document.getElementById('cl-date').value;
+      cl.location = document.getElementById('cl-location').value.trim();
+      cl.notes = document.getElementById('cl-notes').value.trim();
+    }
+    toast('📌 Clip updated!');
+  } else {
+    clips.unshift({id:Date.now(),company:c,role:r,
+      url:document.getElementById('cl-url').value.trim(),
+      date:document.getElementById('cl-date').value,
+      location:document.getElementById('cl-location').value.trim(),
+      notes:document.getElementById('cl-notes').value.trim(),
+      status:'saved'
+    });
+    toast('📌 Job clipped!');
+  }
+  sv(KEY.clips,clips); closeM('m-clip'); currentEditId = null; refreshAll();
 }
 function delClip(id){clips=clips.filter(c=>c.id!==id);sv(KEY.clips,clips);refreshAll();}
 function setClipStatus(id,v){const c=clips.find(c=>c.id===id);if(c){c.status=v;sv(KEY.clips,clips);refreshAll();}}
@@ -1306,6 +1369,7 @@ function renderClips(){
       <td class="fs12 text-muted" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e(cl.notes)}">${e(cl.notes)||'—'}</td>
       <td style="display:flex;gap:5px;align-items:center;white-space:nowrap;">
         ${cl.status!=='applied'?`<button class="btn btn-teal btn-sm" onclick="applyClip(${cl.id})">Apply →</button>`:'<span class="badge b-teal">Applied</span>'}
+        <button class="del-btn" onclick="editClip(${cl.id})">✏️</button>
         <button class="del-btn" onclick="delClip(${cl.id})">🗑</button>
       </td>
     </tr>`).join('');
@@ -1321,20 +1385,48 @@ function renderClips(){
 // ══════════════════════════════════════════════════
 //  NETWORKING CRUD
 // ══════════════════════════════════════════════════
+function editContact(id) {
+  const n = nets.find(x => x.id === id);
+  if(!n) return;
+  currentEditId = id;
+  document.getElementById('n-name').value = n.name || '';
+  document.getElementById('n-title').value = n.title || '';
+  document.getElementById('n-platform').value = n.platform || 'LinkedIn';
+  document.getElementById('n-status').value = n.status || 'pending';
+  document.getElementById('n-date').value = n.date || '';
+  document.getElementById('n-followup').value = n.followup || '';
+  document.getElementById('n-notes').value = n.notes || '';
+  document.getElementById('m-net').classList.add('on');
+}
+
 function addContact(){
   const nm=document.getElementById('n-name').value.trim();
   if(!nm){alert('Name required.');return;}
-  nets.unshift({id:Date.now(),name:nm,
-    title:document.getElementById('n-title').value.trim(),
-    platform:document.getElementById('n-platform').value,
-    status:document.getElementById('n-status').value,
-    date:document.getElementById('n-date').value,
-    followup:document.getElementById('n-followup').value,
-    notes:document.getElementById('n-notes').value.trim()
-  });
-  sv(KEY.net,nets);closeM('m-net');
-  ['n-name','n-title','n-notes'].forEach(i=>document.getElementById(i).value='');
-  refreshAll();toast('🤝 Contact saved!');
+  
+  if(currentEditId) {
+    const n = nets.find(x => x.id === currentEditId);
+    if(n) {
+      n.name = nm;
+      n.title = document.getElementById('n-title').value.trim();
+      n.platform = document.getElementById('n-platform').value;
+      n.status = document.getElementById('n-status').value;
+      n.date = document.getElementById('n-date').value;
+      n.followup = document.getElementById('n-followup').value;
+      n.notes = document.getElementById('n-notes').value.trim();
+    }
+    toast('🤝 Contact updated!');
+  } else {
+    nets.unshift({id:Date.now(),name:nm,
+      title:document.getElementById('n-title').value.trim(),
+      platform:document.getElementById('n-platform').value,
+      status:document.getElementById('n-status').value,
+      date:document.getElementById('n-date').value,
+      followup:document.getElementById('n-followup').value,
+      notes:document.getElementById('n-notes').value.trim()
+    });
+    toast('🤝 Contact saved!');
+  }
+  sv(KEY.net,nets); closeM('m-net'); currentEditId = null; refreshAll();
 }
 function delContact(id){nets=nets.filter(n=>n.id!==id);sv(KEY.net,nets);refreshAll();}
 function setNetStatus(id,v){const n=nets.find(n=>n.id===id);if(n){n.status=v;sv(KEY.net,nets);refreshAll();}}
@@ -1354,8 +1446,12 @@ function renderNets(){
         ${['pending','connected','warm','followup'].map(s=>`<option value="${s}"${n.status===s?' selected':''}>${sl[s]}</option>`).join('')}
       </select></td>
       <td class="mono fs11 text-muted">${n.date||'—'}</td>
+      <td class="mono fs11 text-muted">${n.followup||'—'}</td>
       <td class="fs12 text-muted" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e(n.notes)}">${e(n.notes)||'—'}</td>
-      <td><button class="del-btn" onclick="delContact(${n.id})">🗑</button></td>
+      <td style="white-space:nowrap;">
+        <button class="del-btn" onclick="editContact(${n.id})">✏️</button>
+        <button class="del-btn" onclick="delContact(${n.id})">🗑</button>
+      </td>
     </tr>`).join('');
   }
   const ws=getWeekStart();
@@ -1363,23 +1459,47 @@ function renderNets(){
   document.getElementById('net-week-count').textContent=wc;
   document.getElementById('net-week-bar').style.width=Math.min(100,wc/30*100)+'%';
 }
-
+  
 // ══════════════════════════════════════════════════
 //  TASKS CRUD
 // ══════════════════════════════════════════════════
+function editTask(id) {
+  const t = tasks.find(x => x.id === id);
+  if(!t) return;
+  currentEditId = id;
+  document.getElementById('tk-text').value = t.text || '';
+  document.getElementById('tk-cat').value = t.cat || 'Application';
+  document.getElementById('tk-pri').value = t.pri || 'm';
+  document.getElementById('tk-due').value = t.due || '';
+  document.getElementById('tk-notes').value = t.notes || '';
+  document.getElementById('m-task').classList.add('on');
+}
+
 function addTask(){
   const txt=document.getElementById('tk-text').value.trim();
   if(!txt)return;
-  tasks.unshift({id:Date.now(),text:txt,
-    cat:document.getElementById('tk-cat').value,
-    pri:document.getElementById('tk-pri').value,
-    due:document.getElementById('tk-due').value,
-    notes:document.getElementById('tk-notes').value.trim(),
-    done:false,created:new Date().toISOString()
-  });
-  sv(KEY.tasks,tasks);closeM('m-task');
-  ['tk-text','tk-notes','tk-due'].forEach(i=>document.getElementById(i).value='');
-  refreshAll();toast('✅ Task added!');
+  
+  if(currentEditId) {
+    const t = tasks.find(x => x.id === currentEditId);
+    if(t) {
+      t.text = txt;
+      t.cat = document.getElementById('tk-cat').value;
+      t.pri = document.getElementById('tk-pri').value;
+      t.due = document.getElementById('tk-due').value;
+      t.notes = document.getElementById('tk-notes').value.trim();
+    }
+    toast('✅ Task updated!');
+  } else {
+    tasks.unshift({id:Date.now(),text:txt,
+      cat:document.getElementById('tk-cat').value,
+      pri:document.getElementById('tk-pri').value,
+      due:document.getElementById('tk-due').value,
+      notes:document.getElementById('tk-notes').value.trim(),
+      done:false,created:new Date().toISOString()
+    });
+    toast('✅ Task added!');
+  }
+  sv(KEY.tasks,tasks); closeM('m-task'); currentEditId = null; refreshAll();
 }
 function toggleTask(id){const t=tasks.find(t=>t.id===id);if(t){t.done=!t.done;sv(KEY.tasks,tasks);refreshAll();}}
 function delTask(id){tasks=tasks.filter(t=>t.id!==id);sv(KEY.tasks,tasks);refreshAll();}
@@ -1389,6 +1509,7 @@ function renderTasks(){
   const done=tasks.filter(t=>t.done);
   const pc={h:'pri-h',m:'pri-m',l:'pri-l'};
   const pl={h:'HIGH',m:'MED',l:'LOW'};
+  
   function tHTML(t){return`<div class="task-item${t.done?' done':''}" onclick="toggleTask(${t.id})">
     <div class="chkbox"><span class="chk-ico">✓</span></div>
     <div style="flex:1">
@@ -1397,8 +1518,10 @@ function renderTasks(){
       ${t.notes ? `<div class="fs11 text-muted" style="margin-top:3px;">${e(t.notes)}</div>` : ''}
     </div>
     <span class="pri ${pc[t.pri]||'pri-m'}">${pl[t.pri]||'MED'}</span>
+    <button class="del-btn" onclick="event.stopPropagation();editTask(${t.id})">✏️</button>
     <button class="del-btn" onclick="event.stopPropagation();delTask(${t.id})">🗑</button>
   </div>`;}
+  
   document.getElementById('tasks-active').innerHTML=active.length?active.map(tHTML).join(''):`<div class="empty-state" style="padding:24px;"><div class="empty-ico">🎯</div><div>All clear — add a task to get going.</div></div>`;
   document.getElementById('tasks-done').innerHTML=done.length?done.map(tHTML).join(''):`<div class="fs12 text-muted" style="padding:12px;">Nothing completed yet.</div>`;
   document.getElementById('t-done').textContent=done.length;
