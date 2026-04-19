@@ -694,7 +694,7 @@ body{
       <div class="logo-icon">🎯</div>
       <div class="logo-text">Job Hunt<br/>Command Center</div>
     </div>
-    <div class="logo-sub">Saugat · Class of 2026</div>
+    <div class="logo-sub">Saugat · MS BAIM (UD'26)</div>
   </div>
   <div class="nav-group">
     <div class="nav-group-label">Overview</div>
@@ -729,7 +729,7 @@ body{
 <div class="page active" id="page-dashboard">
   <div class="page-header">
     <div class="breadcrumb">/ <span>dashboard</span></div>
-    <h1 class="page-title">Mission Control</h1>
+    <h1 class="page-title">Get your dream job!</h1>
     <p class="page-subtitle">Your weekly job hunt at a glance — stay on target, stay consistent.</p>
   </div>
   <div class="quote-banner mb28">
@@ -1928,6 +1928,76 @@ function init(){
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyDN1gVIlmVcVTUsm3IskLLKzn0pGux9yb8",
+  authDomain: "saugat-s-job-hunt-2026.netlify.app", // Keep your Netlify URL here if you did the mobile fix!
+  projectId: "job-hunt-2026-9caef",
+  storageBucket: "job-hunt-2026-9caef.firebasestorage.app",
+  messagingSenderId: "470319391474",
+  appId: "1:470319391474:web:4d46ff7f90fc54cd19a66b",
+  measurementId: "G-4VHQ5GYSR3"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+let userId = null;
+const loginGate = document.getElementById('login-gate');
+const gateBtn = document.getElementById('gate-login-btn');
+
+// 1. Process the redirect return BEFORE checking general auth state
+getRedirectResult(auth).then((result) => {
+  if (result) {
+    console.log("Redirect success!");
+  }
+}).catch((error) => {
+  console.error("Redirect error:", error);
+  alert("Login failed. Please check your browser privacy settings.");
+});
+
+// 2. Bind the Button Click
+if (gateBtn) {
+  gateBtn.addEventListener('click', () => {
+    gateBtn.textContent = "Redirecting...";
+    // Triggered by a real tap, so mobile browsers allow it
+    signInWithRedirect(auth, provider);
+  });
+}
+
+// 3. Listen for Auth State
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // USER IS LOGGED IN
+    userId = user.uid;
+    toast("✅ Synced to: " + user.email);
+    
+    // Hide the login gate smoothly
+    if (loginGate) {
+      loginGate.classList.add('hidden');
+      setTimeout(() => loginGate.style.display = 'none', 400); // Wait for fade out
+    }
+    
+  } else {
+    // USER IS NOT LOGGED IN
+    userId = null;
+    
+    // Show the login gate to block access until signed in
+    if (loginGate) {
+      loginGate.style.display = 'flex';
+      // Small delay ensures display:flex applies before opacity transitions
+      setTimeout(() => loginGate.classList.remove('hidden'), 10);
+      if (gateBtn) gateBtn.textContent = "Sign in with Google";
+    }
+  }
+});
+</script>
 </body>
 </html>
