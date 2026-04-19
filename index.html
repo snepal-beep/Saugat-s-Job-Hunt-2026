@@ -2192,7 +2192,7 @@ document.addEventListener('DOMContentLoaded',init);
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // CONFIG
@@ -2212,13 +2212,25 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 let userId = null;
+const loginBtn = document.getElementById('btn-login');
 
-// AUTH - Listen for login state
+// 1. BIND BUTTON IMMEDIATELY
+if (loginBtn) {
+  loginBtn.addEventListener('click', async () => {
+    try {
+      loginBtn.textContent = "Opening Google...";
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error(error);
+      alert("Popup blocked by Safari Privacy Settings. See Step 2 to fix it!");
+      loginBtn.textContent = "Sign in with Google";
+    }
+  });
+}
+
+// 2. LISTEN FOR SUCCESSFUL LOGIN
 onAuthStateChanged(auth, (user) => {
-  const loginBtn = document.getElementById('btn-login');
-  
   if (user) {
-    // User is logged in
     userId = user.uid;
     toast("✅ Synced to: " + user.email);
     
@@ -2226,21 +2238,10 @@ onAuthStateChanged(auth, (user) => {
       loginBtn.textContent = "✅ Signed in as " + user.email;
       loginBtn.style.background = "var(--teal)";
       loginBtn.style.borderColor = "var(--teal)";
-      loginBtn.onclick = null; // Disable clicks once logged in
+      loginBtn.style.pointerEvents = "none"; // Disable clicking again
     }
     
     initRealtime();
-  } else {
-    // Not logged in - wait for button click
-    if(loginBtn) {
-      loginBtn.textContent = "Sign in with Google";
-      loginBtn.onclick = () => {
-        // CHANGED: Using Redirect instead of Popup for mobile compatibility
-        signInWithRedirect(auth, provider).catch((error) => {
-          alert("Login error: " + error.message);
-        });
-      };
-    }
   }
 });
 
@@ -2285,6 +2286,5 @@ window.renderClips = (data) => { console.log("Cloud Clips loaded:", data); };
 window.renderNetwork = (data) => { console.log("Cloud Network loaded:", data); };
 
 </script>
-
 </body>
 </html>
