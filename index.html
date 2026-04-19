@@ -132,7 +132,8 @@ body{
 
 /* ── MOBILE TOPBAR ── */
 .topbar{
-  display:none;position:fixed;top:0;left:0;right:0;z-index:150;
+  display:none;position:fixed;top:0;left:0;right:0;
+  z-index:210; /* Bumped up from 150 to ensure it's always on top */
   background:var(--navy);height:54px;
   align-items:center;padding:0 16px;gap:14px;
   box-shadow:0 2px 12px rgba(0,0,0,0.15);
@@ -150,12 +151,13 @@ body{
 .sidebar-overlay{
   display:none;position:fixed;inset:0;
   background:rgba(0,0,0,0.4);z-index:190;
-  opacity:0;transition:opacity 0.25s;
-  pointer-events:none; /* ADD THIS: Lets taps pass through when hidden */
+  opacity:0;
+  visibility:hidden; /* ADDED: Completely removes it from touch detection when closed */
+  transition:opacity 0.25s, visibility 0.25s;
 }
 .sidebar-overlay.on{
   opacity:1;
-  pointer-events:all; /* ADD THIS: Catches taps to close the sidebar when open */
+  visibility:visible; /* ADDED: Brings it back when the menu opens */
 }
 
 /* ── MAIN ── */
