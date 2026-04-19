@@ -2378,11 +2378,6 @@ window.deleteItem = async (collectionName, id) => {
   await deleteDoc(doc(db, collectionName, id));
 };
 
-// RENDER PLACEHOLDERS 
-window.renderTasks = (data) => { console.log("Cloud Tasks loaded:", data); };
-window.renderJobs = (data) => { console.log("Cloud Jobs loaded:", data); };
-window.renderClips = (data) => { console.log("Cloud Clips loaded:", data); };
-window.renderNetwork = (data) => { console.log("Cloud Network loaded:", data); };
 </script>
 </body>
 </html>
