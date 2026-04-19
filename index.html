@@ -2192,7 +2192,7 @@ document.addEventListener('DOMContentLoaded',init);
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // CONFIG
@@ -2209,16 +2209,23 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
 let userId = null;
 
-// AUTH
-signInAnonymously(auth);
-
+// AUTH - Listen for login state
 onAuthStateChanged(auth, (user) => {
   if (user) {
+    // User is logged in
     userId = user.uid;
+    toast("✅ Synced to: " + user.email);
     initRealtime();
+  } else {
+    // User is NOT logged in. Trigger the Google login popup.
+    signInWithPopup(auth, provider).catch((error) => {
+      console.error("Login failed:", error);
+      alert("Please sign in with Google to sync your job hunt data.");
+    });
   }
 });
 
@@ -2233,7 +2240,7 @@ function initRealtime() {
   subscribe("network", renderNetwork);
 }
 
-// GENERIC SUBSCRIBE
+// GENERIC SUBSCRIBE (Only pulls data matching your specific Google Account ID)
 function subscribe(name, renderFn) {
   const q = query(col(name), where("uid","==",userId));
   onSnapshot(q, snap => {
@@ -2244,6 +2251,7 @@ function subscribe(name, renderFn) {
 
 // CRUD
 window.addItem = async (collectionName, data) => {
+  if(!userId) return alert("Must be logged in to save.");
   await addDoc(col(collectionName), {...data, uid:userId, created:new Date()});
 };
 
@@ -2255,19 +2263,13 @@ window.deleteItem = async (collectionName, id) => {
   await deleteDoc(doc(db, collectionName, id));
 };
 
-// RENDER PLACEHOLDERS (hook into your existing UI functions)
-window.renderTasks = (data) => {
-  console.log("Tasks:", data);
-};
-window.renderJobs = (data) => {
-  console.log("Jobs:", data);
-};
-window.renderClips = (data) => {
-  console.log("Clips:", data);
-};
-window.renderNetwork = (data) => {
-  console.log("Network:", data);
-};
+// RENDER PLACEHOLDERS 
+// Note: When you are ready to fully switch off localStorage and rely 100% on Firebase,
+// you will link these up to your actual UI rendering functions.
+window.renderTasks = (data) => { console.log("Cloud Tasks loaded:", data); };
+window.renderJobs = (data) => { console.log("Cloud Jobs loaded:", data); };
+window.renderClips = (data) => { console.log("Cloud Clips loaded:", data); };
+window.renderNetwork = (data) => { console.log("Cloud Network loaded:", data); };
 
 </script>
 
