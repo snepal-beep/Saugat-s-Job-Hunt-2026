@@ -2189,10 +2189,9 @@ function init(){
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // CONFIG
@@ -2212,40 +2211,34 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 let userId = null;
-const loginBtn = document.getElementById('btn-login');
 
-// 1. BIND BUTTON IMMEDIATELY
-if (loginBtn) {
-  loginBtn.addEventListener('click', async () => {
-    try {
-      loginBtn.textContent = "Opening Google...";
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error(error);
-      alert("Popup blocked by Safari Privacy Settings. See Step 2 to fix it!");
-      loginBtn.textContent = "Sign in with Google";
-    }
-  });
-}
+// Catch any errors if the redirect fails
+getRedirectResult(auth).catch((error) => {
+  console.error("Login Error:", error);
+  alert("Google Sign-In failed: " + error.message);
+});
 
-// 2. LISTEN FOR SUCCESSFUL LOGIN
+// AUTH - Listen for login state
 onAuthStateChanged(auth, (user) => {
   if (user) {
+    // LOGGED IN: Initialize the app
     userId = user.uid;
     toast("✅ Synced to: " + user.email);
     
-    if(loginBtn) {
-      loginBtn.textContent = "✅ Signed in as " + user.email;
-      loginBtn.style.background = "var(--teal)";
-      loginBtn.style.borderColor = "var(--teal)";
-      loginBtn.style.pointerEvents = "none"; // Disable clicking again
+    // Optional: Update the sidebar display if you kept that code
+    const weekDisplay = document.getElementById('week-display');
+    if (weekDisplay && !document.getElementById('sync-status-badge')) {
+      weekDisplay.insertAdjacentHTML('afterend', `<div id="sync-status-badge" style="margin-top:8px; font-size:10px; color:var(--teal); font-weight:bold;">✅ SYNCED: ${user.email.split('@')[0]}</div>`);
     }
-    
+
     initRealtime();
+  } else {
+    // NOT LOGGED IN: Automatically trigger the Google login redirect
+    signInWithRedirect(auth, provider);
   }
 });
 
-// COLLECTION HELPERS (scoped per user)
+// COLLECTION HELPERS
 const col = (name) => collection(db, name);
 
 // INIT REALTIME LISTENERS
@@ -2256,7 +2249,7 @@ function initRealtime() {
   subscribe("network", renderNetwork);
 }
 
-// GENERIC SUBSCRIBE (Only pulls data matching your specific Google Account ID)
+// GENERIC SUBSCRIBE 
 function subscribe(name, renderFn) {
   const q = query(col(name), where("uid","==",userId));
   onSnapshot(q, snap => {
@@ -2267,15 +2260,17 @@ function subscribe(name, renderFn) {
 
 // CRUD
 window.addItem = async (collectionName, data) => {
-  if(!userId) return alert("Must be logged in to save.");
+  if(!userId) return;
   await addDoc(col(collectionName), {...data, uid:userId, created:new Date()});
 };
 
 window.updateItem = async (collectionName, id, updates) => {
+  if(!userId) return;
   await updateDoc(doc(db, collectionName, id), updates);
 };
 
 window.deleteItem = async (collectionName, id) => {
+  if(!userId) return;
   await deleteDoc(doc(db, collectionName, id));
 };
 
