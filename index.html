@@ -992,7 +992,15 @@ body{
   <div class="page-header">
     <div class="breadcrumb">/ <span>message-templates</span></div>
     <h1 class="page-title">Message Templates</h1>
-    <p class="page-subtitle">Six role-specific templates.</p>
+    <p class="page-subtitle">Six role-specific templates — LinkedIn Connection Note + InMail for each. Personalize the <em>[bracketed]</em> fields before sending.</p>
+  </div>
+  <div class="card mb18" style="background:var(--navy);color:rgba(255,255,255,0.8);margin-bottom:18px;">
+    <div class="flex gap12">
+      <span style="font-size:22px">⚠️</span>
+      <div class="fs12" style="line-height:1.65">
+        <strong style="color:#DBA83C">LinkedIn Connection Request:</strong> Hard limit of <strong style="color:#DBA83C">300 characters</strong> (not words). Every word counts. The InMail messages below are full-length (~180–220 words) and can also be sent as emails. Always replace [Name], [Firm/Company], and [specific area] before sending.
+      </div>
+    </div>
   </div>
   <div class="role-tabs" id="role-tabs"></div>
   <div id="template-panels"></div>
@@ -1002,6 +1010,15 @@ body{
   <div class="page-header">
     <div class="breadcrumb">/ <span>phone-reminders</span></div>
     <h1 class="page-title">Phone Reminder Guide</h1>
+    <p class="page-subtitle">Set these exactly on iOS Reminders or Google Calendar — copy the label as your alarm name.</p>
+  </div>
+  <div class="card mb20" style="background:var(--gold-light);border-color:var(--gold-border);">
+    <div style="font-family:'DM Serif Display',serif;font-size:17px;color:var(--gold);margin-bottom:9px;">📱 Setup Instructions</div>
+    <div class="fs13 text-muted" style="line-height:1.75">
+      <strong style="color:var(--navy)">iOS:</strong> Open Reminders app → New List named "Job Hunt" → Add each time below → Set Repeat days shown.<br/>
+      <strong style="color:var(--navy)">Android / Google Cal:</strong> Create Event → set Notification → Repeat → check specific days.<br/>
+      <strong style="color:var(--navy)">Pro tip:</strong> Name your alarm the exact action (e.g. "📧 Send 2 job apps NOW") so you know what to do the moment it rings.
+    </div>
   </div>
   <div class="g2" id="reminders-grid"></div>
 </div>
@@ -1010,6 +1027,7 @@ body{
   <div class="page-header">
     <div class="breadcrumb">/ <span>strategy</span></div>
     <h1 class="page-title">Strategy & Tips</h1>
+    <p class="page-subtitle">Proven frameworks for landing a role with your CA + Big 4 + MS Analytics background.</p>
   </div>
   <div id="strategy-content"></div>
 </div>
@@ -2113,6 +2131,7 @@ function buildTemplates(){
           <div style="font-size:12px;color:rgba(255,255,255,0.42);">Best for: ${r.short}</div>
         </div>
       </div>
+      
       <div class="tpl-box">
         <div class="tpl-label">
           <span>🔗 LinkedIn Connection Request <span class="char-count">(300 char limit)</span></span>
@@ -2121,6 +2140,20 @@ function buildTemplates(){
         <div class="tpl-text" id="${r.id}-conn">${r.conn}</div>
         <div class="tpl-note">${r.conn_note}</div>
       </div>
+
+      <div class="tpl-box">
+        <div class="tpl-label">
+          <span>📧 InMail / Email Message</span>
+          <button class="btn-copy" onclick="copyTpl('${r.id}-inmail',this)">📋 Copy</button>
+        </div>
+        <div style="margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="fs11 text-muted">Subject:</span>
+          <span class="fs12 fw6 text-navy">${r.inmail_subj}</span>
+          <button class="btn-copy" style="font-size:10px;padding:3px 8px;" onclick="copyText('${r.inmail_subj}',this)">📋</button>
+        </div>
+        <div class="tpl-text" id="${r.id}-inmail">${r.inmail}</div>
+      </div>
+
     </div>`).join('');
 }
 function switchRole(id,el){
