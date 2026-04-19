@@ -57,7 +57,18 @@ body{
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
 }
-
+/* ── LOGIN GATE ── */
+.login-gate {
+  position: fixed; inset: 0; background: var(--navy); z-index: 99999;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #fff; padding: 20px; text-align: center;
+  transition: opacity 0.4s ease;
+}
+.login-gate.hidden { opacity: 0; pointer-events: none; }
+.login-box {
+  background: var(--surface); border-radius: 16px; padding: 40px 30px;
+  max-width: 400px; width: 100%; box-shadow: var(--shadow-lg); color: var(--text);
+}
 /* ── SIDEBAR ── */
 .sidebar{
   width:var(--sidebar-w);
@@ -672,6 +683,20 @@ body{
 </style>
 </head>
 <body>
+  <div class="login-gate" id="login-gate">
+  <div class="login-box">
+    <div class="logo-mark" style="justify-content: center; margin-bottom: 20px;">
+      <div class="logo-icon">🎯</div>
+    </div>
+    <h1 style="font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--navy); margin-bottom: 10px;">Job Hunt HQ</h1>
+    <p style="font-size: 14px; color: var(--text3); margin-bottom: 24px; line-height: 1.6;">
+      Sign in with Google to access your synced command center.
+    </p>
+    <button class="btn btn-navy" id="gate-login-btn" style="width: 100%; justify-content: center; padding: 12px; font-size: 15px;">
+      Sign in with Google
+    </button>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <div class="topbar">
@@ -2211,30 +2236,51 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 let userId = null;
+const loginGate = document.getElementById('login-gate');
+const gateBtn = document.getElementById('gate-login-btn');
 
-// Catch any errors if the redirect fails
-getRedirectResult(auth).catch((error) => {
-  console.error("Login Error:", error);
-  alert("Google Sign-In failed: " + error.message);
+// 1. Process the redirect return BEFORE checking general auth state
+getRedirectResult(auth).then((result) => {
+  if (result) {
+    // Successfully returned from Google on mobile
+    console.log("Redirect success!");
+  }
+}).catch((error) => {
+  console.error("Redirect error:", error);
+  alert("Login failed. Please check your browser privacy settings.");
 });
 
-// AUTH - Listen for login state
+// 2. Bind the Button Click
+if (gateBtn) {
+  gateBtn.addEventListener('click', () => {
+    gateBtn.textContent = "Redirecting...";
+    // Because this is triggered by a real tap, mobile browsers allow it!
+    signInWithRedirect(auth, provider);
+  });
+}
+
+// 3. Listen for Auth State
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    // LOGGED IN: Initialize the app
+    // USER IS LOGGED IN
     userId = user.uid;
     toast("✅ Synced to: " + user.email);
     
-    // Optional: Update the sidebar display if you kept that code
-    const weekDisplay = document.getElementById('week-display');
-    if (weekDisplay && !document.getElementById('sync-status-badge')) {
-      weekDisplay.insertAdjacentHTML('afterend', `<div id="sync-status-badge" style="margin-top:8px; font-size:10px; color:var(--teal); font-weight:bold;">✅ SYNCED: ${user.email.split('@')[0]}</div>`);
+    // Hide the login gate smoothly
+    if (loginGate) {
+      loginGate.classList.add('hidden');
+      setTimeout(() => loginGate.style.display = 'none', 400); // Wait for fade out
     }
-
+    
     initRealtime();
   } else {
-    // NOT LOGGED IN: Automatically trigger the Google login redirect
-    signInWithRedirect(auth, provider);
+    // USER IS NOT LOGGED IN
+    userId = null;
+    if (loginGate) {
+      loginGate.style.display = 'flex';
+      loginGate.classList.remove('hidden');
+      if (gateBtn) gateBtn.textContent = "Sign in with Google";
+    }
   }
 });
 
@@ -2279,7 +2325,6 @@ window.renderTasks = (data) => { console.log("Cloud Tasks loaded:", data); };
 window.renderJobs = (data) => { console.log("Cloud Jobs loaded:", data); };
 window.renderClips = (data) => { console.log("Cloud Clips loaded:", data); };
 window.renderNetwork = (data) => { console.log("Cloud Network loaded:", data); };
-
 </script>
 </body>
 </html>
