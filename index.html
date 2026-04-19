@@ -764,7 +764,7 @@ body{
 
   <div class="g2 mb20">
     <div class="card">
-      <div class="card-title">📅 Due Today</div>
+      <div class="card-title">🚨 Due & Overdue</div>
       <div id="dash-due-today"></div>
     </div>
     <div class="card">
@@ -1629,41 +1629,100 @@ function renderTodayFocus(){
 function renderDashDueToday() {
   const todayStr = new Date().toISOString().split('T')[0];
   
-  // Gather Tasks, Jobs, and Networking due today
-  const dueTasks = tasks.filter(t => !t.done && t.due === todayStr).map(t => ({...t, type:'Task'}));
-  const dueJobs = jobs.filter(j => j.followup === todayStr && !['offer','rejected'].includes(j.status)).map(j => ({...j, type:'Job'}));
-  const dueNets = nets.filter(n => n.followup === todayStr).map(n => ({...n, type:'Net'}));
+  // Gather ALL pending items that have dates
+  const pendingTasks = tasks.filter(t => !t.done && t.due);
+  const pendingJobs = jobs.filter(j => j.followup && !['offer','rejected'].includes(j.status));
+  const pendingNets = nets.filter(n => n.followup);
 
-  const allDue = [...dueTasks, ...dueJobs, ...dueNets];
+  const overdue = [];
+  const dueToday = [];
+
+  // Sort Tasks
+  pendingTasks.forEach(t => {
+    if(t.due < todayStr) overdue.push({...t, type:'Task'});
+    else if(t.due === todayStr) dueToday.push({...t, type:'Task'});
+  });
+
+  // Sort Jobs
+  pendingJobs.forEach(j => {
+    if(j.followup < todayStr) overdue.push({...j, type:'Job'});
+    else if(j.followup === todayStr) dueToday.push({...j, type:'Job'});
+  });
+
+  // Sort Networking
+  pendingNets.forEach(n => {
+    if(n.followup < todayStr) overdue.push({...n, type:'Net'});
+    else if(n.followup === todayStr) dueToday.push({...n, type:'Net'});
+  });
+
   const el = document.getElementById('dash-due-today');
   
-  if(!allDue.length) {
-    el.innerHTML = `<div class="empty-state" style="padding:30px 10px;"><div class="empty-ico" style="font-size:26px; margin-bottom:8px;">🎉</div><div class="fs12 text-muted">All clear! No tasks or follow-ups due today.</div></div>`;
+  if(!overdue.length && !dueToday.length) {
+    el.innerHTML = `<div class="empty-state" style="padding:30px 10px;"><div class="empty-ico" style="font-size:26px; margin-bottom:8px;">🎉</div><div class="fs12 text-muted">All clear! Nothing overdue or due today.</div></div>`;
     return;
   }
   
   const pc={h:'pri-h',m:'pri-m',l:'pri-l'};
   const pl={h:'HIGH',m:'MED',l:'LOW'};
   
-  el.innerHTML = allDue.map(item => {
-    if(item.type === 'Task') {
-      return `<div class="task-item" style="box-shadow:none; border-color:var(--border2); margin-bottom:8px;" onclick="toggleTask(${item.id})">
-        <div class="chkbox"></div>
-        <div style="flex:1"><div class="task-txt">${e(item.text)}</div></div>
-        <span class="pri ${pc[item.pri]||'pri-m'}">${pl[item.pri]||'MED'}</span>
-      </div>`;
-    } else if(item.type === 'Job') {
-      return `<div class="task-item" style="box-shadow:none; border-color:var(--teal-border); background:var(--teal-bg); margin-bottom:8px;" onclick="nav('jobs')">
-        <div style="flex:1"><div class="task-txt" style="color:var(--teal); font-weight:600;">💼 Follow up: ${e(item.company)}</div><div class="fs11 text-muted">${e(item.role)}</div></div>
-        <span class="pri" style="background:var(--teal);color:#fff;">JOB</span>
-      </div>`;
-    } else if(item.type === 'Net') {
-      return `<div class="task-item" style="box-shadow:none; border-color:var(--purple-border); background:var(--purple-bg); margin-bottom:8px;" onclick="nav('network')">
-        <div style="flex:1"><div class="task-txt" style="color:var(--purple); font-weight:600;">🤝 Follow up: ${e(item.name)}</div><div class="fs11 text-muted">${e(item.title || 'Contact')}</div></div>
-        <span class="pri" style="background:var(--purple);color:#fff;">NET</span>
-      </div>`;
+  let html = '';
+
+  // Render Overdue Items (Coral Warning Style)
+  if(overdue.length > 0) {
+    html += `<div style="font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--coral); margin-bottom:8px;">⚠️ Overdue</div>`;
+    
+    html += overdue.map(item => {
+      if(item.type === 'Task') {
+        return `<div class="task-item" style="box-shadow:none; border-color:var(--coral-border); background:var(--coral-bg); margin-bottom:8px;" onclick="toggleTask(${item.id})">
+          <div class="chkbox" style="border-color:rgba(168,56,56,0.3);"></div>
+          <div style="flex:1"><div class="task-txt" style="color:var(--coral); font-weight:600;">${e(item.text)}</div><div class="fs11" style="color:var(--coral); opacity:0.8;">Due: ${item.due}</div></div>
+          <span class="pri" style="background:var(--coral); color:#fff;">TASK</span>
+        </div>`;
+      } else if(item.type === 'Job') {
+        return `<div class="task-item" style="box-shadow:none; border-color:var(--coral-border); background:var(--coral-bg); margin-bottom:8px;" onclick="nav('jobs')">
+          <div style="flex:1"><div class="task-txt" style="color:var(--coral); font-weight:600;">💼 Follow up: ${e(item.company)}</div><div class="fs11" style="color:var(--coral); opacity:0.8;">Due: ${item.followup}</div></div>
+          <span class="pri" style="background:var(--coral);color:#fff;">JOB</span>
+        </div>`;
+      } else if(item.type === 'Net') {
+        return `<div class="task-item" style="box-shadow:none; border-color:var(--coral-border); background:var(--coral-bg); margin-bottom:8px;" onclick="nav('network')">
+          <div style="flex:1"><div class="task-txt" style="color:var(--coral); font-weight:600;">🤝 Follow up: ${e(item.name)}</div><div class="fs11" style="color:var(--coral); opacity:0.8;">Due: ${item.followup}</div></div>
+          <span class="pri" style="background:var(--coral);color:#fff;">NET</span>
+        </div>`;
+      }
+    }).join('');
+  }
+
+  // Render Due Today Items (Standard Style)
+  if(dueToday.length > 0) {
+    // Add a divider if we have overdue items above this
+    if(overdue.length > 0) {
+      html += `<div style="font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--navy); margin-top:16px; margin-bottom:8px; padding-top:12px; border-top:1px solid var(--border);">📅 Due Today</div>`;
+    } else {
+      html += `<div style="font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--navy); margin-bottom:8px;">📅 Due Today</div>`;
     }
-  }).join('');
+
+    html += dueToday.map(item => {
+      if(item.type === 'Task') {
+        return `<div class="task-item" style="box-shadow:none; border-color:var(--border2); margin-bottom:8px;" onclick="toggleTask(${item.id})">
+          <div class="chkbox"></div>
+          <div style="flex:1"><div class="task-txt">${e(item.text)}</div></div>
+          <span class="pri ${pc[item.pri]||'pri-m'}">${pl[item.pri]||'MED'}</span>
+        </div>`;
+      } else if(item.type === 'Job') {
+        return `<div class="task-item" style="box-shadow:none; border-color:var(--teal-border); background:var(--teal-bg); margin-bottom:8px;" onclick="nav('jobs')">
+          <div style="flex:1"><div class="task-txt" style="color:var(--teal); font-weight:600;">💼 Follow up: ${e(item.company)}</div><div class="fs11 text-muted">${e(item.role)}</div></div>
+          <span class="pri" style="background:var(--teal);color:#fff;">JOB</span>
+        </div>`;
+      } else if(item.type === 'Net') {
+        return `<div class="task-item" style="box-shadow:none; border-color:var(--purple-border); background:var(--purple-bg); margin-bottom:8px;" onclick="nav('network')">
+          <div style="flex:1"><div class="task-txt" style="color:var(--purple); font-weight:600;">🤝 Follow up: ${e(item.name)}</div><div class="fs11 text-muted">${e(item.title || 'Contact')}</div></div>
+          <span class="pri" style="background:var(--purple);color:#fff;">NET</span>
+        </div>`;
+      }
+    }).join('');
+  }
+
+  el.innerHTML = html;
 }
 
 // ══════════════════════════════════════════════════
