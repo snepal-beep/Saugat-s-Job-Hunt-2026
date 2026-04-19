@@ -1020,12 +1020,12 @@ body{
     <h1 class="page-title">Data & Sync</h1>
   </div>
   <div class="sync-option" style="border-color:var(--teal-border);background:linear-gradient(135deg,var(--teal-bg),var(--card));">
-    <div class="sync-tier" style="color:var(--teal)">✅ CURRENT — ACTIVE NOW — NO SETUP NEEDED</div>
-    <div class="sync-title">Browser localStorage</div>
-    <div class="sync-desc">All your data is saved automatically in your browser's localStorage. Use Export/Import JSON to move data between devices.</div>
+    <div class="sync-tier" style="color:var(--teal)">✅ SECURE CLOUD SYNC ACTIVE</div>
+    <div class="sync-title">Saved to your Google Account</div>
+    <div class="sync-desc">Your job hunt data is actively syncing to the cloud via your Google Account. You can safely access this dashboard from your phone or laptop. Use the tools below if you want to download a hard copy backup of your data.</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
-      <button class="btn btn-navy" onclick="exportData()">⬇ Export All Data (JSON)</button>
-      <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">⬆ Import Data (JSON)</button>
+      <button class="btn btn-navy" onclick="exportData()">⬇ Export Backup (JSON)</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">⬆ Import Data</button>
       <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)"/>
       <button class="btn btn-danger" onclick="if(confirm('Clear ALL data? Cannot be undone.'))clearData()">🗑 Clear All Data</button>
     </div>
@@ -1090,7 +1090,10 @@ body{
         </select>
       </div>
     </div>
-    <div class="fg"><label>Date Reached Out</label><input class="fi" type="date" id="n-date"/></div>
+    <div class="frow">
+      <div class="fg"><label>Date Reached Out</label><input class="fi" type="date" id="n-date"/></div>
+      <div class="fg"><label>Follow-Up Date</label><input class="fi" type="date" id="n-followup"/></div>
+    </div>
     <div class="fg"><label>Notes</label><textarea class="fa" id="n-notes" placeholder="Mutual connection, what you discussed, next step..."></textarea></div>
     <div class="f-actions">
       <button class="btn btn-ghost" onclick="closeM('m-net')">Cancel</button>
@@ -1188,7 +1191,7 @@ function closeSidebar(){
 // ══════════════════════════════════════════════════
 function openM(id,prefill){
   const today=new Date().toISOString().split('T')[0];
-  const fu=new Date(Date.now()+7*86400000).toISOString().split('T')[0];
+  const fu=new Date(Date.now()+4*86400000).toISOString().split('T')[0];
   document.querySelectorAll('#'+id+' input[type=date]').forEach((el,i)=>{el.value=i===0?today:fu;});
   if(prefill){
     if(prefill.company&&document.getElementById('cl-company'))document.getElementById('cl-company').value=prefill.company;
@@ -1326,6 +1329,7 @@ function addContact(){
     platform:document.getElementById('n-platform').value,
     status:document.getElementById('n-status').value,
     date:document.getElementById('n-date').value,
+    followup:document.getElementById('n-followup').value,
     notes:document.getElementById('n-notes').value.trim()
   });
   sv(KEY.net,nets);closeM('m-net');
@@ -1501,24 +1505,42 @@ function renderTodayFocus(){
 
 function renderDashDueToday() {
   const todayStr = new Date().toISOString().split('T')[0];
-  const dueToday = tasks.filter(t => !t.done && t.due === todayStr);
+  
+  // Gather Tasks, Jobs, and Networking due today
+  const dueTasks = tasks.filter(t => !t.done && t.due === todayStr).map(t => ({...t, type:'Task'}));
+  const dueJobs = jobs.filter(j => j.followup === todayStr && !['offer','rejected'].includes(j.status)).map(j => ({...j, type:'Job'}));
+  const dueNets = nets.filter(n => n.followup === todayStr).map(n => ({...n, type:'Net'}));
+
+  const allDue = [...dueTasks, ...dueJobs, ...dueNets];
   const el = document.getElementById('dash-due-today');
   
-  if(!dueToday.length) {
-    el.innerHTML = `<div class="empty-state" style="padding:30px 10px;"><div class="empty-ico" style="font-size:26px; margin-bottom:8px;">🎉</div><div class="fs12 text-muted">All clear! No tasks due today.</div></div>`;
+  if(!allDue.length) {
+    el.innerHTML = `<div class="empty-state" style="padding:30px 10px;"><div class="empty-ico" style="font-size:26px; margin-bottom:8px;">🎉</div><div class="fs12 text-muted">All clear! No tasks or follow-ups due today.</div></div>`;
     return;
   }
   
   const pc={h:'pri-h',m:'pri-m',l:'pri-l'};
   const pl={h:'HIGH',m:'MED',l:'LOW'};
   
-  el.innerHTML = dueToday.map(t=>`
-    <div class="task-item" style="box-shadow:none; border-color:var(--border2); margin-bottom:8px;" onclick="toggleTask(${t.id})">
-      <div class="chkbox"></div>
-      <div style="flex:1"><div class="task-txt">${e(t.text)}</div></div>
-      <span class="pri ${pc[t.pri]||'pri-m'}">${pl[t.pri]||'MED'}</span>
-    </div>
-  `).join('');
+  el.innerHTML = allDue.map(item => {
+    if(item.type === 'Task') {
+      return `<div class="task-item" style="box-shadow:none; border-color:var(--border2); margin-bottom:8px;" onclick="toggleTask(${item.id})">
+        <div class="chkbox"></div>
+        <div style="flex:1"><div class="task-txt">${e(item.text)}</div></div>
+        <span class="pri ${pc[item.pri]||'pri-m'}">${pl[item.pri]||'MED'}</span>
+      </div>`;
+    } else if(item.type === 'Job') {
+      return `<div class="task-item" style="box-shadow:none; border-color:var(--teal-border); background:var(--teal-bg); margin-bottom:8px;" onclick="nav('jobs')">
+        <div style="flex:1"><div class="task-txt" style="color:var(--teal); font-weight:600;">💼 Follow up: ${e(item.company)}</div><div class="fs11 text-muted">${e(item.role)}</div></div>
+        <span class="pri" style="background:var(--teal);color:#fff;">JOB</span>
+      </div>`;
+    } else if(item.type === 'Net') {
+      return `<div class="task-item" style="box-shadow:none; border-color:var(--purple-border); background:var(--purple-bg); margin-bottom:8px;" onclick="nav('network')">
+        <div style="flex:1"><div class="task-txt" style="color:var(--purple); font-weight:600;">🤝 Follow up: ${e(item.name)}</div><div class="fs11 text-muted">${e(item.title || 'Contact')}</div></div>
+        <span class="pri" style="background:var(--purple);color:#fff;">NET</span>
+      </div>`;
+    }
+  }).join('');
 }
 
 // ══════════════════════════════════════════════════
@@ -1781,9 +1803,123 @@ const roles=[
     conn:`Hi [Name] — your SAP risk advisory work at [Firm] caught my eye. I'm a CA with 5+ yrs Big 4 SAP GRC/ITGC experience, completing MS Analytics at UD (4.0 GPA). Exploring similar roles — would love to connect!`,
     conn_note:'⚠️ LinkedIn connection requests max out at 300 characters. This message is ~245 chars — fits perfectly.',
     inmail_subj:'SAP GRC & Risk Technology — CA + Big 4 Professional Exploring Opportunities',
-    inmail:`Hi [Name],\n\nI hope this finds you well. I came across your profile while researching [Firm]'s risk technology practice...\n[Full template removed for brevity, keeps your existing text!]`
+    inmail:`Hi [Name],
+
+I hope this finds you well. I came across your profile while researching [Firm]'s risk technology practice, and your work in [specific area — SAP GRC, IT risk advisory, or similar] is exactly the direction I'm looking to move in.
+
+A bit about me: I'm a Chartered Accountant with over five years of Big 4 experience specializing in SAP application controls, ITGC testing, and SOX advisory engagements. I'm completing my MS in Business Analytics (4.0 GPA) at the University of Delaware, graduating May 2026 — which has sharpened my Python, SQL, and data analytics skills alongside my risk consulting foundation.
+
+I'm particularly drawn to [Firm]'s [practice/team name] and believe my combination of SAP GRC platform experience, ICFR audit depth, and analytics capability would translate well into an advisory context.
+
+Would you be open to a 15-minute call to share your perspective on the team? I'd genuinely value your insights on what it takes to succeed in this space.
+
+Thank you for considering my note.
+
+Best regards,
+Saugat`
+  },
+  {
+    id:'sox',label:'SOX / Internal Audit',short:'Corporate CAE · Fortune 500 · Big 4 IA',
+    conn:`Hi [Name] — impressed by [Company]'s internal audit program. I'm a CA with 5+ yrs Big 4 SOX/ICFR experience + MS Analytics (UD, May '26). Exploring corporate IA roles and would love to hear about your path!`,
+    conn_note:'~270 chars — fits within LinkedIn\'s 300 character limit.',
+    inmail_subj:'CA + Big 4 SOX Professional — Interested in [Company]\'s Internal Audit Program',
+    inmail:`Hi [Name],
+
+Your experience in [Company]'s internal audit function caught my attention — particularly [any specific area or initiative you've seen them post about].
+
+I'm a Chartered Accountant with five years of Big 4 internal audit and SOX compliance experience. My background includes leading SOX 302 and 404 assessments, ICFR walkthroughs, control deficiency classification (from significant deficiency through material weakness), and substantive testing across IT general controls and SAP application controls at clients in financial services, healthcare, and manufacturing.
+
+I'm completing my MS in Business Analytics at the University of Delaware (GPA 4.0, graduating May 2026), adding Python, SQL, and data visualization skills to my audit foundation — allowing me to bring an analytics lens to traditional IA work.
+
+[Company]'s internal audit program stands out because [specific reason — scale, industry complexity, innovation in audit methodology], and I believe my depth in ICFR and SAP controls could add immediate value.
+
+Would a brief 15-minute conversation work for you? I'd appreciate any perspective you can share on the team's direction.
+
+Best regards,
+Saugat`
+  },
+  {
+    id:'scm',label:'Supply Chain Analyst',short:'FMCG · Pharma · Manufacturing Ops',
+    conn:`Hi [Name] — your supply chain role at [Company] is fascinating. My SAP P2P/O2C controls background + MS Analytics (UD '26, 4.0) give me a strong process improvement foundation. Would love to connect!`,
+    conn_note:'~255 chars — fits within LinkedIn\'s limit.',
+    inmail_subj:'SAP P2P/O2C Controls + Analytics — Exploring Supply Chain at [Company]',
+    inmail:`Hi [Name],
+
+I've been following [Company]'s supply chain work with genuine interest, particularly around [specific area — procurement transformation, logistics optimization, or similar].
+
+My background bridges two areas increasingly valuable in supply chain: deep SAP process expertise and data analytics. Over five years at Big 4 firms, I reviewed and tested controls across procure-to-pay, order-to-cash, and inventory management in SAP environments for manufacturing and FMCG clients. I developed a precise understanding of where process breakdowns occur and how to design controls that prevent them.
+
+I'm completing my MS in Business Analytics at the University of Delaware (GPA 4.0, graduating May 2026), with hands-on Python, SQL, and data pipeline experience that I'm eager to apply in a supply chain analytics context.
+
+I'm drawn to [Company] because [reason — supply chain scale, global complexity, or industry leadership], and I'd love to explore whether my SAP controls and analytics profile is a good fit for your team.
+
+Would you be open to a brief conversation?
+
+Best regards,
+Saugat`
+  },
+  {
+    id:'fpa',label:'Financial Analyst / FP&A',short:'Finance Teams · FP&A · Controllers',
+    conn:`Hi [Name] — your finance career at [Company] is inspiring. As a CA with Big 4 SAP FI/CO + GAAP/IFRS experience + MS Analytics (UD '26, 4.0 GPA), I'm targeting FP&A roles. Would love to connect!`,
+    conn_note:'~265 chars — fits within LinkedIn\'s limit.',
+    inmail_subj:'CA + SAP FI/CO Background — Exploring FP&A Opportunities at [Company]',
+    inmail:`Hi [Name],
+
+Your finance career path at [Company] is one I'd genuinely like to learn from.
+
+I'm a Chartered Accountant with deep financial reporting and SAP FI/CO experience from Big 4 audit engagements across diverse industries. My work involved reviewing financial close processes, testing SAP controls over GL, AR/AP, and fixed assets, and assessing GAAP/IFRS compliance — giving me an unusually complete understanding of how financial data flows through enterprise systems and where errors originate.
+
+I'm completing my MS in Business Analytics at the University of Delaware (GPA 4.0, graduating May 2026), with strong skills in Python, SQL, and financial modeling. I'm eager to apply this combination in an FP&A or finance analytics capacity where analytical rigor and business understanding both matter.
+
+[Company]'s finance function appeals to me because [specific reason — complexity, scale, innovation in planning tools], and I believe my audit depth would allow me to ramp up quickly and add value from day one.
+
+Would you be open to a 15-minute call?
+
+Best regards,
+Saugat`
+  },
+  {
+    id:'grc',label:'GRC / Compliance Analyst',short:'GRC Platforms · Compliance Programs · SoD',
+    conn:`Hi [Name] — your GRC work at [Company] stands out. I specialize in SAP GRC ARA, SoD analysis, and access governance from 5+ yrs Big 4. Completing MS Analytics at UD (4.0). Would love to connect!`,
+    conn_note:'~245 chars — fits comfortably within LinkedIn\'s limit.',
+    inmail_subj:'SAP GRC ARA + SoD Specialist — Exploring Compliance Opportunities at [Company]',
+    inmail:`Hi [Name],
+
+I came across your profile while researching [Company]'s compliance and GRC function, and your work in [area] is directly relevant to the expertise I'm looking to apply in my next role.
+
+Over five years at Big 4 firms, I built deep specialization in SAP GRC Access Risk Analysis (ARA), Segregation of Duties design and remediation, user access reviews, and compliance program management. I've supported clients across financial services, manufacturing, and healthcare in remediating SoD conflicts, designing mitigating controls, and maintaining audit-ready access governance frameworks.
+
+I complement this with an MS in Business Analytics from the University of Delaware (GPA 4.0, graduating May 2026), including Python scripting I've applied to automate access review data preparation and control testing dashboards.
+
+I'm selectively exploring GRC and compliance analyst roles at organizations like [Company] where this combination of SAP GRC platform depth and analytics capability would be high-impact.
+
+Would a short call make sense?
+
+Best regards,
+Saugat`
+  },
+  {
+    id:'data',label:'Data / Business Analyst',short:'Analytics · BI · Data Roles · Python/SQL',
+    conn:`Hi [Name] — your analytics work at [Company] caught my eye. MS Analytics (4.0 GPA, UD '26) + 5 yrs Big 4 with Python/SQL/Power BI + SAP data experience. Exploring analyst roles — would love to connect!`,
+    conn_note:'~255 chars — fits within LinkedIn\'s limit.',
+    inmail_subj:'MS Business Analytics + Big 4 Data Background — Interested in Analytics at [Company]',
+    inmail:`Hi [Name],
+
+Your data and analytics work at [Company] is exactly the kind of role I'm actively targeting, and I wanted to reach out directly.
+
+I'm completing my MS in Business Analytics at the University of Delaware (GPA 4.0, graduating May 2026) with applied experience in Python (pandas, scikit-learn, spaCy for NLP), SQL, Power BI, and statistical modeling. My coursework has included NLP analysis of earnings call transcripts, predictive modeling projects, and complex data pipeline construction — giving me genuine hands-on depth, not just coursework knowledge.
+
+What makes my background distinct for a data role is five years at Big 4 firms working deep inside SAP environments. I understand how enterprise data is structured, where it breaks, and why financial and operational data quality issues originate. This audit foundation makes me effective at translating business process questions into analytical frameworks — and at recognizing when a number looks wrong.
+
+I'm drawn to [Company] because of [reason — data culture, analytical sophistication, domain complexity], and I believe I could contribute quickly.
+
+Could we connect for a brief call?
+
+Best regards,
+Saugat`
   }
 ];
+
 
 function buildTemplates(){
   document.getElementById('role-tabs').innerHTML=roles.map((r,i)=>`<div class="role-tab${i===0?' active':''}" onclick="switchRole('${r.id}',this)">${r.label}</div>`).join('');
@@ -1824,7 +1960,16 @@ function copyTpl(id,btn){
 // ══════════════════════════════════════════════════
 const remData=[
   {time:'7:30 AM',label:'Morning Intention 🌅',desc:"What's today's job hunt goal? Set your intention before the day pulls you elsewhere.",days:[1,2,3,4,5]},
-  {time:'8:00 AM',label:'LinkedIn Messages 🤝',desc:'Open LinkedIn, send your first 2 networking messages before work or class begins.',days:[1,2,3,4,5]}
+  {time:'8:00 AM',label:'LinkedIn Messages 🤝',desc:'Open LinkedIn, send your first 2 networking messages before work or class begins.',days:[1,2,3,4,5]},
+  {time:'9:00 AM',label:'Tuesday Power Alarm ⚡',desc:'TUESDAY ONLY: Block calendar, close non-job-hunt tabs. 4 apps + 6 networking before noon. GO.',days:[2]},
+  {time:'10:00 AM',label:'Work Squeeze — Clip Jobs 📌',desc:'Mon/Thu/Fri work days: Use your personal hour to visit career sites and clip roles.',days:[1,4,5]},
+  {time:'11:30 AM',label:'Thu Morning Wrap-Up ⏰',desc:'THURSDAY: 30 minutes before work. Wrap up applications. Send last follow-ups now.',days:[4]},
+  {time:'2:30 PM',label:'Tuesday Afternoon 🔥',desc:'TUESDAY: Resume. 2 more apps + 4 networking messages. Timer: 2.5 hrs. No exceptions.',days:[2]},
+  {time:'4:00 PM',label:'After-Work Hunt Window ⚡',desc:'Mon/Wed: Work ended — immediately open job boards. Apply for 2 roles in next 90 min.',days:[1,3]},
+  {time:'5:00 PM',label:'Wed Class in 30 min 🔔',desc:'WEDNESDAY: Wrap up job hunt. Save tabs. Class starts at 5:30.',days:[3]},
+  {time:'7:00 PM',label:'Evening Log 📝',desc:"Log today's applications and networking contacts. Takes 5 minutes. Keeps your data clean.",days:[0,1,2,3,4,5,6]},
+  {time:'9:00 AM',label:'Weekend Study Block 📚',desc:'Sat/Sun: Tackle online class NOW before job hunt starts. Clear it so your focus is free.',days:[0,6]},
+  {time:'4:00 PM',label:'Sunday Review + Week Plan 📊',desc:'SUNDAY: Tally apps + networking. Did you hit 20+30? Plan next week\'s employer targets.',days:[0]},
 ];
 function buildReminders(){
   const dn=['S','M','T','W','T','F','S'];
@@ -1842,7 +1987,27 @@ function buildReminders(){
 // ══════════════════════════════════════════════════
 const phases=[
   {n:1,color:'var(--gold)',bg:'var(--gold-bg)',title:'Application Strategy — Quality + Volume',body:`
-    <div class="tip mb8"><div class="tip-title">Your Unique Value Proposition</div><div class="tip-text">CA (ICAI) + Big 4 (5+ years) + SAP GRC + MS Analytics (4.0 GPA) = an extremely rare combination. Lead with all three in every application header and opening line.</div></div>`
+    <div class="tip mb8"><div class="tip-title">Your Unique Value Proposition</div><div class="tip-text">CA (ICAI) + Big 4 (5+ years) + SAP GRC + MS Analytics (4.0 GPA) = an extremely rare combination. Lead with all three in every application header and opening line. Don't bury it.</div></div>
+    <div class="tip gold mb8"><div class="tip-title">Three Resume Versions to Maintain</div><div class="tip-text">(1) Risk/Controls/SOX focused — for Big 4 and corporate IA roles. (2) Analytics/Data focused — Python/SQL/Power BI foregrounded. (3) Hybrid — for GRC/compliance analyst roles. Swap top 3 bullets and skills section per application. Never start from scratch.</div></div>
+    <div class="tip purple mb8"><div class="tip-title">ATS Keywords to Weave In</div><div class="tip-text">SOX compliance, ICFR, internal controls, SAP GRC ARA, SoD, ITGC, risk advisory, process improvement, data analytics, COSO framework, PCAOB, Python, SQL, Power BI, variance analysis, GAAP, IFRS, control deficiency, material weakness.</div></div>
+    <div class="tip coral"><div class="tip-title">Target Company Tiers</div><div class="tip-text"><strong>Tier 1 (highest fit):</strong> EY, Deloitte, KPMG, PwC, Protiviti, RSM — risk/advisory roles. <strong>Tier 2:</strong> JPMorgan, Goldman, Citi, BofA — internal audit / risk. <strong>Tier 3:</strong> J&J, Pfizer, Amazon, Microsoft — corporate IA / analytics. Apply across all three tiers every week.</div></div>`
+  },
+  {n:2,color:'var(--teal)',bg:'var(--teal-bg)',title:'Networking — 30 Reach-Outs Done Right',body:`
+    <div class="tip mb8"><div class="tip-title">The 3-Line LinkedIn Formula</div><div class="tip-text">Line 1: Personal hook (reference their post, company initiative, or shared alumni connection).<br/>Line 2: Your credentials in one sentence — CA + Big 4 + what you're seeking.<br/>Line 3: Specific ask — a 15-min call or perspective on the team. Never "do you have openings?"</div></div>
+    <div class="tip gold mb8"><div class="tip-title">Tuesday Batch Strategy</div><div class="tip-text">Write 10 LinkedIn drafts Tuesday morning. Customize only Line 1 for each person — Lines 2–3 can be templated from the Messages page. Set a 2-hour timer. Send all 10 before noon.</div></div>
+    <div class="tip purple mb8"><div class="tip-title">Who to Target</div><div class="tip-text">Big 4 → Industry transitioners (your future path), UD alumni in audit/risk roles, hiring managers at target companies, SAP GRC specialists, recruiters at EY/Deloitte/KPMG, people 5–8 years ahead of you with your background.</div></div>
+    <div class="tip coral"><div class="tip-title">Follow-Up Rule</div><div class="tip-text">Wait exactly 5–7 days, then one follow-up: "Hi [Name] — just following up on my note. Happy to connect if timing works." Never more than 2 touches per person.</div></div>`
+  },
+  {n:3,color:'var(--purple)',bg:'var(--purple-bg)',title:'OPT / H-1B Strategy',body:`
+    <div class="tip mb8"><div class="tip-title">Lead With STEM OPT Proactively</div><div class="tip-text">MS BUAN = STEM designation → 3-year OPT window. State clearly in cover letters: "I hold STEM OPT authorization through [date], giving employers a 3-year runway before H-1B is required." Remove the #1 hesitation before it forms.</div></div>
+    <div class="tip gold mb8"><div class="tip-title">Target High-Sponsorship Employers First</div><div class="tip-text">Use USCIS H-1B disclosure data (h1bdata.info) to verify sponsorship history before applying. Big 4, major banks, Fortune 500 tech, and pharma companies sponsor thousands annually — these are your Tier 1 targets for good reason.</div></div>
+    <div class="tip coral"><div class="tip-title">UD Career Services + On-Campus Recruiting</div><div class="tip-text">Lerner Career Services hosts firm-specific recruiting events. On-campus recruiting has higher sponsorship rates than cold applications. Attend every campus event this semester — your Finance Speed Networking experience is an asset here.</div></div>`
+  },
+  {n:4,color:'var(--sky)',bg:'var(--sky-bg)',title:'Time Management — Working Smarter',body:`
+    <div class="tip mb8"><div class="tip-title">The 60-Minute Squeeze Rule</div><div class="tip-text">During work days, identify your least-interrupted window. Set a hard 60-minute timer. Use it exclusively for job clipping, networking messages, or one application. Hard stop when the timer rings.</div></div>
+    <div class="tip gold mb8"><div class="tip-title">Batch Ruthlessly</div><div class="tip-text">Never alternate applying → networking → applying. Applications together. Networking together. Follow-ups together. Research/clipping together. Context switching costs 20+ minutes per transition.</div></div>
+    <div class="tip purple mb8"><div class="tip-title">Class Assignment Buffer</div><div class="tip-text">Schedule online class review Sunday 9–11 AM and Tuesday 1–2:30 PM. Protect these. Don't let class work bleed into your Tuesday power block or Thursday morning sprint.</div></div>
+    <div class="tip coral"><div class="tip-title">Protect Social Time — Non-Negotiable</div><div class="tip-text">Friday night + Saturday evening + Sunday afternoon = protected. Job hunting is a marathon. Burnout kills application quality. Treat these windows like you would a class commitment.</div></div>`
   }
 ];
 function buildStrategy(){
