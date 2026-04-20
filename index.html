@@ -1045,7 +1045,6 @@ body{
       <button class="btn btn-navy" onclick="exportData()">⬇ Export Backup (JSON)</button>
       <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">⬆ Import Data</button>
       <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)"/>
-      <button class="btn btn-danger" onclick="if(confirm('Clear ALL data? Cannot be undone.'))clearData()">🗑 Clear All Data</button>
     </div>
   </div>
 </div>
@@ -1077,7 +1076,15 @@ body{
     </div>
     <div class="frow">
       <div class="fg"><label>Date Applied</label><input class="fi" type="date" id="j-date"/></div>
-      <div class="fg"><label>Follow-Up Date</label><input class="fi" type="date" id="j-followup"/></div>
+      <div class="fg">
+        <label style="display:flex; justify-content:space-between; align-items:center;">
+          Follow-Up Date
+          <span style="text-transform:none; letter-spacing:normal; font-weight:500; font-size:10px; cursor:pointer; color:var(--text3);">
+            <input type="checkbox" id="j-no-followup" onchange="toggleFu('j-followup', this.checked)" style="vertical-align:middle; margin-top:-2px; margin-right:3px;">Not required
+          </span>
+        </label>
+        <input class="fi" type="date" id="j-followup"/>
+      </div>
     </div>
     <div class="fg"><label>Notes</label><textarea class="fa" id="j-notes" placeholder="Recruiter name, tailored resume version, JD highlights..."></textarea></div>
     <div class="f-actions">
@@ -1110,7 +1117,15 @@ body{
     </div>
     <div class="frow">
       <div class="fg"><label>Date Reached Out</label><input class="fi" type="date" id="n-date"/></div>
-      <div class="fg"><label>Follow-Up Date</label><input class="fi" type="date" id="n-followup"/></div>
+      <div class="fg">
+        <label style="display:flex; justify-content:space-between; align-items:center;">
+          Follow-Up Date
+          <span style="text-transform:none; letter-spacing:normal; font-weight:500; font-size:10px; cursor:pointer; color:var(--text3);">
+            <input type="checkbox" id="n-no-followup" onchange="toggleFu('n-followup', this.checked)" style="vertical-align:middle; margin-top:-2px; margin-right:3px;">Not required
+          </span>
+        </label>
+        <input class="fi" type="date" id="n-followup"/>
+      </div>
     </div>
     <div class="fg"><label>Notes</label><textarea class="fa" id="n-notes" placeholder="Mutual connection, what you discussed, next step..."></textarea></div>
     <div class="f-actions">
@@ -1209,15 +1224,38 @@ function closeSidebar(){
 // ══════════════════════════════════════════════════
 let currentEditId = null;
 
+// Helper function to disable/clear the date field
+function toggleFu(id, isChecked) {
+  const el = document.getElementById(id);
+  if(isChecked) {
+    el.value = '';
+    el.disabled = true;
+    el.style.opacity = '0.4';
+  } else {
+    el.disabled = false;
+    el.style.opacity = '1';
+    el.value = new Date(Date.now()+4*86400000).toISOString().split('T')[0];
+  }
+}
+
 function openM(id,prefill){
-  currentEditId = null; // Ensure we start fresh when clicking "+ Add"
+  currentEditId = null; 
   
-  // Clear out old text/notes from previous edits
-  document.querySelectorAll('#'+id+' input:not([type=date]), #'+id+' textarea').forEach(el=>el.value='');
+  // Clear text inputs, ignoring checkboxes
+  document.querySelectorAll('#'+id+' input:not([type=date]):not([type=checkbox]), #'+id+' textarea').forEach(el=>el.value='');
   
   const today=new Date().toISOString().split('T')[0];
   const fu=new Date(Date.now()+4*86400000).toISOString().split('T')[0];
-  document.querySelectorAll('#'+id+' input[type=date]').forEach((el,i)=>{el.value=i===0?today:fu;});
+  
+  // Reset dates and ensure they are active
+  document.querySelectorAll('#'+id+' input[type=date]').forEach((el,i)=>{
+    el.value = (i===0) ? today : fu;
+    el.disabled = false;
+    el.style.opacity = '1';
+  });
+  
+  // Uncheck any "Not required" boxes
+  document.querySelectorAll('#'+id+' input[type=checkbox]').forEach(el=>el.checked=false);
   
   if(prefill){
     if(prefill.company&&document.getElementById('cl-company'))document.getElementById('cl-company').value=prefill.company;
@@ -1226,8 +1264,7 @@ function openM(id,prefill){
   }
   document.getElementById(id).classList.add('on');
 }
-function closeM(id){document.getElementById(id).classList.remove('on');}
-document.querySelectorAll('.overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');});});
+
 
 // ══════════════════════════════════════════════════
 //  TOAST
@@ -1250,7 +1287,15 @@ function editJob(id) {
   document.getElementById('j-status').value = j.status || 'applied';
   document.getElementById('j-platform').value = j.platform || 'LinkedIn';
   document.getElementById('j-date').value = j.date || '';
-  document.getElementById('j-followup').value = j.followup || '';
+  
+  // Handle the checkbox state
+  const noFu = !j.followup;
+  document.getElementById('j-no-followup').checked = noFu;
+  const fuEl = document.getElementById('j-followup');
+  fuEl.value = j.followup || '';
+  fuEl.disabled = noFu;
+  fuEl.style.opacity = noFu ? '0.4' : '1';
+  
   document.getElementById('j-notes').value = j.notes || '';
   document.getElementById('m-job').classList.add('on');
 }
@@ -1412,7 +1457,15 @@ function editContact(id) {
   document.getElementById('n-platform').value = n.platform || 'LinkedIn';
   document.getElementById('n-status').value = n.status || 'pending';
   document.getElementById('n-date').value = n.date || '';
-  document.getElementById('n-followup').value = n.followup || '';
+  
+  // Handle the checkbox state
+  const noFu = !n.followup;
+  document.getElementById('n-no-followup').checked = noFu;
+  const fuEl = document.getElementById('n-followup');
+  fuEl.value = n.followup || '';
+  fuEl.disabled = noFu;
+  fuEl.style.opacity = noFu ? '0.4' : '1';
+
   document.getElementById('n-notes').value = n.notes || '';
   document.getElementById('m-net').classList.add('on');
 }
@@ -2310,14 +2363,14 @@ document.addEventListener('DOMContentLoaded',init);
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-// Changed: Swapped Redirect for Popup
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// Changed imports to support Single Document Master Sync
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyDN1gVIlmVcVTUsm3IskLLKzn0pGux9yb8",
-  authDomain: "job-hunt-2026-9caef.firebaseapp.com", // Changed: MUST be the firebaseapp.com URL for GitHub Pages
+  authDomain: "job-hunt-2026-9caef.firebaseapp.com",
   projectId: "job-hunt-2026-9caef",
   storageBucket: "job-hunt-2026-9caef.firebasestorage.app",
   messagingSenderId: "470319391474",
@@ -2334,12 +2387,25 @@ let userId = null;
 const loginGate = document.getElementById('login-gate');
 const gateBtn = document.getElementById('gate-login-btn');
 
-// 1. Bind the Button Click to a Popup
+// 1. AUTO-SYNC HOOK: Intercept local saves and automatically push to cloud
+const originalSv = window.sv; 
+window.sv = async function(k, d) {
+  originalSv(k, d); // Keep the instant local save
+  if (userId) {
+    try {
+      // Merge the new data silently into your master cloud document
+      await setDoc(doc(db, "userSync", userId), { [k]: d }, { merge: true });
+    } catch (error) {
+      console.error("Cloud save error:", error);
+    }
+  }
+};
+
+// 2. Bind the Button Click to a Popup
 if (gateBtn) {
   gateBtn.addEventListener('click', async () => {
     try {
       gateBtn.textContent = "Opening Google...";
-      // Triggered by a real tap, so mobile Safari will allow the popup
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Login error:", error);
@@ -2349,22 +2415,53 @@ if (gateBtn) {
   });
 }
 
-// 2. Listen for Auth State
-onAuthStateChanged(auth, (user) => {
+// 3. Listen for Auth State & Fetch Master Data
+onAuthStateChanged(auth, async (user) => {
   if (user) {
-    // USER IS LOGGED IN
     userId = user.uid;
-    toast("✅ Synced to: " + user.email);
     
     // Hide the login gate smoothly
     if (loginGate) {
       loginGate.classList.add('hidden');
       setTimeout(() => loginGate.style.display = 'none', 400);
     }
-    
-    initRealtime();
+
+    toast("☁️ Syncing from cloud...");
+
+    // PULL CLOUD DATA ON LOGIN (Fixes the Incognito & New Device issue)
+    try {
+      const docRef = doc(db, "userSync", userId);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        
+        // If the cloud has data, inject it into the app's local memory and save it locally
+        if (data[KEY.jobs]) { jobs = data[KEY.jobs]; originalSv(KEY.jobs, jobs); }
+        if (data[KEY.net]) { nets = data[KEY.net]; originalSv(KEY.net, nets); }
+        if (data[KEY.tasks]) { tasks = data[KEY.tasks]; originalSv(KEY.tasks, tasks); }
+        if (data[KEY.clips]) { clips = data[KEY.clips]; originalSv(KEY.clips, clips); }
+        
+        refreshAll(); // Redraw the screen with the newly injected cloud data
+        toast("✅ Synced to: " + user.email);
+      } else {
+        // First time ever logging in: Push current local data up to create the backup
+        toast("☁️ Creating initial backup...");
+        await setDoc(docRef, {
+          [KEY.jobs]: jobs,
+          [KEY.net]: nets,
+          [KEY.tasks]: tasks,
+          [KEY.clips]: clips
+        });
+        toast("✅ Synced to: " + user.email);
+      }
+    } catch (error) {
+      console.error("Sync error:", error);
+      toast("⚠️ Cloud sync failed. Using local data.");
+    }
+
   } else {
-    // USER IS NOT LOGGED IN
+    // User is logged out
     userId = null;
     
     if (loginGate) {
@@ -2374,43 +2471,6 @@ onAuthStateChanged(auth, (user) => {
     }
   }
 });
-
-// COLLECTION HELPERS
-const col = (name) => collection(db, name);
-
-// INIT REALTIME LISTENERS
-function initRealtime() {
-  subscribe("tasks", renderTasks);
-  subscribe("jobs", renderJobs);
-  subscribe("clips", renderClips);
-  subscribe("network", renderNetwork);
-}
-
-// GENERIC SUBSCRIBE 
-function subscribe(name, renderFn) {
-  const q = query(col(name), where("uid","==",userId));
-  onSnapshot(q, snap => {
-    const data = snap.docs.map(d => ({id:d.id,...d.data()}));
-    renderFn(data);
-  });
-}
-
-// CRUD
-window.addItem = async (collectionName, data) => {
-  if(!userId) return;
-  await addDoc(col(collectionName), {...data, uid:userId, created:new Date()});
-};
-
-window.updateItem = async (collectionName, id, updates) => {
-  if(!userId) return;
-  await updateDoc(doc(db, collectionName, id), updates);
-};
-
-window.deleteItem = async (collectionName, id) => {
-  if(!userId) return;
-  await deleteDoc(doc(db, collectionName, id));
-};
-
 </script>
 </body>
 </html>
