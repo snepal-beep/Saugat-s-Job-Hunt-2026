@@ -2395,7 +2395,7 @@ localStorage.setItem = function(key, value) {
   if (userId && validKeys.includes(key)) {
     try {
       setDoc(doc(db, "userSync", userId), { 
-        uid: userId, // ⬅️ Required for your secure Firestore rules to accept it
+        uid: userId, 
         [key]: JSON.parse(value) 
       }, { merge: true });
     } catch (error) {
@@ -2431,53 +2431,45 @@ onAuthStateChanged(auth, async (user) => {
 
     // PULL CLOUD DATA ON LOGIN
     const docRef = doc(db, "userSync", userId);
-    let exists = false;
-    let docSnap;
     
     try {
-      docSnap = await getDoc(docRef);
-      exists = docSnap.exists();
-    } catch(e) {
-      // If Firestore blocks the read because the document is missing, catch it smoothly
-      exists = false;
-    }
-
-    if (exists) {
-      const data = docSnap.data();
-      let needsReload = false;
-      const keys = ['jhcc_jobs', 'jhcc_net', 'jhcc_tasks', 'jhcc_clips'];
+      const docSnap = await getDoc(docRef);
       
-      // Compare cloud data to local browser data
-      keys.forEach(k => {
-         if (data[k]) {
-            const localStr = localStorage.getItem(k);
-            const cloudStr = JSON.stringify(data[k]);
-            if (localStr !== cloudStr) {
-               originalSetItem.call(localStorage, k, cloudStr);
-               needsReload = true; // Cloud has newer data!
-            }
-         }
-      });
-      
-      // If the cloud had newer data, safely reload the page to inject it into the app
-      if (needsReload) {
-         toast("☁️ Cloud data found! Refreshing dashboard...");
-         setTimeout(() => window.location.reload(), 1200);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        
+        // 1. Silently update local browser storage with cloud data
+        if (data['jhcc_jobs']) originalSetItem.call(localStorage, 'jhcc_jobs', JSON.stringify(data['jhcc_jobs']));
+        if (data['jhcc_net']) originalSetItem.call(localStorage, 'jhcc_net', JSON.stringify(data['jhcc_net']));
+        if (data['jhcc_tasks']) originalSetItem.call(localStorage, 'jhcc_tasks', JSON.stringify(data['jhcc_tasks']));
+        if (data['jhcc_clips']) originalSetItem.call(localStorage, 'jhcc_clips', JSON.stringify(data['jhcc_clips']));
+        
+        // 2. Update the live app variables instantly
+        jobs = JSON.parse(localStorage.getItem('jhcc_jobs') || '[]');
+        nets = JSON.parse(localStorage.getItem('jhcc_net') || '[]');
+        tasks = JSON.parse(localStorage.getItem('jhcc_tasks') || '[]');
+        clips = JSON.parse(localStorage.getItem('jhcc_clips') || '[]');
+        
+        // 3. Repaint the screen seamlessly (NO page reloading!)
+        refreshAll();
+        toast("✅ Synced to: " + user.email);
+        
       } else {
-         toast("✅ Synced to: " + user.email);
+        // First time logging in: Create initial cloud backup from local memory
+        toast("☁️ Creating initial backup...");
+        const getLd = (k) => JSON.parse(localStorage.getItem(k) || "[]");
+        await setDoc(docRef, {
+          uid: userId,
+          'jhcc_jobs': getLd('jhcc_jobs'),
+          'jhcc_net': getLd('jhcc_net'),
+          'jhcc_tasks': getLd('jhcc_tasks'),
+          'jhcc_clips': getLd('jhcc_clips')
+        });
+        toast("✅ Synced to: " + user.email);
       }
-    } else {
-      // First time logging in: Create initial cloud backup from local memory
-      toast("☁️ Creating initial backup...");
-      const getLd = (k) => JSON.parse(localStorage.getItem(k) || "[]");
-      await setDoc(docRef, {
-        uid: userId,
-        'jhcc_jobs': getLd('jhcc_jobs'),
-        'jhcc_net': getLd('jhcc_net'),
-        'jhcc_tasks': getLd('jhcc_tasks'),
-        'jhcc_clips': getLd('jhcc_clips')
-      });
-      toast("✅ Synced to: " + user.email);
+    } catch(e) {
+      console.error("Sync error:", e);
+      toast("⚠️ Cloud sync issue. Using local data.");
     }
   } else {
     // User is logged out, show the gate
