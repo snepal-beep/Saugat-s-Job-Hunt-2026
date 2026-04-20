@@ -2389,7 +2389,8 @@ const gateBtn = document.getElementById('gate-login-btn');
 // 1. AUTO-SYNC HOOK: Invisibly intercept local saves to push to the cloud
 const originalSetItem = localStorage.setItem;
 localStorage.setItem = function(key, value) {
-  originalSetItem.apply(this, arguments); // Always save locally instantly
+  // FIX: Properly bind the 'this' context back to localStorage
+  originalSetItem.call(localStorage, key, value); 
   
   const validKeys = ['jhcc_jobs', 'jhcc_net', 'jhcc_tasks', 'jhcc_clips'];
   if (userId && validKeys.includes(key)) {
