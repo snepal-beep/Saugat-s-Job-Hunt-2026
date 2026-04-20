@@ -1097,12 +1097,17 @@ body{
 <div class="overlay" id="m-net">
   <div class="modal">
     <div class="modal-title">🤝 Add Networking Contact</div>
-    <div class="frow">
-      <div class="fg"><label>Full Name *</label><input class="fi" id="n-name" placeholder="e.g. Jane Smith"/></div>
+    
+    <div class="fg">
+      <label>Full Name *</label>
+      <input class="fi" id="n-name" placeholder="e.g. Jane Smith"/>
+    </div>
+    
     <div class="frow">
       <div class="fg"><label>Title</label><input class="fi" id="n-title" placeholder="e.g. Manager"/></div>
       <div class="fg"><label>Company</label><input class="fi" id="n-company" placeholder="e.g. EY"/></div>
     </div>
+    
     <div class="frow">
       <div class="fg"><label>Platform</label>
         <select class="fs" id="n-platform">
@@ -1117,6 +1122,7 @@ body{
         </select>
       </div>
     </div>
+    
     <div class="frow">
       <div class="fg"><label>Date Reached Out</label><input class="fi" type="date" id="n-date"/></div>
       <div class="fg">
@@ -1129,13 +1135,20 @@ body{
         <input class="fi" type="date" id="n-followup"/>
       </div>
     </div>
-    <div class="fg"><label>Notes</label><textarea class="fa" id="n-notes" placeholder="Mutual connection, what you discussed, next step..."></textarea></div>
+    
+    <div class="fg">
+      <label>Notes</label>
+      <textarea class="fa" id="n-notes" placeholder="Mutual connection, what you discussed, next step..."></textarea>
+    </div>
+    
     <div class="f-actions">
       <button class="btn btn-ghost" onclick="closeM('m-net')">Cancel</button>
       <button class="btn btn-teal" onclick="addContact()">Save Contact</button>
     </div>
+    
   </div>
 </div>
+
 
 <div class="overlay" id="m-task">
   <div class="modal">
