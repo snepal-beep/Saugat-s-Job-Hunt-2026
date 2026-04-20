@@ -2364,7 +2364,6 @@ document.addEventListener('DOMContentLoaded',init);
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-// Changed imports to support Single Document Master Sync
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // CONFIG
@@ -2387,21 +2386,25 @@ let userId = null;
 const loginGate = document.getElementById('login-gate');
 const gateBtn = document.getElementById('gate-login-btn');
 
-// 1. AUTO-SYNC HOOK: Intercept local saves and automatically push to cloud
-const originalSv = window.sv; 
-window.sv = async function(k, d) {
-  originalSv(k, d); // Keep the instant local save
-  if (userId) {
+// 1. AUTO-SYNC HOOK: Invisibly intercept local saves to push to the cloud
+const originalSetItem = localStorage.setItem;
+localStorage.setItem = function(key, value) {
+  originalSetItem.apply(this, arguments); // Always save locally instantly
+  
+  const validKeys = ['jhcc_jobs', 'jhcc_net', 'jhcc_tasks', 'jhcc_clips'];
+  if (userId && validKeys.includes(key)) {
     try {
-      // Merge the new data silently into your master cloud document
-      await setDoc(doc(db, "userSync", userId), { [k]: d }, { merge: true });
+      setDoc(doc(db, "userSync", userId), { 
+        uid: userId, // ⬅️ Required for your secure Firestore rules to accept it
+        [key]: JSON.parse(value) 
+      }, { merge: true });
     } catch (error) {
       console.error("Cloud save error:", error);
     }
   }
 };
 
-// 2. Bind the Button Click to a Popup
+// 2. Bind the Login Button
 if (gateBtn) {
   gateBtn.addEventListener('click', async () => {
     try {
@@ -2409,7 +2412,7 @@ if (gateBtn) {
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Login error:", error);
-      alert("Popup blocked! If you are on an iPhone, go to Settings > Safari and turn OFF 'Prevent Cross-Site Tracking'.");
+      alert("Popup blocked! If on iPhone, go to Settings > Safari and turn OFF 'Prevent Cross-Site Tracking'.");
       gateBtn.textContent = "Sign in with Google";
     }
   });
@@ -2426,44 +2429,59 @@ onAuthStateChanged(auth, async (user) => {
       setTimeout(() => loginGate.style.display = 'none', 400);
     }
 
-    toast("☁️ Syncing from cloud...");
-
-    // PULL CLOUD DATA ON LOGIN (Fixes the Incognito & New Device issue)
+    // PULL CLOUD DATA ON LOGIN
+    const docRef = doc(db, "userSync", userId);
+    let exists = false;
+    let docSnap;
+    
     try {
-      const docRef = doc(db, "userSync", userId);
-      const docSnap = await getDoc(docRef);
-      
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        
-        // If the cloud has data, inject it into the app's local memory and save it locally
-        if (data[KEY.jobs]) { jobs = data[KEY.jobs]; originalSv(KEY.jobs, jobs); }
-        if (data[KEY.net]) { nets = data[KEY.net]; originalSv(KEY.net, nets); }
-        if (data[KEY.tasks]) { tasks = data[KEY.tasks]; originalSv(KEY.tasks, tasks); }
-        if (data[KEY.clips]) { clips = data[KEY.clips]; originalSv(KEY.clips, clips); }
-        
-        refreshAll(); // Redraw the screen with the newly injected cloud data
-        toast("✅ Synced to: " + user.email);
-      } else {
-        // First time ever logging in: Push current local data up to create the backup
-        toast("☁️ Creating initial backup...");
-        await setDoc(docRef, {
-          [KEY.jobs]: jobs,
-          [KEY.net]: nets,
-          [KEY.tasks]: tasks,
-          [KEY.clips]: clips
-        });
-        toast("✅ Synced to: " + user.email);
-      }
-    } catch (error) {
-      console.error("Sync error:", error);
-      toast("⚠️ Cloud sync failed. Using local data.");
+      docSnap = await getDoc(docRef);
+      exists = docSnap.exists();
+    } catch(e) {
+      // If Firestore blocks the read because the document is missing, catch it smoothly
+      exists = false;
     }
 
+    if (exists) {
+      const data = docSnap.data();
+      let needsReload = false;
+      const keys = ['jhcc_jobs', 'jhcc_net', 'jhcc_tasks', 'jhcc_clips'];
+      
+      // Compare cloud data to local browser data
+      keys.forEach(k => {
+         if (data[k]) {
+            const localStr = localStorage.getItem(k);
+            const cloudStr = JSON.stringify(data[k]);
+            if (localStr !== cloudStr) {
+               originalSetItem.call(localStorage, k, cloudStr);
+               needsReload = true; // Cloud has newer data!
+            }
+         }
+      });
+      
+      // If the cloud had newer data, safely reload the page to inject it into the app
+      if (needsReload) {
+         toast("☁️ Cloud data found! Refreshing dashboard...");
+         setTimeout(() => window.location.reload(), 1200);
+      } else {
+         toast("✅ Synced to: " + user.email);
+      }
+    } else {
+      // First time logging in: Create initial cloud backup from local memory
+      toast("☁️ Creating initial backup...");
+      const getLd = (k) => JSON.parse(localStorage.getItem(k) || "[]");
+      await setDoc(docRef, {
+        uid: userId,
+        'jhcc_jobs': getLd('jhcc_jobs'),
+        'jhcc_net': getLd('jhcc_net'),
+        'jhcc_tasks': getLd('jhcc_tasks'),
+        'jhcc_clips': getLd('jhcc_clips')
+      });
+      toast("✅ Synced to: " + user.email);
+    }
   } else {
-    // User is logged out
+    // User is logged out, show the gate
     userId = null;
-    
     if (loginGate) {
       loginGate.style.display = 'flex';
       setTimeout(() => loginGate.classList.remove('hidden'), 10);
@@ -2472,5 +2490,6 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 </script>
+
 </body>
 </html>
