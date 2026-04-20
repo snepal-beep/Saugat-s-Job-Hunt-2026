@@ -2369,7 +2369,7 @@ import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/fireb
 // CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyDN1gVIlmVcVTUsm3IskLLKzn0pGux9yb8",
-  authDomain: "job-hunt-2026-9caef.firebaseapp.com",
+  authDomain: "job-hunt-2026-9caef.firebaseapp.com", // Keeping the Firebase URL since you use GitHub Pages
   projectId: "job-hunt-2026-9caef",
   storageBucket: "job-hunt-2026-9caef.firebasestorage.app",
   messagingSenderId: "470319391474",
@@ -2386,22 +2386,17 @@ let userId = null;
 const loginGate = document.getElementById('login-gate');
 const gateBtn = document.getElementById('gate-login-btn');
 
-// 1. AUTO-SYNC HOOK: Invisibly intercept local saves to push to the cloud
-const originalSetItem = localStorage.setItem;
-localStorage.setItem = function(key, value) {
-  // FIX: Properly bind the 'this' context back to localStorage
-  originalSetItem.call(localStorage, key, value); 
+// 1. SAFE AUTO-SYNC: Intercept the app's custom sv() function instead of the browser's core memory
+const originalSv = window.sv;
+window.sv = function(k, d) {
+  originalSv(k, d); // Instantly save to local browser like normal
   
-  const validKeys = ['jhcc_jobs', 'jhcc_net', 'jhcc_tasks', 'jhcc_clips'];
-  if (userId && validKeys.includes(key)) {
-    try {
-      setDoc(doc(db, "userSync", userId), { 
-        uid: userId, 
-        [key]: JSON.parse(value) 
-      }, { merge: true });
-    } catch (error) {
-      console.error("Cloud save error:", error);
-    }
+  // Silently push a copy to the cloud
+  if (userId) {
+    setDoc(doc(db, "userSync", userId), { 
+      uid: userId, 
+      [k]: d 
+    }, { merge: true }).catch(err => console.error("Cloud save error:", err));
   }
 };
 
@@ -2437,26 +2432,24 @@ onAuthStateChanged(auth, async (user) => {
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
-        const data = docSnap.data();
-        
-        // 1. Silently update local browser storage with cloud data
-        if (data['jhcc_jobs']) originalSetItem.call(localStorage, 'jhcc_jobs', JSON.stringify(data['jhcc_jobs']));
-        if (data['jhcc_net']) originalSetItem.call(localStorage, 'jhcc_net', JSON.stringify(data['jhcc_net']));
-        if (data['jhcc_tasks']) originalSetItem.call(localStorage, 'jhcc_tasks', JSON.stringify(data['jhcc_tasks']));
-        if (data['jhcc_clips']) originalSetItem.call(localStorage, 'jhcc_clips', JSON.stringify(data['jhcc_clips']));
-        
-        // 2. Update the live app variables instantly
-        jobs = JSON.parse(localStorage.getItem('jhcc_jobs') || '[]');
-        nets = JSON.parse(localStorage.getItem('jhcc_net') || '[]');
-        tasks = JSON.parse(localStorage.getItem('jhcc_tasks') || '[]');
-        clips = JSON.parse(localStorage.getItem('jhcc_clips') || '[]');
-        
-        // 3. Repaint the screen seamlessly (NO page reloading!)
-        refreshAll();
-        toast("✅ Synced to: " + user.email);
-        
+        // Prevent infinite refresh loop using a single-use session flag
+        if (!sessionStorage.getItem("cloudSynced")) {
+           const data = docSnap.data();
+           
+           // Silently overwrite local browser storage with your Cloud data
+           if (data['jhcc_jobs']) localStorage.setItem('jhcc_jobs', JSON.stringify(data['jhcc_jobs']));
+           if (data['jhcc_net']) localStorage.setItem('jhcc_net', JSON.stringify(data['jhcc_net']));
+           if (data['jhcc_tasks']) localStorage.setItem('jhcc_tasks', JSON.stringify(data['jhcc_tasks']));
+           if (data['jhcc_clips']) localStorage.setItem('jhcc_clips', JSON.stringify(data['jhcc_clips']));
+
+           sessionStorage.setItem("cloudSynced", "true"); // Mark it as synced so it never loops
+           toast("☁️ Cloud data found! Refreshing dashboard...");
+           setTimeout(() => window.location.reload(), 800); // Reload ONCE to apply the data
+        } else {
+           toast("✅ Synced to: " + user.email);
+        }
       } else {
-        // First time logging in: Create initial cloud backup from local memory
+        // First time ever logging in: Create initial cloud backup from local memory
         toast("☁️ Creating initial backup...");
         const getLd = (k) => JSON.parse(localStorage.getItem(k) || "[]");
         await setDoc(docRef, {
