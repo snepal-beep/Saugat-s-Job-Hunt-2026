@@ -1264,7 +1264,10 @@ function openM(id,prefill){
   }
   document.getElementById(id).classList.add('on');
 }
-
+function closeM(id){
+  document.getElementById(id).classList.remove('on');
+  document.querySelectorAll('#'+id+' input, #'+id+' textarea').forEach(el=>el.value='');
+}
 
 // ══════════════════════════════════════════════════
 //  TOAST
