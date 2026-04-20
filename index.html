@@ -1099,7 +1099,9 @@ body{
     <div class="modal-title">🤝 Add Networking Contact</div>
     <div class="frow">
       <div class="fg"><label>Full Name *</label><input class="fi" id="n-name" placeholder="e.g. Jane Smith"/></div>
-      <div class="fg"><label>Title / Company</label><input class="fi" id="n-title" placeholder="e.g. Manager at EY"/></div>
+    <div class="frow">
+      <div class="fg"><label>Title</label><input class="fi" id="n-title" placeholder="e.g. Manager"/></div>
+      <div class="fg"><label>Company</label><input class="fi" id="n-company" placeholder="e.g. EY"/></div>
     </div>
     <div class="frow">
       <div class="fg"><label>Platform</label>
@@ -1457,17 +1459,16 @@ function editContact(id) {
   currentEditId = id;
   document.getElementById('n-name').value = n.name || '';
   document.getElementById('n-title').value = n.title || '';
+  document.getElementById('n-company').value = n.company || ''; // NEW FIELD
   document.getElementById('n-platform').value = n.platform || 'LinkedIn';
   document.getElementById('n-status').value = n.status || 'pending';
   document.getElementById('n-date').value = n.date || '';
   
-  // Handle the checkbox state
   const noFu = !n.followup;
   document.getElementById('n-no-followup').checked = noFu;
   const fuEl = document.getElementById('n-followup');
   fuEl.value = n.followup || '';
-  fuEl.disabled = noFu;
-  fuEl.style.opacity = noFu ? '0.4' : '1';
+  fuEl.disabled = noFu; fuEl.style.opacity = noFu ? '0.4' : '1';
 
   document.getElementById('n-notes').value = n.notes || '';
   document.getElementById('m-net').classList.add('on');
@@ -1482,6 +1483,7 @@ function addContact(){
     if(n) {
       n.name = nm;
       n.title = document.getElementById('n-title').value.trim();
+      n.company = document.getElementById('n-company').value.trim(); // NEW FIELD
       n.platform = document.getElementById('n-platform').value;
       n.status = document.getElementById('n-status').value;
       n.date = document.getElementById('n-date').value;
@@ -1492,6 +1494,7 @@ function addContact(){
   } else {
     nets.unshift({id:Date.now(),name:nm,
       title:document.getElementById('n-title').value.trim(),
+      company:document.getElementById('n-company').value.trim(), // NEW FIELD
       platform:document.getElementById('n-platform').value,
       status:document.getElementById('n-status').value,
       date:document.getElementById('n-date').value,
@@ -1502,6 +1505,7 @@ function addContact(){
   }
   sv(KEY.net,nets); closeM('m-net'); currentEditId = null; refreshAll();
 }
+
 function delContact(id){nets=nets.filter(n=>n.id!==id);sv(KEY.net,nets);refreshAll();}
 function setNetStatus(id,v){const n=nets.find(n=>n.id===id);if(n){n.status=v;sv(KEY.net,nets);refreshAll();}}
 
@@ -1514,7 +1518,7 @@ function renderNets(){
     em.style.display='none';
     tb.innerHTML=nets.map(n=>`<tr>
       <td><strong>${e(n.name)}</strong></td>
-      <td class="fs12 text-muted">${e(n.title)||'—'}</td>
+      <td class="fs12 text-muted">${[e(n.title), e(n.company)].filter(Boolean).join(' at ') || '—'}</td>
       <td><span class="badge b-muted">${e(n.platform)}</span></td>
       <td><select onchange="setNetStatus(${n.id},this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
         ${['pending','connected','warm','followup'].map(s=>`<option value="${s}"${n.status===s?' selected':''}>${sl[s]}</option>`).join('')}
@@ -1527,6 +1531,7 @@ function renderNets(){
         <button class="del-btn" onclick="delContact(${n.id})">🗑</button>
       </td>
     </tr>`).join('');
+
   }
   const ws=getWeekStart();
   const wc=nets.filter(n=>n.date&&new Date(n.date)>=ws).length;
