@@ -2736,7 +2736,7 @@ document.addEventListener('DOMContentLoaded',init);
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // CONFIG
@@ -2773,21 +2773,55 @@ window.sv = function(k, d) {
   }
 };
 
-// 2. Bind the Login Button
+// 2. Handle redirect result FIRST (fires when returning from Google redirect login)
+try {
+  const redirectResult = await getRedirectResult(auth);
+  if (redirectResult && redirectResult.user) {
+    // User came back from redirect — auth state listener below will handle the rest
+    console.log("Redirect sign-in successful:", redirectResult.user.email);
+  }
+} catch (redirectError) {
+  console.error("Redirect result error:", redirectError);
+}
+
+// 3. Bind the Login Button — try popup first, fall back to redirect if blocked
 if (gateBtn) {
   gateBtn.addEventListener('click', async () => {
+    gateBtn.textContent = "Signing in...";
+    gateBtn.disabled = true;
+
     try {
-      gateBtn.textContent = "Opening Google...";
+      // Try popup first (works on desktop, Chrome, Firefox)
       await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Popup blocked! If on iPhone, go to Settings > Safari and turn OFF 'Prevent Cross-Site Tracking'.");
-      gateBtn.textContent = "Sign in with Google";
+    } catch (popupError) {
+      const code = popupError.code || '';
+      if (
+        code === 'auth/popup-blocked' ||
+        code === 'auth/popup-closed-by-user' ||
+        code === 'auth/cancelled-popup-request'
+      ) {
+        // Popup was blocked — fall back to full-page redirect (always works)
+        try {
+          toast("🔄 Opening Google sign-in...");
+          await signInWithRedirect(auth, provider);
+          // Page will navigate away; no code runs after this
+        } catch (redirectError) {
+          console.error("Redirect error:", redirectError);
+          gateBtn.textContent = "Sign in with Google";
+          gateBtn.disabled = false;
+          alert("Sign-in failed. Please try again or disable pop-up blockers.");
+        }
+      } else {
+        console.error("Login error:", popupError);
+        gateBtn.textContent = "Sign in with Google";
+        gateBtn.disabled = false;
+        alert("Sign-in failed (" + code + "). Please try again.");
+      }
     }
   });
 }
 
-// 3. Listen for Auth State & Fetch Master Data
+// 4. Listen for Auth State & Fetch Master Data
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     userId = user.uid;
@@ -2809,13 +2843,23 @@ onAuthStateChanged(auth, async (user) => {
         if (!sessionStorage.getItem("cloudSynced")) {
            const data = docSnap.data();
            
-           // Silently overwrite local browser storage with your Cloud data
-           if (data['jhcc_jobs']) localStorage.setItem('jhcc_jobs', JSON.stringify(data['jhcc_jobs']));
-           if (data['jhcc_net']) localStorage.setItem('jhcc_net', JSON.stringify(data['jhcc_net']));
-           if (data['jhcc_tasks']) localStorage.setItem('jhcc_tasks', JSON.stringify(data['jhcc_tasks']));
-           if (data['jhcc_clips']) localStorage.setItem('jhcc_clips', JSON.stringify(data['jhcc_clips']));
+           // Only overwrite local storage if cloud has MORE data (protect against accidental wipe)
+           const cloudNets = data['jhcc_net'];
+           const localNets = JSON.parse(localStorage.getItem('jhcc_net') || '[]');
+           const cloudJobs = data['jhcc_jobs'];
+           const localJobs = JSON.parse(localStorage.getItem('jhcc_jobs') || '[]');
+           const cloudTasks = data['jhcc_tasks'];
+           const localTasks = JSON.parse(localStorage.getItem('jhcc_tasks') || '[]');
+           const cloudClips = data['jhcc_clips'];
+           const localClips = JSON.parse(localStorage.getItem('jhcc_clips') || '[]');
 
-           sessionStorage.setItem("cloudSynced", "true"); // Mark it as synced so it never loops
+           // Use whichever source has more records (cloud vs local)
+           if (cloudNets  && Array.isArray(cloudNets)  && cloudNets.length  >= localNets.length)  localStorage.setItem('jhcc_net',   JSON.stringify(cloudNets));
+           if (cloudJobs  && Array.isArray(cloudJobs)  && cloudJobs.length  >= localJobs.length)  localStorage.setItem('jhcc_jobs',  JSON.stringify(cloudJobs));
+           if (cloudTasks && Array.isArray(cloudTasks) && cloudTasks.length >= localTasks.length) localStorage.setItem('jhcc_tasks', JSON.stringify(cloudTasks));
+           if (cloudClips && Array.isArray(cloudClips) && cloudClips.length >= localClips.length) localStorage.setItem('jhcc_clips', JSON.stringify(cloudClips));
+
+           sessionStorage.setItem("cloudSynced", "true"); // Mark as synced so it never loops
            toast("☁️ Cloud data found! Refreshing dashboard...");
            setTimeout(() => window.location.reload(), 800); // Reload ONCE to apply the data
         } else {
@@ -2844,7 +2888,7 @@ onAuthStateChanged(auth, async (user) => {
     if (loginGate) {
       loginGate.style.display = 'flex';
       setTimeout(() => loginGate.classList.remove('hidden'), 10);
-      if (gateBtn) gateBtn.textContent = "Sign in with Google";
+      if (gateBtn) { gateBtn.textContent = "Sign in with Google"; gateBtn.disabled = false; }
     }
   }
 });
