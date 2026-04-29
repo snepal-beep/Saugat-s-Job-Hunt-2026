@@ -1161,8 +1161,8 @@ body::before {
     <h1 class="page-title">Networking Tracker</h1>
     <p class="page-subtitle">30 reach-outs per week — every conversation tracked, no warm lead lost.</p>
   </div>
-  <div class="row-act">
-    <div class="flex gap12">
+  <div class="row-act" style="flex-wrap:wrap;gap:16px;">
+    <div class="flex gap12" style="align-items:center;">
       <div>
         <span style="font-family:'DM Serif Display',serif;font-size:30px;color:var(--teal);" id="net-week-count">0</span>
         <span class="text-muted fs12"> / 30 this week</span>
@@ -1170,6 +1170,12 @@ body::before {
       <div class="stat-bar" style="width:140px;height:5px;margin-top:4px;">
         <div class="stat-bar-fill" id="net-week-bar" style="width:0%;background:linear-gradient(90deg,var(--teal),var(--teal2))"></div>
       </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <span style="display:flex;align-items:center;gap:5px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--text2);"><span style="width:7px;height:7px;border-radius:50%;background:var(--text3);display:inline-block;"></span>Pending <span id="net-cnt-pending" style="font-family:'JetBrains Mono',monospace;margin-left:3px;">0</span></span>
+      <span style="display:flex;align-items:center;gap:5px;background:var(--teal-bg);border:1px solid var(--teal-border);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--teal);"><span style="width:7px;height:7px;border-radius:50%;background:var(--teal);display:inline-block;"></span>Connected <span id="net-cnt-connected" style="font-family:'JetBrains Mono',monospace;margin-left:3px;">0</span></span>
+      <span style="display:flex;align-items:center;gap:5px;background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--gold);"><span style="width:7px;height:7px;border-radius:50%;background:var(--gold);display:inline-block;"></span>Warm Lead <span id="net-cnt-warm" style="font-family:'JetBrains Mono',monospace;margin-left:3px;">0</span></span>
+      <span style="display:flex;align-items:center;gap:5px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--purple);"><span style="width:7px;height:7px;border-radius:50%;background:var(--purple);display:inline-block;"></span>Follow-Up <span id="net-cnt-followup" style="font-family:'JetBrains Mono',monospace;margin-left:3px;">0</span></span>
     </div>
     <button class="btn btn-teal" onclick="openM('m-net')">+ Add Contact</button>
   </div>
@@ -1848,6 +1854,10 @@ function renderNets(){
   const wc=nets.filter(n=>n.date&&new Date(n.date)>=ws).length;
   document.getElementById('net-week-count').textContent=wc;
   document.getElementById('net-week-bar').style.width=Math.min(100,wc/30*100)+'%';
+  document.getElementById('net-cnt-pending').textContent=nets.filter(n=>n.status==='pending').length;
+  document.getElementById('net-cnt-connected').textContent=nets.filter(n=>n.status==='connected').length;
+  document.getElementById('net-cnt-warm').textContent=nets.filter(n=>n.status==='warm').length;
+  document.getElementById('net-cnt-followup').textContent=nets.filter(n=>n.status==='followup').length;
 }
   
 // ══════════════════════════════════════════════════
