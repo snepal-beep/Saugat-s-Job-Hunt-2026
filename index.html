@@ -636,7 +636,35 @@ body{
   display:flex;align-items:center;justify-content:center;
   font-size:8px;font-weight:700;flex-shrink:0;margin-top:0.5px;
 }
+/* ── STATUS COLORS ── */
+.status-select { 
+  font-weight: 600; 
+  border: none !important; 
+  outline: none;
+}
+/* Job Statuses */
+.st-applied { background: var(--sky-bg) !important; color: var(--sky) !important; border: 1px solid var(--sky-border) !important;}
+.st-interview { background: var(--gold-bg) !important; color: var(--gold) !important; border: 1px solid var(--gold-border) !important;}
+.st-offer { background: var(--teal-bg) !important; color: var(--teal) !important; border: 1px solid var(--teal-border) !important;}
+.st-rejected { background: var(--coral-bg) !important; color: var(--coral) !important; border: 1px solid var(--coral-border) !important;}
+.st-job-followup { background: var(--purple-bg) !important; color: var(--purple) !important; border: 1px solid var(--purple-border) !important;}
 
+/* Network Statuses */
+.st-pending { background: var(--bg2) !important; color: var(--text2) !important; border: 1px solid var(--border) !important;}
+.st-connected { background: var(--teal-bg) !important; color: var(--teal) !important; border: 1px solid var(--teal-border) !important;}
+.st-warm { background: var(--orange-bg) !important; color: var(--orange) !important; border: 1px solid rgba(176,92,24,0.2) !important;}
+.st-net-followup { background: var(--purple-bg) !important; color: var(--purple) !important; border: 1px solid var(--purple-border) !important;}
+
+/* ── FILTER PILLS ── */
+.filter-row { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+.filter-pill {
+  padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; 
+  cursor: pointer; background: var(--card); border: 1px solid var(--border); 
+  color: var(--text3); transition: all 0.15s; white-space: nowrap;
+}
+.filter-pill:hover { background: var(--bg2); color: var(--text); }
+.filter-pill.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  
 /* ── MOBILE ── */
 @media(max-width:1024px){
   :root{--sidebar-w:240px;}
@@ -920,6 +948,17 @@ body{
     <p class="page-subtitle">Track every submission — status, follow-up dates, interview pipeline.</p>
   </div>
   <div class="row-act">
+    </div>
+  
+  <div class="filter-row" id="job-filters">
+    <div class="filter-pill active" onclick="setJobFilter('all')">All</div>
+    <div class="filter-pill" onclick="setJobFilter('applied')">Applied</div>
+    <div class="filter-pill" onclick="setJobFilter('interview')">Interview</div>
+    <div class="filter-pill" onclick="setJobFilter('offer')">Offer</div>
+    <div class="filter-pill" onclick="setJobFilter('rejected')">Rejected</div>
+    <div class="filter-pill" onclick="setJobFilter('followup')">Follow-Up</div>
+  </div>
+    
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
       <div class="stat sky" style="padding:10px 16px;min-width:0;">
         <div class="stat-label" style="font-size:9px;">Applied</div>
@@ -962,6 +1001,15 @@ body{
     <p class="page-subtitle">30 reach-outs per week — every conversation tracked, no warm lead lost.</p>
   </div>
   <div class="row-act">
+    </div>
+
+  <div class="filter-row" id="net-filters">
+    <div class="filter-pill active" onclick="setNetFilter('all')">All</div>
+    <div class="filter-pill" onclick="setNetFilter('pending')">Pending</div>
+    <div class="filter-pill" onclick="setNetFilter('connected')">Connected</div>
+    <div class="filter-pill" onclick="setNetFilter('warm')">Warm Lead</div>
+    <div class="filter-pill" onclick="setNetFilter('followup')">Follow-Up</div>
+  </div>
     <div class="flex gap12">
       <div>
         <span style="font-family:'DM Serif Display',serif;font-size:30px;color:var(--teal);" id="net-week-count">0</span>
@@ -1211,6 +1259,33 @@ function ld(k){try{return JSON.parse(localStorage.getItem(k))||[];}catch{return[
 function sv(k,d){localStorage.setItem(k,JSON.stringify(d));}
 let jobs=ld(KEY.jobs), nets=ld(KEY.net), tasks=ld(KEY.tasks), clips=ld(KEY.clips);
 
+  
+// ── FILTER STATE & FUNCTIONS ──
+let currentJobFilter = 'all';
+let currentNetFilter = 'all';
+
+function setJobFilter(val) {
+  currentJobFilter = val;
+  // Update UI to highlight the active pill
+  document.querySelectorAll('#job-filters .filter-pill').forEach(p => p.classList.remove('active'));
+  document.querySelector(`#job-filters .filter-pill[onclick="setJobFilter('${val}')"]`).classList.add('active');
+  // Re-render the table with the new filter
+  renderJobs();
+}
+
+function setNetFilter(val) {
+  currentNetFilter = val;
+  // Update UI to highlight the active pill
+  document.querySelectorAll('#net-filters .filter-pill').forEach(p => p.classList.remove('active'));
+  document.querySelector(`#net-filters .filter-pill[onclick="setNetFilter('${val}')"]`).classList.add('active');
+  // Re-render the table with the new filter
+  renderNets();
+}
+  
+
+
+  
+
 // ══════════════════════════════════════════════════
 //  NAVIGATION
 // ══════════════════════════════════════════════════
@@ -1350,34 +1425,44 @@ function delJob(id){jobs=jobs.filter(j=>j.id!==id);sv(KEY.jobs,jobs);refreshAll(
 function setJobStatus(id,v){const j=jobs.find(j=>j.id===id);if(j){j.status=v;sv(KEY.jobs,jobs);refreshAll();}}
 
 function renderJobs(){
-  const tb=document.getElementById('jobs-tbody');
-  const em=document.getElementById('jobs-empty');
-  const statusLabel={applied:'Applied',interview:'Interview',offer:'Offer 🎉',rejected:'Rejected',followup:'Follow-Up'};
-  if(!jobs.length){tb.innerHTML='';em.style.display='block';}
-  else{
+  const tb = document.getElementById('jobs-tbody');
+  const em = document.getElementById('jobs-empty');
+  const statusLabel = {applied:'Applied',interview:'Interview',offer:'Offer 🎉',rejected:'Rejected',followup:'Follow-Up'};
+  
+  // Apply the filter
+  const filteredJobs = currentJobFilter === 'all' ? jobs : jobs.filter(j => j.status === currentJobFilter);
+
+  if(!filteredJobs.length){ tb.innerHTML=''; em.style.display='block'; }
+  else {
     em.style.display='none';
-    tb.innerHTML=jobs.map(j=>`<tr>
-      <td><strong>${e(j.company)}</strong></td>
-      <td class="fs12">${e(j.role)}</td>
-      <td><select onchange="setJobStatus(${j.id},this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
-        ${['applied','interview','offer','rejected','followup'].map(s=>`<option value="${s}"${j.status===s?' selected':''}>${statusLabel[s]}</option>`).join('')}
-      </select></td>
-      <td class="mono fs11 text-muted">${j.date||'—'}</td>
-      <td><span class="badge b-muted">${e(j.platform)}</span></td>
-      <td class="mono fs11 text-muted">${j.followup||'—'}</td>
-      <td class="fs12 text-muted" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e(j.notes)}">${e(j.notes)||'—'}</td>
-      <td style="white-space:nowrap;">
-        <button class="del-btn" onclick="editJob(${j.id})">✏️</button>
-        <button class="del-btn" onclick="delJob(${j.id})">🗑</button>
-      </td>
-    </tr>`).join('');
+    tb.innerHTML = filteredJobs.map(j => {
+      // Map status to the new CSS classes you added
+      const statusClass = j.status === 'followup' ? 'st-job-followup' : `st-${j.status}`;
+      return `<tr>
+        <td><strong>${e(j.company)}</strong></td>
+        <td class="fs12">${e(j.role)}</td>
+        <td>
+          <select onchange="setJobStatus(${j.id},this.value)" class="status-select ${statusClass}" style="border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+            ${['applied','interview','offer','rejected','followup'].map(s=>`<option value="${s}"${j.status===s?' selected':''}>${statusLabel[s]}</option>`).join('')}
+          </select>
+        </td>
+        <td class="mono fs11 text-muted">${j.date||'—'}</td>
+        <td><span class="badge b-muted">${e(j.platform)}</span></td>
+        <td class="mono fs11 text-muted">${j.followup||'—'}</td>
+        <td class="fs12 text-muted" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e(j.notes)}">${e(j.notes)||'—'}</td>
+        <td style="white-space:nowrap;">
+          <button class="del-btn" onclick="editJob(${j.id})">✏️</button>
+          <button class="del-btn" onclick="delJob(${j.id})">🗑</button>
+        </td>
+      </tr>`;
+    }).join('');
   }
+  // Keep the top dashboard stats updating based on the full array, not the filtered array
   document.getElementById('j-applied').textContent=jobs.filter(j=>j.status==='applied').length;
   document.getElementById('j-int').textContent=jobs.filter(j=>j.status==='interview').length;
   document.getElementById('j-offer').textContent=jobs.filter(j=>j.status==='offer').length;
   document.getElementById('j-rej').textContent=jobs.filter(j=>j.status==='rejected').length;
 }
-
 // ══════════════════════════════════════════════════
 //  CLIPS CRUD
 // ══════════════════════════════════════════════════
@@ -1523,33 +1608,44 @@ function delContact(id){nets=nets.filter(n=>n.id!==id);sv(KEY.net,nets);refreshA
 function setNetStatus(id,v){const n=nets.find(n=>n.id===id);if(n){n.status=v;sv(KEY.net,nets);refreshAll();}}
 
 function renderNets(){
-  const tb=document.getElementById('net-tbody');
-  const em=document.getElementById('net-empty');
-  const sl={pending:'Pending',connected:'Connected',warm:'Warm Lead',followup:'Follow-Up'};
-  if(!nets.length){tb.innerHTML='';em.style.display='block';}
-  else{
-    em.style.display='none';
-    tb.innerHTML=nets.map(n=>`<tr>
-      <td><strong>${e(n.name)}</strong></td>
-      <td class="fs12 text-muted">${[e(n.title), e(n.company)].filter(Boolean).join(' at ') || '—'}</td>
-      <td><span class="badge b-muted">${e(n.platform)}</span></td>
-      <td><select onchange="setNetStatus(${n.id},this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
-        ${['pending','connected','warm','followup'].map(s=>`<option value="${s}"${n.status===s?' selected':''}>${sl[s]}</option>`).join('')}
-      </select></td>
-      <td class="mono fs11 text-muted">${n.date||'—'}</td>
-      <td class="mono fs11 text-muted">${n.followup||'—'}</td>
-      <td class="fs12 text-muted" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e(n.notes)}">${e(n.notes)||'—'}</td>
-      <td style="white-space:nowrap;">
-        <button class="del-btn" onclick="editContact(${n.id})">✏️</button>
-        <button class="del-btn" onclick="delContact(${n.id})">🗑</button>
-      </td>
-    </tr>`).join('');
+  const tb = document.getElementById('net-tbody');
+  const em = document.getElementById('net-empty');
+  const sl = {pending:'Pending',connected:'Connected',warm:'Warm Lead',followup:'Follow-Up'};
+  
+  // Apply the filter
+  const filteredNets = currentNetFilter === 'all' ? nets : nets.filter(n => n.status === currentNetFilter);
 
+  if(!filteredNets.length){ tb.innerHTML=''; em.style.display='block'; }
+  else {
+    em.style.display='none';
+    tb.innerHTML = filteredNets.map(n => {
+      // Map status to the new CSS classes
+      const statusClass = n.status === 'followup' ? 'st-net-followup' : `st-${n.status}`;
+      return `<tr>
+        <td><strong>${e(n.name)}</strong></td>
+        <td class="fs12 text-muted">${[e(n.title), e(n.company)].filter(Boolean).join(' at ') || '—'}</td>
+        <td><span class="badge b-muted">${e(n.platform)}</span></td>
+        <td>
+          <select onchange="setNetStatus(${n.id},this.value)" class="status-select ${statusClass}" style="border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+            ${['pending','connected','warm','followup'].map(s=>`<option value="${s}"${n.status===s?' selected':''}>${sl[s]}</option>`).join('')}
+          </select>
+        </td>
+        <td class="mono fs11 text-muted">${n.date||'—'}</td>
+        <td class="mono fs11 text-muted">${n.followup||'—'}</td>
+        <td class="fs12 text-muted" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e(n.notes)}">${e(n.notes)||'—'}</td>
+        <td style="white-space:nowrap;">
+          <button class="del-btn" onclick="editContact(${n.id})">✏️</button>
+          <button class="del-btn" onclick="delContact(${n.id})">🗑</button>
+        </td>
+      </tr>`;
+    }).join('');
   }
-  const ws=getWeekStart();
-  const wc=nets.filter(n=>n.date&&new Date(n.date)>=ws).length;
-  document.getElementById('net-week-count').textContent=wc;
-  document.getElementById('net-week-bar').style.width=Math.min(100,wc/30*100)+'%';
+  
+  // Keep the weekly progress bar updating based on total contacts
+  const ws = getWeekStart();
+  const wc = nets.filter(n => n.date && new Date(n.date) >= ws).length;
+  document.getElementById('net-week-count').textContent = wc;
+  document.getElementById('net-week-bar').style.width = Math.min(100, wc/30*100) + '%';
 }
   
 // ══════════════════════════════════════════════════
