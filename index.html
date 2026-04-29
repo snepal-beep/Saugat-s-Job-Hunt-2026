@@ -614,6 +614,170 @@ body{
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
 
+/* ── STATUS DOTS ── */
+.status-dot {
+  display:inline-block; width:8px; height:8px; border-radius:50%;
+  flex-shrink:0; box-shadow:0 0 0 2px rgba(255,255,255,0.9);
+  transition:transform 0.15s;
+}
+.dot-applied   { background:var(--sky); }
+.dot-interview { background:var(--gold); box-shadow:0 0 0 2px rgba(255,255,255,0.9), 0 0 6px rgba(168,114,14,0.5); }
+.dot-offer     { background:var(--teal); box-shadow:0 0 0 2px rgba(255,255,255,0.9), 0 0 6px rgba(15,107,88,0.5); }
+.dot-rejected  { background:var(--coral); }
+.dot-followup  { background:var(--orange); }
+.dot-saved     { background:var(--sky); }
+.dot-ready     { background:var(--gold); box-shadow:0 0 0 2px rgba(255,255,255,0.9), 0 0 6px rgba(168,114,14,0.4); }
+.dot-clip-applied { background:var(--teal); }
+.dot-pending   { background:var(--text3); }
+.dot-connected { background:var(--teal); box-shadow:0 0 0 2px rgba(255,255,255,0.9), 0 0 5px rgba(15,107,88,0.4); }
+.dot-warm      { background:var(--gold); box-shadow:0 0 0 2px rgba(255,255,255,0.9), 0 0 5px rgba(168,114,14,0.4); }
+.dot-net-followup { background:var(--purple); }
+
+/* status cell with dot */
+.status-cell { display:flex; align-items:center; gap:7px; }
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  margin-bottom:14px; padding:12px 16px;
+  background:var(--bg2); border:1px solid var(--border); border-radius:11px;
+}
+.filter-bar-label {
+  font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--text3); white-space:nowrap; margin-right:2px;
+}
+.filter-chips { display:flex; gap:5px; flex-wrap:wrap; flex:1; }
+.fchip {
+  padding:4px 11px; border-radius:20px; font-size:11px; font-weight:600;
+  cursor:pointer; border:1px solid var(--border); background:var(--card);
+  color:var(--text2); transition:all 0.15s; font-family:'DM Sans',sans-serif;
+  display:flex; align-items:center; gap:5px;
+  user-select:none;
+}
+.fchip:hover { border-color:var(--border2); background:var(--bg); }
+.fchip.active {
+  background:var(--navy); color:#fff; border-color:var(--navy);
+  box-shadow:0 2px 6px rgba(26,39,68,0.2);
+}
+.fchip .fchip-dot {
+  width:6px; height:6px; border-radius:50%; flex-shrink:0;
+}
+.sort-divider { width:1px; height:18px; background:var(--border); margin:0 4px; flex-shrink:0; }
+.sort-select {
+  background:var(--card); border:1px solid var(--border); border-radius:7px;
+  padding:4px 10px; color:var(--text2); font-size:11px; font-weight:500;
+  font-family:'DM Sans',sans-serif; cursor:pointer; outline:none;
+  transition:border-color 0.15s;
+}
+.sort-select:focus { border-color:var(--gold); }
+.filter-count {
+  font-size:10px; font-weight:600; color:var(--text3); white-space:nowrap;
+  background:var(--bg); border:1px solid var(--border); border-radius:20px;
+  padding:3px 9px; font-family:'JetBrains Mono',monospace;
+}
+
+/* ── STAT CARD ENHANCEMENTS ── */
+.stat {
+  transition:transform 0.2s, box-shadow 0.2s;
+}
+.stat:hover {
+  transform:translateY(-3px);
+  box-shadow:var(--shadow);
+}
+
+/* ── TABLE ENHANCEMENTS ── */
+.tbl tbody tr {
+  transition:all 0.12s;
+}
+.tbl tbody tr:hover td {
+  background:var(--bg);
+}
+.tbl tbody tr.row-highlight {
+  animation: rowpop 0.35s ease;
+}
+@keyframes rowpop {
+  0%{transform:scaleX(0.98);opacity:0.7;}
+  100%{transform:scaleX(1);opacity:1;}
+}
+
+/* ── ANIMATED STAT NUMBERS ── */
+.stat-val {
+  transition:color 0.3s;
+}
+
+/* ── PULSE DOT (week chip) ── */
+.pulse-dot {
+  width:7px; height:7px; border-radius:50%;
+  background:var(--teal); display:inline-block;
+  animation:pulse-ring 1.8s ease-in-out infinite;
+  box-shadow:0 0 0 0 rgba(15,107,88,0.5);
+  margin-right:4px; vertical-align:middle;
+}
+@keyframes pulse-ring {
+  0%{box-shadow:0 0 0 0 rgba(15,107,88,0.5);}
+  70%{box-shadow:0 0 0 6px rgba(15,107,88,0);}
+  100%{box-shadow:0 0 0 0 rgba(15,107,88,0);}
+}
+
+/* ── CARD ENTRANCE ANIMATION ── */
+.page.active .card,
+.page.active .stat {
+  animation:cardrise 0.3s ease both;
+}
+.page.active .stat:nth-child(2){animation-delay:0.05s;}
+.page.active .stat:nth-child(3){animation-delay:0.1s;}
+.page.active .stat:nth-child(4){animation-delay:0.15s;}
+@keyframes cardrise{
+  from{opacity:0;transform:translateY(8px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ── SIDEBAR ACTIVE INDICATOR ── */
+.nav-item.active::before {
+  content:''; position:absolute; left:0; top:50%; transform:translateY(-50%);
+  width:3px; height:60%; background:var(--gold); border-radius:0 3px 3px 0;
+}
+.nav-item { position:relative; }
+
+/* ── QUOTE BANNER SHIMMER ── */
+.quote-banner {
+  position:relative; overflow:hidden;
+}
+.quote-banner::after {
+  content:''; position:absolute; top:0; left:-100%; right:0; bottom:0;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.04) 50%,transparent 60%);
+  animation:shimmer 4s ease-in-out infinite;
+}
+@keyframes shimmer{
+  0%{left:-100%;}
+  100%{left:200%;}
+}
+
+/* ── BACKGROUND TEXTURE ── */
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image: radial-gradient(circle at 20% 50%, rgba(168,114,14,0.02) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(15,107,88,0.02) 0%, transparent 40%);
+}
+.main { position:relative; z-index:1; }
+
+/* ── ENHANCED ROW ACTIONS ── */
+.row-act { gap:12px; }
+
+/* ── STAT BAR ANIMATION ── */
+.stat-bar-fill {
+  transition:width 1s cubic-bezier(0.4,0,0.2,1);
+}
+.stat-bar-fill.bar-animated {
+  transition:width 1s cubic-bezier(0.4,0,0.2,1);
+  width:var(--target-width) !important;
+}
+
+/* ── TABLE STATUS INLINE DOT WRAP ── */
+.tbl .status-wrap {
+  display:flex; align-items:center; gap:6px;
+}
+
 /* ── TASK DAILY SECTION ── */
 .daily-task-section{
   background:var(--gold-light);border:1px solid var(--gold-border);
@@ -636,35 +800,7 @@ body{
   display:flex;align-items:center;justify-content:center;
   font-size:8px;font-weight:700;flex-shrink:0;margin-top:0.5px;
 }
-/* ── STATUS COLORS ── */
-.status-select { 
-  font-weight: 600; 
-  border: none !important; 
-  outline: none;
-}
-/* Job Statuses */
-.st-applied { background: var(--sky-bg) !important; color: var(--sky) !important; border: 1px solid var(--sky-border) !important;}
-.st-interview { background: var(--gold-bg) !important; color: var(--gold) !important; border: 1px solid var(--gold-border) !important;}
-.st-offer { background: var(--teal-bg) !important; color: var(--teal) !important; border: 1px solid var(--teal-border) !important;}
-.st-rejected { background: var(--coral-bg) !important; color: var(--coral) !important; border: 1px solid var(--coral-border) !important;}
-.st-job-followup { background: var(--purple-bg) !important; color: var(--purple) !important; border: 1px solid var(--purple-border) !important;}
 
-/* Network Statuses */
-.st-pending { background: var(--bg2) !important; color: var(--text2) !important; border: 1px solid var(--border) !important;}
-.st-connected { background: var(--teal-bg) !important; color: var(--teal) !important; border: 1px solid var(--teal-border) !important;}
-.st-warm { background: var(--orange-bg) !important; color: var(--orange) !important; border: 1px solid rgba(176,92,24,0.2) !important;}
-.st-net-followup { background: var(--purple-bg) !important; color: var(--purple) !important; border: 1px solid var(--purple-border) !important;}
-
-/* ── FILTER PILLS ── */
-.filter-row { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
-.filter-pill {
-  padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; 
-  cursor: pointer; background: var(--card); border: 1px solid var(--border); 
-  color: var(--text3); transition: all 0.15s; white-space: nowrap;
-}
-.filter-pill:hover { background: var(--bg2); color: var(--text); }
-.filter-pill.active { background: var(--navy); color: #fff; border-color: var(--navy); }
-  
 /* ── MOBILE ── */
 @media(max-width:1024px){
   :root{--sidebar-w:240px;}
@@ -746,7 +882,7 @@ body{
   </div>
   <div class="sidebar-bottom">
     <div class="week-chip">
-      <div class="week-chip-label">Current Week</div>
+      <div class="week-chip-label"><span class="pulse-dot"></span>Current Week</div>
       <div class="week-chip-val" id="week-display">—</div>
     </div>
   </div>
@@ -926,6 +1062,23 @@ body{
     </div>
     <button class="btn btn-gold" onclick="openM('m-clip')">📌 Clip a Job</button>
   </div>
+  <div class="filter-bar">
+    <span class="filter-bar-label">Filter</span>
+    <div class="filter-chips">
+      <div class="fchip active" onclick="setClipFilter('all',this)">All</div>
+      <div class="fchip" onclick="setClipFilter('saved',this)"><span class="fchip-dot" style="background:var(--sky)"></span>Saved</div>
+      <div class="fchip" onclick="setClipFilter('ready',this)"><span class="fchip-dot" style="background:var(--gold)"></span>Ready to Apply</div>
+      <div class="fchip" onclick="setClipFilter('applied',this)"><span class="fchip-dot" style="background:var(--teal)"></span>Applied</div>
+    </div>
+    <div class="sort-divider"></div>
+    <select class="sort-select" onchange="setClipSort(this.value)">
+      <option value="date-desc">↓ Newest</option>
+      <option value="date-asc">↑ Oldest</option>
+      <option value="company-asc">A→Z Company</option>
+      <option value="status">By Status</option>
+    </select>
+    <span class="filter-count" id="clips-filter-count">—</span>
+  </div>
   <div class="card" style="overflow-x:auto;">
     <table class="tbl">
       <thead><tr>
@@ -948,17 +1101,6 @@ body{
     <p class="page-subtitle">Track every submission — status, follow-up dates, interview pipeline.</p>
   </div>
   <div class="row-act">
-    </div>
-  
-  <div class="filter-row" id="job-filters">
-    <div class="filter-pill active" onclick="setJobFilter('all')">All</div>
-    <div class="filter-pill" onclick="setJobFilter('applied')">Applied</div>
-    <div class="filter-pill" onclick="setJobFilter('interview')">Interview</div>
-    <div class="filter-pill" onclick="setJobFilter('offer')">Offer</div>
-    <div class="filter-pill" onclick="setJobFilter('rejected')">Rejected</div>
-    <div class="filter-pill" onclick="setJobFilter('followup')">Follow-Up</div>
-  </div>
-    
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
       <div class="stat sky" style="padding:10px 16px;min-width:0;">
         <div class="stat-label" style="font-size:9px;">Applied</div>
@@ -978,6 +1120,25 @@ body{
       </div>
     </div>
     <button class="btn btn-navy" onclick="openM('m-job')">+ Add Application</button>
+  </div>
+  <div class="filter-bar">
+    <span class="filter-bar-label">Filter</span>
+    <div class="filter-chips">
+      <div class="fchip active" onclick="setJobFilter('all',this)">All</div>
+      <div class="fchip" onclick="setJobFilter('applied',this)"><span class="fchip-dot" style="background:var(--sky)"></span>Applied</div>
+      <div class="fchip" onclick="setJobFilter('interview',this)"><span class="fchip-dot" style="background:var(--gold)"></span>Interview</div>
+      <div class="fchip" onclick="setJobFilter('offer',this)"><span class="fchip-dot" style="background:var(--teal)"></span>Offer</div>
+      <div class="fchip" onclick="setJobFilter('rejected',this)"><span class="fchip-dot" style="background:var(--coral)"></span>Rejected</div>
+      <div class="fchip" onclick="setJobFilter('followup',this)"><span class="fchip-dot" style="background:var(--orange)"></span>Follow-Up</div>
+    </div>
+    <div class="sort-divider"></div>
+    <select class="sort-select" onchange="setJobSort(this.value)">
+      <option value="date-desc">↓ Newest</option>
+      <option value="date-asc">↑ Oldest</option>
+      <option value="company-asc">A→Z Company</option>
+      <option value="status">By Status</option>
+    </select>
+    <span class="filter-count" id="jobs-filter-count">—</span>
   </div>
   <div class="card" style="overflow-x:auto;">
     <table class="tbl">
@@ -1001,15 +1162,6 @@ body{
     <p class="page-subtitle">30 reach-outs per week — every conversation tracked, no warm lead lost.</p>
   </div>
   <div class="row-act">
-    </div>
-
-  <div class="filter-row" id="net-filters">
-    <div class="filter-pill active" onclick="setNetFilter('all')">All</div>
-    <div class="filter-pill" onclick="setNetFilter('pending')">Pending</div>
-    <div class="filter-pill" onclick="setNetFilter('connected')">Connected</div>
-    <div class="filter-pill" onclick="setNetFilter('warm')">Warm Lead</div>
-    <div class="filter-pill" onclick="setNetFilter('followup')">Follow-Up</div>
-  </div>
     <div class="flex gap12">
       <div>
         <span style="font-family:'DM Serif Display',serif;font-size:30px;color:var(--teal);" id="net-week-count">0</span>
@@ -1020,6 +1172,24 @@ body{
       </div>
     </div>
     <button class="btn btn-teal" onclick="openM('m-net')">+ Add Contact</button>
+  </div>
+  <div class="filter-bar">
+    <span class="filter-bar-label">Filter</span>
+    <div class="filter-chips">
+      <div class="fchip active" onclick="setNetFilter('all',this)">All</div>
+      <div class="fchip" onclick="setNetFilter('pending',this)"><span class="fchip-dot" style="background:var(--text3)"></span>Pending</div>
+      <div class="fchip" onclick="setNetFilter('connected',this)"><span class="fchip-dot" style="background:var(--teal)"></span>Connected</div>
+      <div class="fchip" onclick="setNetFilter('warm',this)"><span class="fchip-dot" style="background:var(--gold)"></span>Warm Lead</div>
+      <div class="fchip" onclick="setNetFilter('followup',this)"><span class="fchip-dot" style="background:var(--purple)"></span>Follow-Up</div>
+    </div>
+    <div class="sort-divider"></div>
+    <select class="sort-select" onchange="setNetSort(this.value)">
+      <option value="date-desc">↓ Newest</option>
+      <option value="date-asc">↑ Oldest</option>
+      <option value="name-asc">A→Z Name</option>
+      <option value="status">By Status</option>
+    </select>
+    <span class="filter-count" id="net-filter-count">—</span>
   </div>
   <div class="card" style="overflow-x:auto;">
     <table class="tbl">
@@ -1259,33 +1429,6 @@ function ld(k){try{return JSON.parse(localStorage.getItem(k))||[];}catch{return[
 function sv(k,d){localStorage.setItem(k,JSON.stringify(d));}
 let jobs=ld(KEY.jobs), nets=ld(KEY.net), tasks=ld(KEY.tasks), clips=ld(KEY.clips);
 
-  
-// ── FILTER STATE & FUNCTIONS ──
-let currentJobFilter = 'all';
-let currentNetFilter = 'all';
-
-function setJobFilter(val) {
-  currentJobFilter = val;
-  // Update UI to highlight the active pill
-  document.querySelectorAll('#job-filters .filter-pill').forEach(p => p.classList.remove('active'));
-  document.querySelector(`#job-filters .filter-pill[onclick="setJobFilter('${val}')"]`).classList.add('active');
-  // Re-render the table with the new filter
-  renderJobs();
-}
-
-function setNetFilter(val) {
-  currentNetFilter = val;
-  // Update UI to highlight the active pill
-  document.querySelectorAll('#net-filters .filter-pill').forEach(p => p.classList.remove('active'));
-  document.querySelector(`#net-filters .filter-pill[onclick="setNetFilter('${val}')"]`).classList.add('active');
-  // Re-render the table with the new filter
-  renderNets();
-}
-  
-
-
-  
-
 // ══════════════════════════════════════════════════
 //  NAVIGATION
 // ══════════════════════════════════════════════════
@@ -1425,26 +1568,45 @@ function delJob(id){jobs=jobs.filter(j=>j.id!==id);sv(KEY.jobs,jobs);refreshAll(
 function setJobStatus(id,v){const j=jobs.find(j=>j.id===id);if(j){j.status=v;sv(KEY.jobs,jobs);refreshAll();}}
 
 function renderJobs(){
-  const tb = document.getElementById('jobs-tbody');
-  const em = document.getElementById('jobs-empty');
-  const statusLabel = {applied:'Applied',interview:'Interview',offer:'Offer 🎉',rejected:'Rejected',followup:'Follow-Up'};
+  const tb=document.getElementById('jobs-tbody');
+  const em=document.getElementById('jobs-empty');
+  const statusLabel={applied:'Applied',interview:'Interview',offer:'Offer 🎉',rejected:'Rejected',followup:'Follow-Up'};
+  const statusDotClass={applied:'dot-applied',interview:'dot-interview',offer:'dot-offer',rejected:'dot-rejected',followup:'dot-followup'};
   
-  // Apply the filter
-  const filteredJobs = currentJobFilter === 'all' ? jobs : jobs.filter(j => j.status === currentJobFilter);
-
-  if(!filteredJobs.length){ tb.innerHTML=''; em.style.display='block'; }
-  else {
+  // Apply filter
+  let filtered = jobFilter==='all' ? jobs : jobs.filter(j=>j.status===jobFilter);
+  
+  // Apply sort
+  const sorted = [...filtered].sort((a,b)=>{
+    if(jobSort==='date-asc') return (a.date||'').localeCompare(b.date||'');
+    if(jobSort==='date-desc') return (b.date||'').localeCompare(a.date||'');
+    if(jobSort==='company-asc') return (a.company||'').localeCompare(b.company||'');
+    if(jobSort==='status'){
+      const order={interview:0,offer:1,followup:2,applied:3,rejected:4};
+      return (order[a.status]??9)-(order[b.status]??9);
+    }
+    return 0;
+  });
+  
+  const fc=document.getElementById('jobs-filter-count');
+  if(fc) fc.textContent=sorted.length+' of '+jobs.length;
+  
+  if(!jobs.length){tb.innerHTML='';em.style.display='block';}
+  else{
     em.style.display='none';
-    tb.innerHTML = filteredJobs.map(j => {
-      // Map status to the new CSS classes you added
-      const statusClass = j.status === 'followup' ? 'st-job-followup' : `st-${j.status}`;
-      return `<tr>
+    if(!sorted.length){
+      tb.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--text3);font-size:13px;">No applications match this filter.</td></tr>`;
+    } else {
+      tb.innerHTML=sorted.map(j=>`<tr>
         <td><strong>${e(j.company)}</strong></td>
         <td class="fs12">${e(j.role)}</td>
         <td>
-          <select onchange="setJobStatus(${j.id},this.value)" class="status-select ${statusClass}" style="border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
-            ${['applied','interview','offer','rejected','followup'].map(s=>`<option value="${s}"${j.status===s?' selected':''}>${statusLabel[s]}</option>`).join('')}
-          </select>
+          <div class="status-wrap">
+            <span class="status-dot ${statusDotClass[j.status]||'dot-applied'}"></span>
+            <select onchange="setJobStatus(${j.id},this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+              ${['applied','interview','offer','rejected','followup'].map(s=>`<option value="${s}"${j.status===s?' selected':''}>${statusLabel[s]}</option>`).join('')}
+            </select>
+          </div>
         </td>
         <td class="mono fs11 text-muted">${j.date||'—'}</td>
         <td><span class="badge b-muted">${e(j.platform)}</span></td>
@@ -1454,15 +1616,15 @@ function renderJobs(){
           <button class="del-btn" onclick="editJob(${j.id})">✏️</button>
           <button class="del-btn" onclick="delJob(${j.id})">🗑</button>
         </td>
-      </tr>`;
-    }).join('');
+      </tr>`).join('');
+    }
   }
-  // Keep the top dashboard stats updating based on the full array, not the filtered array
   document.getElementById('j-applied').textContent=jobs.filter(j=>j.status==='applied').length;
   document.getElementById('j-int').textContent=jobs.filter(j=>j.status==='interview').length;
   document.getElementById('j-offer').textContent=jobs.filter(j=>j.status==='offer').length;
   document.getElementById('j-rej').textContent=jobs.filter(j=>j.status==='rejected').length;
 }
+
 // ══════════════════════════════════════════════════
 //  CLIPS CRUD
 // ══════════════════════════════════════════════════
@@ -1520,25 +1682,51 @@ function renderClips(){
   const tb=document.getElementById('clips-tbody');
   const em=document.getElementById('clips-empty');
   const sl={saved:'Saved',ready:'Ready to Apply',applied:'Applied'};
+  const clipDotClass={saved:'dot-saved',ready:'dot-ready',applied:'dot-clip-applied'};
+  
+  // Apply filter
+  let filtered = clipFilter==='all' ? clips : clips.filter(c=>c.status===clipFilter);
+  
+  // Apply sort
+  const sorted = [...filtered].sort((a,b)=>{
+    if(clipSort==='date-asc') return (a.date||'').localeCompare(b.date||'');
+    if(clipSort==='date-desc') return (b.date||'').localeCompare(a.date||'');
+    if(clipSort==='company-asc') return (a.company||'').localeCompare(b.company||'');
+    if(clipSort==='status'){const order={ready:0,saved:1,applied:2};return (order[a.status]??9)-(order[b.status]??9);}
+    return 0;
+  });
+  
+  const fc=document.getElementById('clips-filter-count');
+  if(fc) fc.textContent=sorted.length+' of '+clips.length;
+  
   if(!clips.length){tb.innerHTML='';em.style.display='block';}
   else{
     em.style.display='none';
-    tb.innerHTML=clips.map(cl=>`<tr>
-      <td><strong>${e(cl.company)}</strong></td>
-      <td class="fs12">${e(cl.role)}</td>
-      <td class="fs12">${cl.url?`<a href="${e(cl.url)}" target="_blank" style="color:var(--sky);text-decoration:none;font-size:11px;">🔗 View Job</a>`:'—'}</td>
-      <td><select onchange="setClipStatus(${cl.id},this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
-        ${['saved','ready','applied'].map(s=>`<option value="${s}"${cl.status===s?' selected':''}>${sl[s]}</option>`).join('')}
-      </select></td>
-      <td class="mono fs11 text-muted">${cl.date||'—'}</td>
-      <td class="fs12 text-muted">${e(cl.location)||'—'}</td>
-      <td class="fs12 text-muted" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e(cl.notes)}">${e(cl.notes)||'—'}</td>
-      <td style="display:flex;gap:5px;align-items:center;white-space:nowrap;">
-        ${cl.status!=='applied'?`<button class="btn btn-teal btn-sm" onclick="applyClip(${cl.id})">Apply →</button>`:'<span class="badge b-teal">Applied</span>'}
-        <button class="del-btn" onclick="editClip(${cl.id})">✏️</button>
-        <button class="del-btn" onclick="delClip(${cl.id})">🗑</button>
-      </td>
-    </tr>`).join('');
+    if(!sorted.length){
+      tb.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--text3);font-size:13px;">No clips match this filter.</td></tr>`;
+    } else {
+      tb.innerHTML=sorted.map(cl=>`<tr>
+        <td><strong>${e(cl.company)}</strong></td>
+        <td class="fs12">${e(cl.role)}</td>
+        <td class="fs12">${cl.url?`<a href="${e(cl.url)}" target="_blank" style="color:var(--sky);text-decoration:none;font-size:11px;">🔗 View Job</a>`:'—'}</td>
+        <td>
+          <div class="status-wrap">
+            <span class="status-dot ${clipDotClass[cl.status]||'dot-saved'}"></span>
+            <select onchange="setClipStatus(${cl.id},this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+              ${['saved','ready','applied'].map(s=>`<option value="${s}"${cl.status===s?' selected':''}>${sl[s]}</option>`).join('')}
+            </select>
+          </div>
+        </td>
+        <td class="mono fs11 text-muted">${cl.date||'—'}</td>
+        <td class="fs12 text-muted">${e(cl.location)||'—'}</td>
+        <td class="fs12 text-muted" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e(cl.notes)}">${e(cl.notes)||'—'}</td>
+        <td style="display:flex;gap:5px;align-items:center;white-space:nowrap;">
+          ${cl.status!=='applied'?`<button class="btn btn-teal btn-sm" onclick="applyClip(${cl.id})">Apply →</button>`:'<span class="badge b-teal">Applied</span>'}
+          <button class="del-btn" onclick="editClip(${cl.id})">✏️</button>
+          <button class="del-btn" onclick="delClip(${cl.id})">🗑</button>
+        </td>
+      </tr>`).join('');
+    }
   }
   const saved=clips.filter(c=>c.status==='saved').length;
   const ready=clips.filter(c=>c.status==='ready').length;
@@ -1608,27 +1796,43 @@ function delContact(id){nets=nets.filter(n=>n.id!==id);sv(KEY.net,nets);refreshA
 function setNetStatus(id,v){const n=nets.find(n=>n.id===id);if(n){n.status=v;sv(KEY.net,nets);refreshAll();}}
 
 function renderNets(){
-  const tb = document.getElementById('net-tbody');
-  const em = document.getElementById('net-empty');
-  const sl = {pending:'Pending',connected:'Connected',warm:'Warm Lead',followup:'Follow-Up'};
+  const tb=document.getElementById('net-tbody');
+  const em=document.getElementById('net-empty');
+  const sl={pending:'Pending',connected:'Connected',warm:'Warm Lead',followup:'Follow-Up'};
+  const netDotClass={pending:'dot-pending',connected:'dot-connected',warm:'dot-warm',followup:'dot-net-followup'};
   
-  // Apply the filter
-  const filteredNets = currentNetFilter === 'all' ? nets : nets.filter(n => n.status === currentNetFilter);
-
-  if(!filteredNets.length){ tb.innerHTML=''; em.style.display='block'; }
-  else {
+  // Apply filter
+  let filtered = netFilter==='all' ? nets : nets.filter(n=>n.status===netFilter);
+  
+  // Apply sort
+  const sorted = [...filtered].sort((a,b)=>{
+    if(netSort==='date-asc') return (a.date||'').localeCompare(b.date||'');
+    if(netSort==='date-desc') return (b.date||'').localeCompare(a.date||'');
+    if(netSort==='name-asc') return (a.name||'').localeCompare(b.name||'');
+    if(netSort==='status'){const order={warm:0,connected:1,followup:2,pending:3};return (order[a.status]??9)-(order[b.status]??9);}
+    return 0;
+  });
+  
+  const fc=document.getElementById('net-filter-count');
+  if(fc) fc.textContent=sorted.length+' of '+nets.length;
+  
+  if(!nets.length){tb.innerHTML='';em.style.display='block';}
+  else{
     em.style.display='none';
-    tb.innerHTML = filteredNets.map(n => {
-      // Map status to the new CSS classes
-      const statusClass = n.status === 'followup' ? 'st-net-followup' : `st-${n.status}`;
-      return `<tr>
+    if(!sorted.length){
+      tb.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--text3);font-size:13px;">No contacts match this filter.</td></tr>`;
+    } else {
+      tb.innerHTML=sorted.map(n=>`<tr>
         <td><strong>${e(n.name)}</strong></td>
         <td class="fs12 text-muted">${[e(n.title), e(n.company)].filter(Boolean).join(' at ') || '—'}</td>
         <td><span class="badge b-muted">${e(n.platform)}</span></td>
         <td>
-          <select onchange="setNetStatus(${n.id},this.value)" class="status-select ${statusClass}" style="border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
-            ${['pending','connected','warm','followup'].map(s=>`<option value="${s}"${n.status===s?' selected':''}>${sl[s]}</option>`).join('')}
-          </select>
+          <div class="status-wrap">
+            <span class="status-dot ${netDotClass[n.status]||'dot-pending'}"></span>
+            <select onchange="setNetStatus(${n.id},this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+              ${['pending','connected','warm','followup'].map(s=>`<option value="${s}"${n.status===s?' selected':''}>${sl[s]}</option>`).join('')}
+            </select>
+          </div>
         </td>
         <td class="mono fs11 text-muted">${n.date||'—'}</td>
         <td class="mono fs11 text-muted">${n.followup||'—'}</td>
@@ -1637,15 +1841,13 @@ function renderNets(){
           <button class="del-btn" onclick="editContact(${n.id})">✏️</button>
           <button class="del-btn" onclick="delContact(${n.id})">🗑</button>
         </td>
-      </tr>`;
-    }).join('');
+      </tr>`).join('');
+    }
   }
-  
-  // Keep the weekly progress bar updating based on total contacts
-  const ws = getWeekStart();
-  const wc = nets.filter(n => n.date && new Date(n.date) >= ws).length;
-  document.getElementById('net-week-count').textContent = wc;
-  document.getElementById('net-week-bar').style.width = Math.min(100, wc/30*100) + '%';
+  const ws=getWeekStart();
+  const wc=nets.filter(n=>n.date&&new Date(n.date)>=ws).length;
+  document.getElementById('net-week-count').textContent=wc;
+  document.getElementById('net-week-bar').style.width=Math.min(100,wc/30*100)+'%';
 }
   
 // ══════════════════════════════════════════════════
@@ -1731,18 +1933,43 @@ function updateDashboard(){
   const wi=jobs.filter(j=>j.status==='interview').length;
   const wc=clips.filter(c=>c.status!=='applied').length;
   
-  document.getElementById('d-apps').textContent=wj;
-  document.getElementById('d-net').textContent=wn;
-  document.getElementById('d-int').textContent=wi;
-  document.getElementById('d-clips').textContent=wc;
+  // Animate stat numbers
+  animateCount('d-apps',wj);
+  animateCount('d-net',wn);
+  animateCount('d-int',wi);
+  animateCount('d-clips',wc);
   
-  document.getElementById('bar-apps').style.width=Math.min(100,wj/20*100)+'%';
-  document.getElementById('bar-net').style.width=Math.min(100,wn/30*100)+'%';
+  // Animated bars via CSS variable
+  const appPct=Math.min(100,wj/20*100);
+  const netPct=Math.min(100,wn/30*100);
+  const barApps=document.getElementById('bar-apps');
+  const barNet=document.getElementById('bar-net');
+  barApps.style.setProperty('--target-width', appPct+'%');
+  barNet.style.setProperty('--target-width', netPct+'%');
+  // Force reflow for animation restart
+  barApps.classList.remove('bar-animated'); void barApps.offsetWidth; barApps.classList.add('bar-animated');
+  barNet.classList.remove('bar-animated'); void barNet.offsetWidth; barNet.classList.add('bar-animated');
 
   document.getElementById('badge-jobs').textContent=jobs.length;
   document.getElementById('badge-net').textContent=nets.length;
   document.getElementById('badge-tasks').textContent=tasks.filter(t=>!t.done).length;
   document.getElementById('badge-clips').textContent=clips.filter(c=>c.status==='saved'||c.status==='ready').length;
+}
+
+function animateCount(id,target){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const start=parseInt(el.textContent)||0;
+  if(start===target){el.textContent=target;return;}
+  const dur=600;const s=performance.now();
+  function step(now){
+    const p=Math.min(1,(now-s)/dur);
+    const ease=1-Math.pow(1-p,3);
+    el.textContent=Math.round(start+(target-start)*ease);
+    if(p<1)requestAnimationFrame(step);
+    else el.textContent=target;
+  }
+  requestAnimationFrame(step);
 }
 
 // ══════════════════════════════════════════════════
@@ -2442,6 +2669,35 @@ function clearData(){
   [KEY.jobs,KEY.net,KEY.tasks,KEY.clips].forEach(k=>localStorage.removeItem(k));
   jobs=[];nets=[];tasks=[];clips=[];refreshAll();toast('🗑 All data cleared.');
 }
+
+// ══════════════════════════════════════════════════
+//  FILTER / SORT STATE
+// ══════════════════════════════════════════════════
+let jobFilter='all', jobSort='date-desc';
+let clipFilter='all', clipSort='date-desc';
+let netFilter='all', netSort='date-desc';
+
+function setJobFilter(v,el){
+  jobFilter=v;
+  document.querySelectorAll('#page-jobs .fchip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderJobs();
+}
+function setJobSort(v){ jobSort=v; renderJobs(); }
+function setClipFilter(v,el){
+  clipFilter=v;
+  document.querySelectorAll('#page-clips .fchip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderClips();
+}
+function setClipSort(v){ clipSort=v; renderClips(); }
+function setNetFilter(v,el){
+  netFilter=v;
+  document.querySelectorAll('#page-network .fchip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderNets();
+}
+function setNetSort(v){ netSort=v; renderNets(); }
 
 // ══════════════════════════════════════════════════
 //  UTILITIES
