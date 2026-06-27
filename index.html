@@ -1500,6 +1500,7 @@ function openM(id,prefill){
     if(prefill.company&&document.getElementById('cl-company'))document.getElementById('cl-company').value=prefill.company;
     if(prefill.company&&document.getElementById('j-company'))document.getElementById('j-company').value=prefill.company;
     if(prefill.role&&document.getElementById('j-role'))document.getElementById('j-role').value=prefill.role;
+    if(prefill.url&&document.getElementById('j-url'))document.getElementById('j-url').value=prefill.url;
   }
   document.getElementById(id).classList.add('on');
 }
@@ -1605,7 +1606,7 @@ function renderJobs(){
     } else {
       tb.innerHTML=sorted.map(j=>`<tr>
         <td><strong>${e(j.company)}</strong></td>
-        <td class="fs12">${e(j.role)}</td>
+        <td class="fs12">${e(j.role)}${j.url?` <a href="${e(j.url)}" target="_blank" style="color:var(--sky);font-size:11px;text-decoration:none;">🔗</a>`:''}</td>
         <td>
           <div class="status-wrap">
             <span class="status-dot ${statusDotClass[j.status]||'dot-applied'}"></span>
@@ -1680,7 +1681,7 @@ function applyClip(id){
   const c=clips.find(c=>c.id===id);
   if(!c)return;
   c.status='applied';sv(KEY.clips,clips);
-  openM('m-job',{company:c.company,role:c.role});
+  openM('m-job',{company:c.company,role:c.role,url:c.url});
   refreshAll();
 }
 
