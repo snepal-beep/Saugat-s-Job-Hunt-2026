@@ -1497,7 +1497,23 @@ function addJob(){
 function delJob(id){jobs=jobs.filter(j=>j.id!==id);sv(KEY.jobs,jobs);refreshAll();}
 function setJobStatus(id,v){const j=jobs.find(j=>j.id===id);if(j){j.status=v;sv(KEY.jobs,jobs);refreshAll();}}
 
+// Backfill Job URLs on any application that's missing one, by matching
+// company + role against the Job Clips list. Handles applications that were
+// created/marked-applied before URL syncing existed, or added manually.
+function norm(s){ return String(s||'').trim().toLowerCase(); }
+function backfillJobUrls(){
+  let changed=false;
+  jobs.forEach(j=>{
+    if(!j.url){
+      const match=clips.find(c=> c.url && norm(c.company)===norm(j.company) && norm(c.role)===norm(j.role));
+      if(match){ j.url=match.url; changed=true; }
+    }
+  });
+  if(changed) sv(KEY.jobs,jobs);
+}
+
 function renderJobs(){
+  backfillJobUrls();
   const tb=document.getElementById('jobs-tbody');
   const em=document.getElementById('jobs-empty');
   const statusLabel={applied:'Applied',interview:'Interview',offer:'Offer 🎉',rejected:'Rejected',followup:'Follow-Up'};
