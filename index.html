@@ -57,8 +57,6 @@ body{
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
 }
-
-/* ── LOGIN GATE ── */
 .login-gate {
   position: fixed; inset: 0; background: var(--navy); z-index: 99999;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -70,8 +68,6 @@ body{
   background: var(--surface); border-radius: 16px; padding: 40px 30px;
   max-width: 400px; width: 100%; box-shadow: var(--shadow-lg); color: var(--text);
 }
-
-/* ── SIDEBAR ── */
 .sidebar{
   width:var(--sidebar-w);
   background:var(--navy);
@@ -142,8 +138,6 @@ body{
 }
 .week-chip-label{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(200,146,42,0.8);font-weight:600;margin-bottom:3px;}
 .week-chip-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.45);}
-
-/* ── MOBILE TOPBAR ── */
 .topbar{
   display:none;position:fixed;top:0;left:0;right:0;
   z-index:210;
@@ -168,8 +162,6 @@ body{
   transition:opacity 0.25s, visibility 0.25s;
 }
 .sidebar-overlay.on{opacity:1; visibility:visible;}
-
-/* ── MAIN ── */
 .main{
   margin-left:var(--sidebar-w);
   padding:40px 44px;
@@ -179,8 +171,6 @@ body{
 .page{display:none;}
 .page.active{display:block;animation:fadein 0.22s ease;}
 @keyframes fadein{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
-
-/* ── PAGE HEADER ── */
 .page-header{margin-bottom:30px;}
 .breadcrumb{
   font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
@@ -195,13 +185,9 @@ body{
   letter-spacing:-0.01em;
 }
 .page-subtitle{font-size:13.5px;color:var(--text3);font-weight:400;line-height:1.5;}
-
-/* ── GRID ── */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
-
-/* ── CARD ── */
 .card{
   background:var(--card);
   border:1px solid var(--border);
@@ -217,8 +203,6 @@ body{
   font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
   font-weight:700;color:var(--text3);margin-bottom:12px;
 }
-
-/* ── STAT CARDS ── */
 .stat{
   background:var(--card);border:1px solid var(--border);
   border-radius:14px;padding:20px 22px;
@@ -248,8 +232,6 @@ body{
 .stat-bar-fill{height:100%;border-radius:99px;transition:width 1s ease;}
 .stat.gold .stat-bar-fill{background:linear-gradient(90deg,#C8922A,var(--gold2));}
 .stat.teal .stat-bar-fill{background:linear-gradient(90deg,var(--teal),var(--teal2));}
-
-/* ── TABLES ── */
 .tbl{width:100%;border-collapse:collapse;}
 .tbl th{
   font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
@@ -260,8 +242,6 @@ body{
 .tbl td{padding:11px 14px;border-bottom:1px solid var(--bg2);font-size:13px;vertical-align:middle;}
 .tbl tr:last-child td{border-bottom:none;}
 .tbl tr:hover td{background:var(--bg);}
-
-/* ── BADGES ── */
 .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10.5px;font-weight:600;font-family:'DM Sans',sans-serif;}
 .b-sky{background:var(--sky-bg);color:var(--sky);border:1px solid var(--sky-border);}
 .b-gold{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border);}
@@ -270,8 +250,6 @@ body{
 .b-purple{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border);}
 .b-muted{background:var(--bg2);color:var(--text3);border:1px solid var(--border);}
 .b-orange{background:var(--orange-bg);color:var(--orange);border:1px solid rgba(176,92,24,0.2);}
-
-/* ── BUTTONS ── */
 .btn{
   display:inline-flex;align-items:center;gap:6px;
   padding:9px 18px;border-radius:9px;
@@ -298,8 +276,6 @@ body{
 }
 .btn-copy:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
 .btn-copy.copied{background:var(--teal);color:#fff;border-color:var(--teal);}
-
-/* ── MODAL ── */
 .overlay{
   position:fixed;inset:0;background:rgba(26,23,20,0.45);
   backdrop-filter:blur(4px);z-index:900;
@@ -320,8 +296,6 @@ body{
   font-size:24px;font-weight:400;color:var(--navy);margin-bottom:22px;
 }
 .modal-wide{width:680px;}
-
-/* ── FORMS ── */
 .fg{margin-bottom:14px;}
 .fg label{display:block;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;color:var(--text3);margin-bottom:5px;}
 .fi,.fs,.fa{
@@ -335,8 +309,6 @@ body{
 .fs option{background:var(--card);}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .f-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
-
-/* ── TASK ITEM ── */
 .task-item{
   display:flex;align-items:flex-start;gap:10px;
   padding:11px 13px;border-radius:9px;border:1px solid var(--border);
@@ -365,8 +337,6 @@ body{
 .pri-h{background:var(--coral-bg);color:var(--coral);}
 .pri-m{background:var(--gold-bg);color:var(--gold);}
 .pri-l{background:var(--bg2);color:var(--text3);}
-
-/* ── EMPLOYER CARDS ── */
 .employer-card{
   background:var(--card);border:1px solid var(--border);
   border-radius:11px;padding:15px 17px;
@@ -395,8 +365,6 @@ body{
   font-size:7px;color:var(--gold);font-weight:700;
 }
 .emp-actions{display:flex;gap:6px;flex-shrink:0;flex-direction:column;align-items:flex-end;}
-
-/* ── TEMPLATE TABS ── */
 .role-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px;}
 .role-tab{
   padding:7px 14px;border-radius:8px;
@@ -428,8 +396,6 @@ body{
   border-radius:6px;border-left:2px solid var(--gold);
 }
 .char-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);}
-
-/* ── REMINDER CARD ── */
 .rem-card{
   background:var(--card);border:1px solid var(--border);
   border-radius:12px;padding:18px 20px;margin-bottom:10px;
@@ -449,8 +415,6 @@ body{
   background:var(--bg2);color:var(--text3);
 }
 .rem-day.on{background:var(--navy);color:#fff;}
-
-/* ── STRATEGY ── */
 .phase{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow-sm);}
 .phase-hd{
   padding:15px 20px;display:flex;align-items:center;gap:12px;
@@ -467,8 +431,6 @@ body{
 .phase-bd{padding:0 20px 18px;background:var(--card);display:none;}
 .phase-bd.open{display:block;}
 .phase-arrow{margin-left:auto;color:var(--text3);transition:transform 0.2s;font-size:12px;}
-
-/* ── TIPS ── */
 .tip{
   border-left:3px solid var(--teal);border-radius:0 9px 9px 0;
   background:var(--teal-bg);padding:13px 15px;margin-bottom:9px;
@@ -478,8 +440,6 @@ body{
 .tip.coral{border-left-color:var(--coral);background:var(--coral-bg);}
 .tip-title{font-weight:600;font-size:13px;color:var(--navy);margin-bottom:3px;}
 .tip-text{font-size:12.5px;color:var(--text2);line-height:1.6;}
-
-/* ── SCHEDULE ── */
 .sch-wrap{overflow-x:auto;}
 .sch-grid{display:grid;grid-template-columns:52px repeat(7,1fr);gap:2px;min-width:580px;}
 .sch-hd{
@@ -507,8 +467,6 @@ body{
 .blk-hunt{background:#0F6B58;color:#fff;}
 .blk-online{background:#5C4E9C;color:#fff;}
 .blk-social{background:#A05818;color:#fff;}
-
-/* ── DAY PLAN CARDS ── */
 .day-plan-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:26px;}
 .day-card{
   background:var(--card);border:1px solid var(--border);
@@ -547,8 +505,6 @@ body{
 .dot-free{background:var(--text3);}
 .tb-t{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);}
 .tb-d{font-size:11.5px;color:var(--text2);font-weight:500;}
-
-/* ── DATA SYNC PAGE ── */
 .sync-option{
   background:var(--card);border:1px solid var(--border);
   border-radius:14px;padding:22px;margin-bottom:16px;
@@ -560,8 +516,6 @@ body{
 }
 .sync-title{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;color:var(--navy);margin-bottom:7px;}
 .sync-desc{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:14px;}
-
-/* ── UTILITY ── */
 .mb4{margin-bottom:4px;} .mb8{margin-bottom:8px;} .mb12{margin-bottom:12px;}
 .mb16{margin-bottom:16px;} .mb20{margin-bottom:20px;} .mb28{margin-bottom:28px;}
 .flex{display:flex;align-items:center;}
@@ -597,8 +551,6 @@ body{
 }
 .quote-banner p{font-size:13.5px;line-height:1.6;font-style:italic;}
 .quote-banner strong{color:#DBA83C;font-style:normal;}
-
-/* ── TOAST ── */
 .toast{
   position:fixed;bottom:24px;right:24px;
   background:var(--navy);color:#fff;
@@ -608,13 +560,9 @@ body{
   box-shadow:var(--shadow-lg);border-left:3px solid var(--gold);
 }
 .toast.show{opacity:1;transform:translateY(0);}
-
-/* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
-
-/* ── STATUS DOTS ── */
 .status-dot {
   display:inline-block; width:8px; height:8px; border-radius:50%;
   flex-shrink:0; box-shadow:0 0 0 2px rgba(255,255,255,0.9);
@@ -632,11 +580,7 @@ body{
 .dot-connected { background:var(--teal); box-shadow:0 0 0 2px rgba(255,255,255,0.9), 0 0 5px rgba(15,107,88,0.4); }
 .dot-warm      { background:var(--gold); box-shadow:0 0 0 2px rgba(255,255,255,0.9), 0 0 5px rgba(168,114,14,0.4); }
 .dot-net-followup { background:var(--purple); }
-
-/* status cell with dot */
 .status-cell { display:flex; align-items:center; gap:7px; }
-
-/* ── FILTER BAR ── */
 .filter-bar {
   display:flex; align-items:center; gap:8px; flex-wrap:wrap;
   margin-bottom:14px; padding:12px 16px;
@@ -675,8 +619,6 @@ body{
   background:var(--bg); border:1px solid var(--border); border-radius:20px;
   padding:3px 9px; font-family:'JetBrains Mono',monospace;
 }
-
-/* ── STAT CARD ENHANCEMENTS ── */
 .stat {
   transition:transform 0.2s, box-shadow 0.2s;
 }
@@ -684,8 +626,6 @@ body{
   transform:translateY(-3px);
   box-shadow:var(--shadow);
 }
-
-/* ── TABLE ENHANCEMENTS ── */
 .tbl tbody tr {
   transition:all 0.12s;
 }
@@ -699,13 +639,9 @@ body{
   0%{transform:scaleX(0.98);opacity:0.7;}
   100%{transform:scaleX(1);opacity:1;}
 }
-
-/* ── ANIMATED STAT NUMBERS ── */
 .stat-val {
   transition:color 0.3s;
 }
-
-/* ── PULSE DOT (week chip) ── */
 .pulse-dot {
   width:7px; height:7px; border-radius:50%;
   background:var(--teal); display:inline-block;
@@ -718,8 +654,6 @@ body{
   70%{box-shadow:0 0 0 6px rgba(15,107,88,0);}
   100%{box-shadow:0 0 0 0 rgba(15,107,88,0);}
 }
-
-/* ── CARD ENTRANCE ANIMATION ── */
 .page.active .card,
 .page.active .stat {
   animation:cardrise 0.3s ease both;
@@ -731,15 +665,11 @@ body{
   from{opacity:0;transform:translateY(8px);}
   to{opacity:1;transform:translateY(0);}
 }
-
-/* ── SIDEBAR ACTIVE INDICATOR ── */
 .nav-item.active::before {
   content:''; position:absolute; left:0; top:50%; transform:translateY(-50%);
   width:3px; height:60%; background:var(--gold); border-radius:0 3px 3px 0;
 }
 .nav-item { position:relative; }
-
-/* ── QUOTE BANNER SHIMMER ── */
 .quote-banner {
   position:relative; overflow:hidden;
 }
@@ -752,19 +682,13 @@ body{
   0%{left:-100%;}
   100%{left:200%;}
 }
-
-/* ── BACKGROUND TEXTURE ── */
 body::before {
   content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
   background-image: radial-gradient(circle at 20% 50%, rgba(168,114,14,0.02) 0%, transparent 50%),
                     radial-gradient(circle at 80% 20%, rgba(15,107,88,0.02) 0%, transparent 40%);
 }
 .main { position:relative; z-index:1; }
-
-/* ── ENHANCED ROW ACTIONS ── */
 .row-act { gap:12px; }
-
-/* ── STAT BAR ANIMATION ── */
 .stat-bar-fill {
   transition:width 1s cubic-bezier(0.4,0,0.2,1);
 }
@@ -772,13 +696,9 @@ body::before {
   transition:width 1s cubic-bezier(0.4,0,0.2,1);
   width:var(--target-width) !important;
 }
-
-/* ── TABLE STATUS INLINE DOT WRAP ── */
 .tbl .status-wrap {
   display:flex; align-items:center; gap:6px;
 }
-
-/* ── TASK DAILY SECTION ── */
 .daily-task-section{
   background:var(--gold-light);border:1px solid var(--gold-border);
   border-radius:12px;padding:18px;margin-bottom:20px;
@@ -800,8 +720,6 @@ body::before {
   display:flex;align-items:center;justify-content:center;
   font-size:8px;font-weight:700;flex-shrink:0;margin-top:0.5px;
 }
-
-/* ── MOBILE ── */
 @media(max-width:1024px){
   :root{--sidebar-w:240px;}
   .main{padding:36px 28px;}
@@ -1143,7 +1061,7 @@ body::before {
   <div class="card" style="overflow-x:auto;">
     <table class="tbl">
       <thead><tr>
-        <th>Company</th><th>Role</th><th>Status</th>
+        <th>Company</th><th>Role</th><th>Job URL</th><th>Status</th>
         <th>Applied</th><th>Platform</th><th>Follow-Up</th><th>Notes</th><th></th>
       </tr></thead>
       <tbody id="jobs-tbody"></tbody>
@@ -1282,6 +1200,7 @@ body::before {
       <div class="fg"><label>Company *</label><input class="fi" id="j-company" placeholder="e.g. EY, Deloitte"/></div>
       <div class="fg"><label>Role *</label><input class="fi" id="j-role" placeholder="e.g. Senior Associate, Risk"/></div>
     </div>
+    <div class="fg"><label>Job URL</label><input class="fi" type="url" id="j-url" placeholder="https://careers.example.com/job/12345"/></div>
     <div class="frow">
       <div class="fg"><label>Status</label>
         <select class="fs" id="j-status">
@@ -1527,6 +1446,7 @@ function editJob(id) {
   currentEditId = id;
   document.getElementById('j-company').value = j.company || '';
   document.getElementById('j-role').value = j.role || '';
+  document.getElementById('j-url').value = j.url || '';
   document.getElementById('j-status').value = j.status || 'applied';
   document.getElementById('j-platform').value = j.platform || 'LinkedIn';
   document.getElementById('j-date').value = j.date || '';
@@ -1547,11 +1467,13 @@ function addJob(){
   const c=document.getElementById('j-company').value.trim();
   const r=document.getElementById('j-role').value.trim();
   if(!c||!r){alert('Company and role are required.');return;}
+  const u=document.getElementById('j-url').value.trim();
   
   if(currentEditId) {
     const j = jobs.find(x => x.id === currentEditId);
     if(j) {
       j.company = c; j.role = r;
+      j.url = u;
       j.status = document.getElementById('j-status').value;
       j.platform = document.getElementById('j-platform').value;
       j.date = document.getElementById('j-date').value;
@@ -1561,6 +1483,7 @@ function addJob(){
     toast('✅ Application updated!');
   } else {
     jobs.unshift({id:Date.now(),company:c,role:r,
+      url:u,
       status:document.getElementById('j-status').value,
       platform:document.getElementById('j-platform').value,
       date:document.getElementById('j-date').value,
@@ -1602,11 +1525,12 @@ function renderJobs(){
   else{
     em.style.display='none';
     if(!sorted.length){
-      tb.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--text3);font-size:13px;">No applications match this filter.</td></tr>`;
+      tb.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--text3);font-size:13px;">No applications match this filter.</td></tr>`;
     } else {
       tb.innerHTML=sorted.map(j=>`<tr>
         <td><strong>${e(j.company)}</strong></td>
-        <td class="fs12">${e(j.role)}${j.url?` <a href="${e(j.url)}" target="_blank" style="color:var(--sky);font-size:11px;text-decoration:none;">🔗</a>`:''}</td>
+        <td class="fs12">${e(j.role)}</td>
+        <td class="fs12">${j.url?`<a href="${e(j.url)}" target="_blank" style="color:var(--sky);text-decoration:none;font-size:11px;">🔗 View Job</a>`:'—'}</td>
         <td>
           <div class="status-wrap">
             <span class="status-dot ${statusDotClass[j.status]||'dot-applied'}"></span>
@@ -1752,7 +1676,7 @@ function editContact(id) {
   currentEditId = id;
   document.getElementById('n-name').value = n.name || '';
   document.getElementById('n-title').value = n.title || '';
-  document.getElementById('n-company').value = n.company || ''; // NEW FIELD
+  document.getElementById('n-company').value = n.company || '';
   document.getElementById('n-platform').value = n.platform || 'LinkedIn';
   document.getElementById('n-status').value = n.status || 'pending';
   document.getElementById('n-date').value = n.date || '';
@@ -1776,7 +1700,7 @@ function addContact(){
     if(n) {
       n.name = nm;
       n.title = document.getElementById('n-title').value.trim();
-      n.company = document.getElementById('n-company').value.trim(); // NEW FIELD
+      n.company = document.getElementById('n-company').value.trim();
       n.platform = document.getElementById('n-platform').value;
       n.status = document.getElementById('n-status').value;
       n.date = document.getElementById('n-date').value;
@@ -1787,7 +1711,7 @@ function addContact(){
   } else {
     nets.unshift({id:Date.now(),name:nm,
       title:document.getElementById('n-title').value.trim(),
-      company:document.getElementById('n-company').value.trim(), // NEW FIELD
+      company:document.getElementById('n-company').value.trim(),
       platform:document.getElementById('n-platform').value,
       status:document.getElementById('n-status').value,
       date:document.getElementById('n-date').value,
@@ -2753,7 +2677,7 @@ import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/fireb
 // CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyDN1gVIlmVcVTUsm3IskLLKzn0pGux9yb8",
-  authDomain: "job-hunt-2026-9caef.firebaseapp.com", // Keeping the Firebase URL since you use GitHub Pages
+  authDomain: "job-hunt-2026-9caef.firebaseapp.com",
   projectId: "job-hunt-2026-9caef",
   storageBucket: "job-hunt-2026-9caef.firebasestorage.app",
   messagingSenderId: "470319391474",
