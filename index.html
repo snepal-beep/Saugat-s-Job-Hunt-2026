@@ -1600,7 +1600,31 @@ function addClip(){
   sv(KEY.clips,clips); closeM('m-clip'); currentEditId = null; refreshAll();
 }
 function delClip(id){clips=clips.filter(c=>c.id!==id);sv(KEY.clips,clips);refreshAll();}
-function setClipStatus(id,v){const c=clips.find(c=>c.id===id);if(c){c.status=v;sv(KEY.clips,clips);refreshAll();}}
+function setClipStatus(id,v){
+  const c=clips.find(c=>c.id===id);
+  if(!c) return;
+  const prevStatus=c.status;
+  c.status=v;
+  sv(KEY.clips,clips);
+  // If moved to "applied" (via dropdown, not the Apply button), auto-create the
+  // matching Application record so the Job URL always carries over.
+  if(v==='applied' && prevStatus!=='applied'){
+    const alreadyExists=jobs.some(j=>j.company===c.company && j.role===c.role && (j.url||'')===(c.url||''));
+    if(!alreadyExists){
+      jobs.unshift({id:Date.now(),company:c.company,role:c.role,
+        url:c.url||'',
+        status:'applied',
+        platform:'Company Site',
+        date:new Date().toISOString().split('T')[0],
+        followup:new Date(Date.now()+4*86400000).toISOString().split('T')[0],
+        notes:''
+      });
+      sv(KEY.jobs,jobs);
+      toast('💼 Moved to Applications — URL carried over!');
+    }
+  }
+  refreshAll();
+}
 function applyClip(id){
   const c=clips.find(c=>c.id===id);
   if(!c)return;
