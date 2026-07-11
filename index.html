@@ -573,6 +573,10 @@ body{
 .dot-offer     { background:var(--teal); box-shadow:0 0 0 2px rgba(255,255,255,0.9), 0 0 6px rgba(15,107,88,0.5); }
 .dot-rejected  { background:var(--coral); }
 .dot-followup  { background:var(--orange); }
+.dot-screening { background:#1E6494; }
+.dot-assessment{ background:#8C5D08; }
+.dot-hiringmgr { background:var(--purple); }
+.dot-executive { background:var(--coral); }
 .dot-saved     { background:var(--sky); }
 .dot-ready     { background:var(--gold); box-shadow:0 0 0 2px rgba(255,255,255,0.9), 0 0 6px rgba(168,114,14,0.4); }
 .dot-clip-applied { background:var(--teal); }
@@ -1036,6 +1040,10 @@ body::before {
         <div class="stat-label" style="font-size:9px;">Rejected</div>
         <div class="stat-val" style="font-size:28px;" id="j-rej">0</div>
       </div>
+      <div class="stat purple" style="padding:10px 16px;min-width:0;">
+        <div class="stat-label" style="font-size:9px;">Total</div>
+        <div class="stat-val" style="font-size:28px;" id="j-total">0</div>
+      </div>
     </div>
     <button class="btn btn-navy" onclick="openM('m-job')">+ Add Application</button>
   </div>
@@ -1044,7 +1052,10 @@ body::before {
     <div class="filter-chips">
       <div class="fchip active" onclick="setJobFilter('all',this)">All</div>
       <div class="fchip" onclick="setJobFilter('applied',this)"><span class="fchip-dot" style="background:var(--sky)"></span>Applied</div>
-      <div class="fchip" onclick="setJobFilter('interview',this)"><span class="fchip-dot" style="background:var(--gold)"></span>Interview</div>
+      <div class="fchip" onclick="setJobFilter('screening',this)"><span class="fchip-dot" style="background:#1E6494"></span>Screening</div>
+      <div class="fchip" onclick="setJobFilter('assessment',this)"><span class="fchip-dot" style="background:#8C5D08"></span>Assessment</div>
+      <div class="fchip" onclick="setJobFilter('hiringmgr',this)"><span class="fchip-dot" style="background:var(--purple)"></span>Hiring Manager</div>
+      <div class="fchip" onclick="setJobFilter('executive',this)"><span class="fchip-dot" style="background:var(--coral)"></span>Executive Round</div>
       <div class="fchip" onclick="setJobFilter('offer',this)"><span class="fchip-dot" style="background:var(--teal)"></span>Offer</div>
       <div class="fchip" onclick="setJobFilter('rejected',this)"><span class="fchip-dot" style="background:var(--coral)"></span>Rejected</div>
       <div class="fchip" onclick="setJobFilter('followup',this)"><span class="fchip-dot" style="background:var(--orange)"></span>Follow-Up</div>
@@ -1204,7 +1215,11 @@ body::before {
     <div class="frow">
       <div class="fg"><label>Status</label>
         <select class="fs" id="j-status">
-          <option value="applied">Applied</option><option value="interview">Interview</option>
+          <option value="applied">Applied</option>
+          <option value="screening">Screening</option>
+          <option value="assessment">Assessment</option>
+          <option value="hiringmgr">Hiring Manager</option>
+          <option value="executive">Executive Round</option>
           <option value="offer">Offer 🎉</option><option value="rejected">Rejected</option>
           <option value="followup">Follow-Up</option>
         </select>
@@ -1516,8 +1531,8 @@ function renderJobs(){
   backfillJobUrls();
   const tb=document.getElementById('jobs-tbody');
   const em=document.getElementById('jobs-empty');
-  const statusLabel={applied:'Applied',interview:'Interview',offer:'Offer 🎉',rejected:'Rejected',followup:'Follow-Up'};
-  const statusDotClass={applied:'dot-applied',interview:'dot-interview',offer:'dot-offer',rejected:'dot-rejected',followup:'dot-followup'};
+  const statusLabel={applied:'Applied',screening:'Screening',assessment:'Assessment',hiringmgr:'Hiring Manager',executive:'Executive Round',offer:'Offer 🎉',rejected:'Rejected',followup:'Follow-Up'};
+  const statusDotClass={applied:'dot-applied',screening:'dot-screening',assessment:'dot-assessment',hiringmgr:'dot-hiringmgr',executive:'dot-executive',offer:'dot-offer',rejected:'dot-rejected',followup:'dot-followup'};
   
   // Apply filter
   let filtered = jobFilter==='all' ? jobs : jobs.filter(j=>j.status===jobFilter);
@@ -1528,7 +1543,7 @@ function renderJobs(){
     if(jobSort==='date-desc') return (b.date||'').localeCompare(a.date||'');
     if(jobSort==='company-asc') return (a.company||'').localeCompare(b.company||'');
     if(jobSort==='status'){
-      const order={interview:0,offer:1,followup:2,applied:3,rejected:4};
+      const order={executive:0,hiringmgr:1,assessment:2,screening:3,offer:4,followup:5,applied:6,rejected:7};
       return (order[a.status]??9)-(order[b.status]??9);
     }
     return 0;
@@ -1551,7 +1566,7 @@ function renderJobs(){
           <div class="status-wrap">
             <span class="status-dot ${statusDotClass[j.status]||'dot-applied'}"></span>
             <select onchange="setJobStatus(${j.id},this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
-              ${['applied','interview','offer','rejected','followup'].map(s=>`<option value="${s}"${j.status===s?' selected':''}>${statusLabel[s]}</option>`).join('')}
+              ${['applied','screening','assessment','hiringmgr','executive','offer','rejected','followup'].map(s=>`<option value="${s}"${j.status===s?' selected':''}>${statusLabel[s]}</option>`).join('')}
             </select>
           </div>
         </td>
@@ -1567,9 +1582,10 @@ function renderJobs(){
     }
   }
   document.getElementById('j-applied').textContent=jobs.filter(j=>j.status==='applied').length;
-  document.getElementById('j-int').textContent=jobs.filter(j=>j.status==='interview').length;
+  document.getElementById('j-int').textContent=jobs.filter(j=>['screening','assessment','hiringmgr','executive'].includes(j.status)).length;
   document.getElementById('j-offer').textContent=jobs.filter(j=>j.status==='offer').length;
   document.getElementById('j-rej').textContent=jobs.filter(j=>j.status==='rejected').length;
+  document.getElementById('j-total').textContent=jobs.length;
 }
 
 // ══════════════════════════════════════════════════
