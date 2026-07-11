@@ -1028,9 +1028,21 @@ body::before {
         <div class="stat-label" style="font-size:9px;">Applied</div>
         <div class="stat-val" style="font-size:28px;" id="j-applied">0</div>
       </div>
+      <div class="stat sky" style="padding:10px 16px;min-width:0;">
+        <div class="stat-label" style="font-size:9px;">Screening</div>
+        <div class="stat-val" style="font-size:28px;" id="j-screening">0</div>
+      </div>
       <div class="stat gold" style="padding:10px 16px;min-width:0;">
-        <div class="stat-label" style="font-size:9px;">Interview</div>
-        <div class="stat-val" style="font-size:28px;" id="j-int">0</div>
+        <div class="stat-label" style="font-size:9px;">Assessment</div>
+        <div class="stat-val" style="font-size:28px;" id="j-assessment">0</div>
+      </div>
+      <div class="stat purple" style="padding:10px 16px;min-width:0;">
+        <div class="stat-label" style="font-size:9px;">Hiring Mgr</div>
+        <div class="stat-val" style="font-size:28px;" id="j-hiringmgr">0</div>
+      </div>
+      <div class="stat coral" style="padding:10px 16px;min-width:0;">
+        <div class="stat-label" style="font-size:9px;">Executive</div>
+        <div class="stat-val" style="font-size:28px;" id="j-executive">0</div>
       </div>
       <div class="stat teal" style="padding:10px 16px;min-width:0;">
         <div class="stat-label" style="font-size:9px;">Offers</div>
@@ -1582,7 +1594,10 @@ function renderJobs(){
     }
   }
   document.getElementById('j-applied').textContent=jobs.filter(j=>j.status==='applied').length;
-  document.getElementById('j-int').textContent=jobs.filter(j=>['screening','assessment','hiringmgr','executive'].includes(j.status)).length;
+  document.getElementById('j-screening').textContent=jobs.filter(j=>['interview','screening'].includes(j.status)).length;
+  document.getElementById('j-assessment').textContent=jobs.filter(j=>j.status==='assessment').length;
+  document.getElementById('j-hiringmgr').textContent=jobs.filter(j=>j.status==='hiringmgr').length;
+  document.getElementById('j-executive').textContent=jobs.filter(j=>j.status==='executive').length;
   document.getElementById('j-offer').textContent=jobs.filter(j=>j.status==='offer').length;
   document.getElementById('j-rej').textContent=jobs.filter(j=>j.status==='rejected').length;
   document.getElementById('j-total').textContent=jobs.length;
