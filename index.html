@@ -1028,13 +1028,13 @@ body::before {
         <div class="stat-label" style="font-size:9px;">Applied</div>
         <div class="stat-val" style="font-size:28px;" id="j-applied">0</div>
       </div>
-      <div class="stat sky" style="padding:10px 16px;min-width:0;">
-        <div class="stat-label" style="font-size:9px;">Screening</div>
-        <div class="stat-val" style="font-size:28px;" id="j-screening">0</div>
-      </div>
       <div class="stat gold" style="padding:10px 16px;min-width:0;">
         <div class="stat-label" style="font-size:9px;">Assessment</div>
         <div class="stat-val" style="font-size:28px;" id="j-assessment">0</div>
+      </div>
+      <div class="stat sky" style="padding:10px 16px;min-width:0;">
+        <div class="stat-label" style="font-size:9px;">Screening</div>
+        <div class="stat-val" style="font-size:28px;" id="j-screening">0</div>
       </div>
       <div class="stat purple" style="padding:10px 16px;min-width:0;">
         <div class="stat-label" style="font-size:9px;">Hiring Mgr</div>
@@ -1064,8 +1064,8 @@ body::before {
     <div class="filter-chips">
       <div class="fchip active" onclick="setJobFilter('all',this)">All</div>
       <div class="fchip" onclick="setJobFilter('applied',this)"><span class="fchip-dot" style="background:var(--sky)"></span>Applied</div>
-      <div class="fchip" onclick="setJobFilter('screening',this)"><span class="fchip-dot" style="background:#1E6494"></span>Screening</div>
       <div class="fchip" onclick="setJobFilter('assessment',this)"><span class="fchip-dot" style="background:#8C5D08"></span>Assessment</div>
+      <div class="fchip" onclick="setJobFilter('screening',this)"><span class="fchip-dot" style="background:#1E6494"></span>Screening</div>
       <div class="fchip" onclick="setJobFilter('hiringmgr',this)"><span class="fchip-dot" style="background:var(--purple)"></span>Hiring Manager</div>
       <div class="fchip" onclick="setJobFilter('executive',this)"><span class="fchip-dot" style="background:var(--coral)"></span>Executive Round</div>
       <div class="fchip" onclick="setJobFilter('offer',this)"><span class="fchip-dot" style="background:var(--teal)"></span>Offer</div>
@@ -1228,8 +1228,8 @@ body::before {
       <div class="fg"><label>Status</label>
         <select class="fs" id="j-status">
           <option value="applied">Applied</option>
-          <option value="screening">Screening</option>
           <option value="assessment">Assessment</option>
+          <option value="screening">Screening</option>
           <option value="hiringmgr">Hiring Manager</option>
           <option value="executive">Executive Round</option>
           <option value="offer">Offer 🎉</option><option value="rejected">Rejected</option>
@@ -1578,7 +1578,7 @@ function renderJobs(){
           <div class="status-wrap">
             <span class="status-dot ${statusDotClass[j.status]||'dot-applied'}"></span>
             <select onchange="setJobStatus(${j.id},this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 9px;color:var(--text);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">
-              ${['applied','screening','assessment','hiringmgr','executive','offer','rejected','followup'].map(s=>`<option value="${s}"${j.status===s?' selected':''}>${statusLabel[s]}</option>`).join('')}
+              ${['applied','assessment','screening','hiringmgr','executive','offer','rejected','followup'].map(s=>`<option value="${s}"${j.status===s?' selected':''}>${statusLabel[s]}</option>`).join('')}
             </select>
           </div>
         </td>
@@ -1594,7 +1594,7 @@ function renderJobs(){
     }
   }
   document.getElementById('j-applied').textContent=jobs.filter(j=>j.status==='applied').length;
-  document.getElementById('j-screening').textContent=jobs.filter(j=>['interview','screening'].includes(j.status)).length;
+  document.getElementById('j-screening').textContent=jobs.filter(j=>j.status==='screening').length;
   document.getElementById('j-assessment').textContent=jobs.filter(j=>j.status==='assessment').length;
   document.getElementById('j-hiringmgr').textContent=jobs.filter(j=>j.status==='hiringmgr').length;
   document.getElementById('j-executive').textContent=jobs.filter(j=>j.status==='executive').length;
